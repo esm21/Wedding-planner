@@ -52,10 +52,10 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Juan Pérez</td>
-                        <td>2</td>
-                        <td>Sí</td>
-                        <td>Mesa 1</td>
+                        <td contenteditable="true">Juan Pérez</td>
+                        <td contenteditable="true">2</td>
+                        <td contenteditable="true">Sí</td>
+                        <td contenteditable="true">Mesa 1</td>
                         <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
                     </tr>
                 </tbody>
@@ -66,11 +66,76 @@
         <!-- Section for table assignments -->
         <div class="section" id="manage-tables">
             <h2>3. Organización de Mesas</h2>
-            <p>Arrastra los invitados a las mesas disponibles:</p>
-            <div id="table-summary">
-                <div>Mesa 1: <span>3 Invitados</span></div>
-                <div>Mesa 2: <span>2 Invitados</span></div>
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mesa</th>
+                        <th>Invitados</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td contenteditable="true">Mesa 1</td>
+                        <td contenteditable="true">3 Invitados</td>
+                        <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
+                    </tr>
+                    <tr>
+                        <td contenteditable="true">Mesa 2</td>
+                        <td contenteditable="true">2 Invitados</td>
+                        <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="addTable()">Añadir Mesa</button>
+        </div>
+
+        <!-- Section for ceremony management -->
+        <div class="section" id="ceremony-management">
+            <h2>4. Gestión de Ceremonias</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Elemento</th>
+                        <th>Gasto Estimado</th>
+                        <th>Gasto Real</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td contenteditable="true">Lugar de la ceremonia</td>
+                        <td contenteditable="true">1000</td>
+                        <td contenteditable="true">950</td>
+                        <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="addCeremonyItem()">Añadir Elemento</button>
+        </div>
+
+        <!-- Section for banquet management -->
+        <div class="section" id="banquet-management">
+            <h2>5. Gestión del Convite</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Elemento</th>
+                        <th>Gasto Estimado</th>
+                        <th>Gasto Real</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td contenteditable="true">Catering</td>
+                        <td contenteditable="true">5000</td>
+                        <td contenteditable="true">4800</td>
+                        <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="addBanquetItem()">Añadir Elemento</button>
         </div>
 
         <!-- Section for summary -->
@@ -118,9 +183,87 @@
             const actionsCell = row.insertCell(4);
 
             nameCell.textContent = "Invitado Nuevo";
+            nameCell.setAttribute('contenteditable', 'true');
+
             additionalCell.textContent = 0;
+            additionalCell.setAttribute('contenteditable', 'true');
+
             confirmationCell.textContent = "Pendiente";
+            confirmationCell.setAttribute('contenteditable', 'true');
+
             tableCell.textContent = "Sin Asignar";
+            tableCell.setAttribute('contenteditable', 'true');
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = "Eliminar";
+            deleteButton.onclick = () => row.remove();
+
+            actionsCell.appendChild(deleteButton);
+        }
+
+                function addTable() {
+            const table = document.querySelector('#manage-tables table tbody');
+            const row = table.insertRow();
+
+            const tableNameCell = row.insertCell(0);
+            const guestCountCell = row.insertCell(1);
+            const actionsCell = row.insertCell(2);
+
+            tableNameCell.textContent = "Nueva Mesa";
+            tableNameCell.setAttribute('contenteditable', 'true');
+
+            guestCountCell.textContent = "0 Invitados";
+            guestCountCell.setAttribute('contenteditable', 'true');
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = "Eliminar";
+            deleteButton.onclick = () => row.remove();
+
+            actionsCell.appendChild(deleteButton);
+        }
+
+        function addCeremonyItem() {
+            const table = document.querySelector('#ceremony-management table tbody');
+            const row = table.insertRow();
+
+            const itemCell = row.insertCell(0);
+            const estimatedCostCell = row.insertCell(1);
+            const realCostCell = row.insertCell(2);
+            const actionsCell = row.insertCell(3);
+
+            itemCell.textContent = "Nuevo Elemento";
+            itemCell.setAttribute('contenteditable', 'true');
+
+            estimatedCostCell.textContent = "0";
+            estimatedCostCell.setAttribute('contenteditable', 'true');
+
+            realCostCell.textContent = "0";
+            realCostCell.setAttribute('contenteditable', 'true');
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = "Eliminar";
+            deleteButton.onclick = () => row.remove();
+
+            actionsCell.appendChild(deleteButton);
+        }
+
+        function addBanquetItem() {
+            const table = document.querySelector('#banquet-management table tbody');
+            const row = table.insertRow();
+
+            const itemCell = row.insertCell(0);
+            const estimatedCostCell = row.insertCell(1);
+            const realCostCell = row.insertCell(2);
+            const actionsCell = row.insertCell(3);
+
+            itemCell.textContent = "Nuevo Elemento";
+            itemCell.setAttribute('contenteditable', 'true');
+
+            estimatedCostCell.textContent = "0";
+            estimatedCostCell.setAttribute('contenteditable', 'true');
+
+            realCostCell.textContent = "0";
+            realCostCell.setAttribute('contenteditable', 'true');
 
             const deleteButton = document.createElement('button');
             deleteButton.textContent = "Eliminar";
@@ -139,3 +282,4 @@
     </script>
 </body>
 </html>
+
