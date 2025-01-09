@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wedding Planner MVP</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="styles.css">
-
 </head>
 <body>
     <header>
@@ -37,6 +37,42 @@
             </form>
         </div>
 
+        <!-- Section for guests management -->
+        <div class="section" id="manage-guests">
+            <h2>2. Gestión de Invitados</h2>
+            <table id="guest-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Personas Adicionales</th>
+                        <th>Confirmación</th>
+                        <th>Mesa</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Juan Pérez</td>
+                        <td>2</td>
+                        <td>Sí</td>
+                        <td>Mesa 1</td>
+                        <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="addGuest()">Añadir Invitado</button>
+        </div>
+
+        <!-- Section for table assignments -->
+        <div class="section" id="manage-tables">
+            <h2>3. Organización de Mesas</h2>
+            <p>Arrastra los invitados a las mesas disponibles:</p>
+            <div id="table-summary">
+                <div>Mesa 1: <span>3 Invitados</span></div>
+                <div>Mesa 2: <span>2 Invitados</span></div>
+            </div>
+        </div>
+
         <!-- Section for summary -->
         <div class="section" id="summary">
             <h2>Resumen Consolidado</h2>
@@ -49,81 +85,57 @@
         </div>
     </div>
 
-<script>
-    const guests = JSON.parse(localStorage.getItem('guests')) || [];
-    const ceremonyData = JSON.parse(localStorage.getItem('ceremony')) || { civil: {}, religious: {} };
-    const banquetData = JSON.parse(localStorage.getItem('banquet')) || {};
-
-    function navigateTo(sectionId) {
-        document.querySelectorAll('.section').forEach(section => {
-            section.style.display = 'none';
-        });
-        document.getElementById(sectionId).style.display = 'block';
-    }
-
-    function validateBasicDetails() {
-        const weddingDate = document.getElementById('wedding-date').value;
-        const guestCount = document.getElementById('guest-count').value;
-        const errorSpan = document.getElementById('basic-error');
-
-        if (!weddingDate || !guestCount || guestCount <= 0) {
-            errorSpan.textContent = "Por favor, complete todos los campos correctamente.";
-            return;
+    <script>
+        function navigateTo(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
         }
 
-        localStorage.setItem('weddingDetails', JSON.stringify({ date: weddingDate, guests: guestCount }));
-        errorSpan.textContent = "";
-        alert("Detalles básicos guardados correctamente.");
-    }
+        function validateBasicDetails() {
+            const weddingDate = document.getElementById('wedding-date').value;
+            const guestCount = document.getElementById('guest-count').value;
+            const errorSpan = document.getElementById('basic-error');
 
-    function updateSummaryStats() {
-        const confirmedGuests = guests.filter(guest => guest.confirmation === 'Sí').length;
-        const totalGuests = guests.length;
-        const totalEstimatedCost = Object.values(banquetData).reduce((sum, value) => sum + (value.estimated || 0), 0);
-        const totalRealCost = Object.values(banquetData).reduce((sum, value) => sum + (value.real || 0), 0);
+            if (!weddingDate || !guestCount || guestCount <= 0) {
+                errorSpan.textContent = "Por favor, complete todos los campos correctamente.";
+                return;
+            }
 
-        document.getElementById('summary-stats').textContent = `
-            Total de invitados confirmados: ${confirmedGuests}/${totalGuests}
-            Gasto estimado total: ${totalEstimatedCost} €
-            Gasto real total: ${totalRealCost} €
-        `;
-    }
+            errorSpan.textContent = "";
+            alert("Detalles básicos guardados correctamente.");
+        }
 
-    function exportToExcel() {
-        const combinedData = {
-            Invitados: guests,
-            Ceremonias: [ceremonyData],
-            Convite: [banquetData]
-        };
+        function addGuest() {
+            const table = document.getElementById('guest-table').querySelector('tbody');
+            const row = table.insertRow();
 
-        const workbook = XLSX.utils.book_new();
-        Object.keys(combinedData).forEach(sheetName => {
-            const worksheet = XLSX.utils.json_to_sheet(combinedData[sheetName]);
-            XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-        });
-        XLSX.writeFile(workbook, 'resumen_planificacion.xlsx');
-    }
+            const nameCell = row.insertCell(0);
+            const additionalCell = row.insertCell(1);
+            const confirmationCell = row.insertCell(2);
+            const tableCell = row.insertCell(3);
+            const actionsCell = row.insertCell(4);
 
-    function exportToPDF() {
-        const pdfContent = `
-            Detalles del Resumen:
+            nameCell.textContent = "Invitado Nuevo";
+            additionalCell.textContent = 0;
+            confirmationCell.textContent = "Pendiente";
+            tableCell.textContent = "Sin Asignar";
 
-            Invitados Confirmados: ${guests.filter(guest => guest.confirmation === 'Sí').length}/${guests.length}
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = "Eliminar";
+            deleteButton.onclick = () => row.remove();
 
-            Ceremonias: ${JSON.stringify(ceremonyData)}
-            Convite: ${JSON.stringify(banquetData)}
-        `;
+            actionsCell.appendChild(deleteButton);
+        }
 
-        const blob = new Blob([pdfContent], { type: 'text/plain' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'resumen_planificacion.txt';
-        link.click();
-    }
+        function exportToExcel() {
+            alert("Función de exportación a Excel en desarrollo.");
+        }
 
-    // Initialize Summary Section
-    document.addEventListener('DOMContentLoaded', updateSummaryStats);
-</script>
-    
-  </body>
+        function exportToPDF() {
+            alert("Función de exportación a PDF en desarrollo.");
+        }
+    </script>
+</body>
 </html>
