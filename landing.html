@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificador de Bodas - Inicio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .landing-container {
+            min-height: 100vh;
+            background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), 
+                        url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .menu-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .icon-container {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h1 class="display-4 mb-3">Planificador de Bodas</h1>
+                <p class="lead">Selecciona una sección para comenzar la planificación</p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='index.html#civil'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                📋
+                            </div>
+                            <h5 class="card-title">Ceremonia Civil</h5>
+                            <p class="card-text">Gestiona todos los detalles de la ceremonia civil</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='index.html#religious'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                ⛪
+                            </div>
+                            <h5 class="card-title">Ceremonia Religiosa</h5>
+                            <p class="card-text">Organiza la ceremonia religiosa</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='index.html#banquet'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                🍽️
+                            </div>
+                            <h5 class="card-title">Convite</h5>
+                            <p class="card-text">Planifica el banquete y la celebración</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='index.html#guests'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                👥
+                            </div>
+                            <h5 class="card-title">Invitados</h5>
+                            <p class="card-text">Gestiona la lista de invitados</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='index.html#tables'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                🪑
+                            </div>
+                            <h5 class="card-title">Mesas</h5>
+                            <p class="card-text">Organiza la distribución de mesas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='index.html#summary'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                📊
+                            </div>
+                            <h5 class="card-title">Resumen</h5>
+                            <p class="card-text">Ver resumen general y estadísticas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
