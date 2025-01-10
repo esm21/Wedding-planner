@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 link.classList.add('active');
             }
         });
+    } else {
+        // If no hash, show civil section by default
+        showSection('civil');
     }
     
     // Navigation
@@ -29,6 +32,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show selected section
             showSection(section);
+            // Update URL hash without scrolling
+            history.pushState(null, '', `#${section}`);
         });
     });
 
@@ -41,12 +46,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize budget calculator
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
+    document.getElementById('save-details').addEventListener('click', saveBasicDetails);
 
     // Initialize predefined elements
     initializePredefinedElements();
     
-    // Show initial section and calculate initial budget
-    showSection('civil');
+    // Load saved details
+    const savedDate = localStorage.getItem('weddingDate');
+    const savedGuests = localStorage.getItem('totalGuests');
+    if (savedDate) document.getElementById('wedding-date').value = savedDate;
+    if (savedGuests) document.getElementById('total-guests').value = savedGuests;
+
     updateBudget();
 });
 
@@ -484,9 +494,3 @@ document.getElementById('export-excel').addEventListener('click', () => {
 document.getElementById('export-pdf').addEventListener('click', () => {
     alert('Funcionalidad de exportación a PDF en desarrollo');
 });
-
-// Load saved details on page load
-const savedDate = localStorage.getItem('weddingDate');
-const savedGuests = localStorage.getItem('totalGuests');
-if (savedDate) document.getElementById('wedding-date').value = savedDate;
-if (savedGuests) document.getElementById('total-guests').value = savedGuests;
