@@ -1,75 +1,142 @@
-<script>
-    const guests = JSON.parse(localStorage.getItem('guests')) || [];
-    const ceremonyData = JSON.parse(localStorage.getItem('ceremony')) || { civil: {}, religious: {} };
-    const banquetData = JSON.parse(localStorage.getItem('banquet')) || {};
-
-    function navigateTo(sectionId) {
-        document.querySelectorAll('.section').forEach(section => {
-            section.style.display = 'none';
+document.addEventListener('DOMContentLoaded', function() {
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const section = this.getAttribute('data-section');
+            showSection(section);
         });
-        document.getElementById(sectionId).style.display = 'block';
-    }
+    });
 
-    function validateBasicDetails() {
+    // Show initial section
+    showSection('basic');
+
+    // Basic Details Form
+    document.getElementById('basic-form').addEventListener('submit', function(e) {
+        e.preventDefault();
         const weddingDate = document.getElementById('wedding-date').value;
-        const guestCount = document.getElementById('guest-count').value;
-        const errorSpan = document.getElementById('basic-error');
+        const totalGuests = document.getElementById('total-guests').value;
+        saveBasicDetails(weddingDate, totalGuests);
+    });
 
-        if (!weddingDate || !guestCount || guestCount <= 0) {
-            errorSpan.textContent = "Por favor, complete todos los campos correctamente.";
-            return;
-        }
+    // Add buttons event listeners
+    document.getElementById('add-guest').addEventListener('click', addGuest);
+    document.getElementById('add-table').addEventListener('click', addTable);
+    document.getElementById('add-civil').addEventListener('click', () => addCeremonyItem('civil'));
+    document.getElementById('add-religious').addEventListener('click', () => addCeremonyItem('religious'));
+    document.getElementById('add-banquet').addEventListener('click', addBanquetItem);
 
-        localStorage.setItem('weddingDetails', JSON.stringify({ date: weddingDate, guests: guestCount }));
-        errorSpan.textContent = "";
-        alert("Detalles básicos guardados correctamente.");
-    }
+    // Export buttons
+    document.getElementById('export-excel').addEventListener('click', exportToExcel);
+    document.getElementById('export-pdf').addEventListener('click', exportToPDF);
+});
 
-    function updateSummaryStats() {
-        const confirmedGuests = guests.filter(guest => guest.confirmation === 'Sí').length;
-        const totalGuests = guests.length;
-        const totalEstimatedCost = Object.values(banquetData).reduce((sum, value) => sum + (value.estimated || 0), 0);
-        const totalRealCost = Object.values(banquetData).reduce((sum, value) => sum + (value.real || 0), 0);
+function showSection(sectionId) {
+    document.querySelectorAll('.section-content').forEach(section => {
+        section.style.display = 'none';
+    });
+    document.getElementById(`${sectionId}-section`).style.display = 'block';
+}
 
-        document.getElementById('summary-stats').textContent = `
-            Total de invitados confirmados: ${confirmedGuests}/${totalGuests}
-            Gasto estimado total: ${totalEstimatedCost} €
-            Gasto real total: ${totalRealCost} €
-        `;
-    }
+function saveBasicDetails(date, guests) {
+    // Save to localStorage for now
+    localStorage.setItem('weddingDate', date);
+    localStorage.setItem('totalGuests', guests);
+    alert('Detalles guardados correctamente');
+}
 
-    function exportToExcel() {
-        const combinedData = {
-            Invitados: guests,
-            Ceremonias: [ceremonyData],
-            Convite: [banquetData]
-        };
+function addGuest() {
+    const tbody = document.querySelector('#guests-table tbody');
+    const row = tbody.insertRow();
+    row.innerHTML = `
+        <td contenteditable="true">Nombre</td>
+        <td contenteditable="true">0</td>
+        <td>
+            <select class="form-select">
+                <option>Pendiente</option>
+                <option>Confirmado</option>
+                <option>Cancelado</option>
+            </select>
+        </td>
+        <td contenteditable="true">-</td>
+        <td>
+            <button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">Eliminar</button>
+        </td>
+    `;
+}
 
-        const workbook = XLSX.utils.book_new();
-        Object.keys(combinedData).forEach(sheetName => {
-            const worksheet = XLSX.utils.json_to_sheet(combinedData[sheetName]);
-            XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-        });
-        XLSX.writeFile(workbook, 'resumen_planificacion.xlsx');
-    }
+function addTable() {
+    const tbody = document.querySelector('#tables-table tbody');
+    const row = tbody.insertRow();
+    row.innerHTML = `
+        <td contenteditable="true">Mesa Nueva</td>
+        <td contenteditable="true">0</td>
+        <td>
+            <button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">Eliminar</button>
+        </td>
+    `;
+}
 
-    function exportToPDF() {
-        const pdfContent = `
-            Detalles del Resumen:
+function addCeremonyItem(type) {
+    const tbody = document.querySelector(`#${type}-table tbody`);
+    const row = tbody.insertRow();
+    row.innerHTML = `
+        <td contenteditable="true">Elemento nuevo</td>
+        <td contenteditable="true">0</td>
+        <td contenteditable="true">0</td>
+        <td>
+            <select class="form-select">
+                <option>Pendiente</option>
+                <option>En curso</option>
+                <option>Terminado</option>
+                <option>No interesado</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select">
+                <option>Alta</option>
+                <option>Media</option>
+                <option>Baja</option>
+            </select>
+        </td>
+        <td>
+            <button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">Eliminar</button>
+        </td>
+    `;
+}
 
-            Invitados Confirmados: ${guests.filter(guest => guest.confirmation === 'Sí').length}/${guests.length}
+function addBanquetItem() {
+    const tbody = document.querySelector('#banquet-table tbody');
+    const row = tbody.insertRow();
+    row.innerHTML = `
+        <td contenteditable="true">Elemento nuevo</td>
+        <td contenteditable="true">0</td>
+        <td contenteditable="true">0</td>
+        <td>
+            <select class="form-select">
+                <option>Pendiente</option>
+                <option>En curso</option>
+                <option>Terminado</option>
+                <option>No interesado</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select">
+                <option>Alta</option>
+                <option>Media</option>
+                <option>Baja</option>
+            </select>
+        </td>
+        <td>
+            <button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">Eliminar</button>
+        </td>
+    `;
+}
 
-            Ceremonias: ${JSON.stringify(ceremonyData)}
-            Convite: ${JSON.stringify(banquetData)}
-        `;
+function exportToExcel() {
+    alert('Funcionalidad de exportación a Excel pendiente de implementar');
+}
 
-        const blob = new Blob([pdfContent], { type: 'text/plain' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'resumen_planificacion.txt';
-        link.click();
-    }
-
-    // Initialize Summary Section
-    document.addEventListener('DOMContentLoaded', updateSummaryStats);
-</script>
+function exportToPDF() {
+    alert('Funcionalidad de exportación a PDF pendiente de implementar');
+}
