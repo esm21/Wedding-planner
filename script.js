@@ -1,9 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded'); // Debug log
     
+    // Setup event listeners first
+    setupEventListeners();
+    
     // Handle URL parameter navigation
     const urlParams = new URLSearchParams(window.location.search);
     const section = urlParams.get('section');
+    
     if (section) {
         showSection(section);
         
@@ -19,12 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showSection('civil');
     }
     
-    // Initialize all sections first
-    initializePredefinedElements();
-    
-    // Setup event listeners
-    setupEventListeners();
-    
     // Load saved details
     const savedDate = localStorage.getItem('weddingDate');
     const savedGuests = localStorage.getItem('totalGuests');
@@ -34,9 +32,36 @@ document.addEventListener('DOMContentLoaded', function() {
     updateBudget();
 });
 
+function setupEventListeners() {
+    console.log('Setting up event listeners...'); // Debug log
+    
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const section = this.getAttribute('data-section');
+            console.log('Navigation clicked:', section); // Debug log
+            showSection(section);
+            history.pushState(null, '', `?section=${section}`);
+        });
+    });
+
+    // Add buttons event listeners
+    document.getElementById('add-civil-item').addEventListener('click', () => addNewItem('civil'));
+    document.getElementById('add-religious-item').addEventListener('click', () => addNewItem('religious'));
+    document.getElementById('add-banquet-item').addEventListener('click', () => addNewItem('banquet'));
+    document.getElementById('add-guest').addEventListener('click', addGuest);
+    document.getElementById('add-table').addEventListener('click', addTable);
+
+    // Initialize budget calculator
+    document.getElementById('initial-budget').addEventListener('input', updateBudget);
+    document.getElementById('save-details').addEventListener('click', saveBasicDetails);
+}
+
 function showSection(sectionId) {
     console.log('Showing section:', sectionId); // Debug log
     document.querySelectorAll('.section-content').forEach(section => {
+        console.log('Section:', section.id); // Debug log
         section.style.display = 'none';
     });
     const targetSection = document.getElementById(`${sectionId}-section`);
@@ -494,16 +519,3 @@ document.getElementById('export-excel').addEventListener('click', () => {
 document.getElementById('export-pdf').addEventListener('click', () => {
     alert('Funcionalidad de exportación a PDF en desarrollo');
 });
-
-// Move event listeners setup to a separate function
-function setupEventListeners() {
-    // Navigation
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const section = this.getAttribute('data-section');
-            showSection(section);
-            history.pushState(null, '', `?section=${section}`);
-        });
-    });
-}
