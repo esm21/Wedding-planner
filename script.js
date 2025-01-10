@@ -1,9 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded'); // Debug log
     
-    // Handle hash navigation
-    if (window.location.hash) {
-        const section = window.location.hash.slice(1); // Remove the # symbol
+    // Handle URL parameter navigation
+    const urlParams = new URLSearchParams(window.location.search);
+    const section = urlParams.get('section');
+    if (section) {
         showSection(section);
         
         // Update navigation
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     } else {
-        // If no hash, show civil section by default
+        // If no section specified, show civil section by default
         showSection('civil');
     }
     
@@ -37,8 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show selected section
             showSection(section);
-            // Update URL hash without scrolling
-            history.pushState(null, '', `#${section}`);
+            // Update URL parameter without reloading
+            history.pushState(null, '', `?section=${section}`);
         });
     });
 
@@ -63,10 +64,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function showSection(sectionId) {
+    console.log('Showing section:', sectionId); // Debug log
     document.querySelectorAll('.section-content').forEach(section => {
         section.style.display = 'none';
     });
-    document.getElementById(`${sectionId}-section`).style.display = 'block';
+    const targetSection = document.getElementById(`${sectionId}-section`);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+    } else {
+        console.error(`Section not found: ${sectionId}-section`);
+    }
 }
 
 function addNewItem(type) {
