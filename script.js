@@ -44,10 +44,25 @@ function setupEventListeners() {
             e.preventDefault();
             const section = this.getAttribute('data-section');
             console.log('Navigation clicked:', section); // Debug log
+            // Remove active class from all links
+            document.querySelectorAll('.nav-link').forEach(l => {
+                l.classList.remove('active');
+            });
+            // Add active class to clicked link
+            this.classList.add('active');
             showSection(section);
             history.pushState(null, '', `?section=${section}`);
         });
     });
+
+    // Handle "Volver al Inicio" button separately
+    const homeButton = document.querySelector('a[href="index.html"]');
+    if (homeButton) {
+        homeButton.addEventListener('click', function(e) {
+            // Let this one use its default behavior
+            return true;
+        });
+    }
 
     // Add buttons event listeners
     document.getElementById('add-civil-item').addEventListener('click', () => addNewItem('civil'));
@@ -64,13 +79,13 @@ function setupEventListeners() {
 function showSection(sectionId) {
     console.log('Showing section:', sectionId); // Debug log
     document.querySelectorAll('.section-content').forEach(section => {
-        console.log('Section:', section.id); // Debug log
         section.style.display = 'none';
     });
     const targetSection = document.getElementById(`${sectionId}-section`);
     if (targetSection) {
         targetSection.style.display = 'block';
-        // Update budget display
+        // Scroll to top when changing sections
+        window.scrollTo(0, 0);
         updateBudget();
     } else {
         console.error(`Section not found: ${sectionId}-section`);
@@ -127,6 +142,11 @@ function attachBudgetListeners(row) {
 
 function initializePredefinedElements() {
     console.log('Initializing predefined elements...'); // Debug log
+    console.log('Checking tables existence:');
+    console.log('#civil-table:', document.querySelector('#civil-table tbody'));
+    console.log('#religious-table:', document.querySelector('#religious-table tbody'));
+    console.log('#banquet-table:', document.querySelector('#banquet-table tbody'));
+
     const civilElements = [
         { category: 'Lugar de la ceremonia', items: [
             'Alquiler de espacio',
@@ -320,6 +340,7 @@ function initializePredefinedElements() {
     const sections = ['civil', 'religious', 'banquet'];
     sections.forEach(type => {
         const tbody = document.querySelector(`#${type}-table tbody`);
+        console.log(`Processing ${type} table:`, tbody);
         if (!tbody) {
             console.error(`Table body not found for ${type}`);
             return;
