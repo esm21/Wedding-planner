@@ -3,263 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificador de Bodas</title>
+    <title>Planificador de Bodas - Inicio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        .landing-container {
+            min-height: 100vh;
+            background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), 
+                        url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .menu-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .icon-container {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Left Sidebar Navigation -->
-            <div class="col-md-2 sidebar">
-                <div class="d-flex flex-column flex-shrink-0 p-3 bg-light">
-                    <span class="fs-4">Planificador de Bodas</span>
-                    <a href="landing.html" class="btn btn-outline-primary btn-sm mt-2 mb-3">
-                        Volver al Inicio
-                    </a>
-                    <hr>
-                    <ul class="nav nav-pills flex-column mb-auto">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link active" data-section="civil">
-                                Ceremonia Civil
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-section="religious">
-                                Ceremonia Religiosa
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-section="banquet">
-                                Convite
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-section="guests">
-                                Invitados
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-section="tables">
-                                Mesas
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-section="summary">
-                                Resumen
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+    <div class="landing-container">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h1 class="display-4 mb-3">Planificador de Bodas</h1>
+                <p class="lead">Selecciona una sección para comenzar la planificación</p>
             </div>
 
-            <!-- Basic Details Banner -->
-            <div class="basic-details-banner" id="basic-details-banner">
-                <div class="container-fluid py-2">
-                    <div class="row align-items-center">
-                        <div class="col-md-4">
-                            <div class="input-group">
-                                <span class="input-group-text">Fecha de boda</span>
-                                <input type="date" class="form-control" id="wedding-date">
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='app.html#civil'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                📋
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="input-group">
-                                <span class="input-group-text">Total invitados</span>
-                                <input type="number" class="form-control" id="total-guests" min="0">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <button class="btn btn-primary" id="save-details">Guardar Detalles</button>
+                            <h5 class="card-title">Ceremonia Civil</h5>
+                            <p class="card-text">Gestiona todos los detalles de la ceremonia civil</p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Main Content Area -->
-            <div class="col-md-7 main-content">
-                <!-- Civil Ceremony Section -->
-                <section id="civil-section" class="section-content">
-                    <h2>Ceremonia Civil</h2>
-                    <button class="btn btn-success mb-3" id="add-civil-item">Añadir Elemento</button>
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="civil-table">
-                            <thead>
-                                <tr>
-                                    <th>Elemento</th>
-                                    <th>Gasto estimado</th>
-                                    <th>Gasto real</th>
-                                    <th>Estado</th>
-                                    <th>Prioridad</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Religious Ceremony Section -->
-                <section id="religious-section" class="section-content" style="display: none;">
-                    <h2>Ceremonia Religiosa</h2>
-                    <button class="btn btn-success mb-3" id="add-religious-item">Añadir Elemento</button>
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="religious-table">
-                            <thead>
-                                <tr>
-                                    <th>Elemento</th>
-                                    <th>Gasto estimado</th>
-                                    <th>Gasto real</th>
-                                    <th>Estado</th>
-                                    <th>Prioridad</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Banquet Section -->
-                <section id="banquet-section" class="section-content" style="display: none;">
-                    <h2>Convite</h2>
-                    <button class="btn btn-success mb-3" id="add-banquet-item">Añadir Elemento</button>
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="banquet-table">
-                            <thead>
-                                <tr>
-                                    <th>Elemento</th>
-                                    <th>Gasto estimado</th>
-                                    <th>Gasto real</th>
-                                    <th>Estado</th>
-                                    <th>Prioridad</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Guests Section -->
-                <section id="guests-section" class="section-content" style="display: none;">
-                    <h2>Invitados</h2>
-                    <button class="btn btn-success mb-3" id="add-guest">Añadir Invitado</button>
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="guests-table">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Personas Adicionales</th>
-                                    <th>Categoría</th>
-                                    <th>Invitación enviada</th>
-                                    <th>Confirmación</th>
-                                    <th>Grupo Mesa</th>
-                                    <th>Regalo aportado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Tables Section -->
-                <section id="tables-section" class="section-content" style="display: none;">
-                    <h2>Mesas</h2>
-                    <button class="btn btn-success mb-3" id="add-table">Añadir Mesa</button>
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="tables-table">
-                            <thead>
-                                <tr>
-                                    <th>Mesa</th>
-                                    <th>Capacidad</th>
-                                    <th>Asignados</th>
-                                    <th>Disponibles</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Summary Section -->
-                <section id="summary-section" class="section-content" style="display: none;">
-                    <h2>Resumen del Evento</h2>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Estadísticas Generales</h5>
-                                    <ul class="list-unstyled">
-                                        <li>Total Invitados: <span id="summary-total-guests">0</span></li>
-                                        <li>Confirmados: <span id="summary-confirmed-guests">0</span></li>
-                                        <li>Mesas Asignadas: <span id="summary-tables">0</span></li>
-                                    </ul>
-                                </div>
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='app.html#religious'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                ⛪
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Exportar Datos</h5>
-                                    <button class="btn btn-success me-2" id="export-excel">
-                                        Exportar a Excel
-                                    </button>
-                                    <button class="btn btn-danger" id="export-pdf">
-                                        Exportar a PDF
-                                    </button>
-                                </div>
-                            </div>
+                            <h5 class="card-title">Ceremonia Religiosa</h5>
+                            <p class="card-text">Organiza la ceremonia religiosa</p>
                         </div>
                     </div>
-                </section>
-            </div>
+                </div>
 
-            <!-- Budget Calculator Sidebar -->
-            <div class="col-md-3 budget-sidebar">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Calculadora de Presupuesto</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label">Presupuesto Inicial</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" id="initial-budget" value="0">
-                                <span class="input-group-text">€</span>
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='app.html#banquet'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                🍽️
                             </div>
+                            <h5 class="card-title">Convite</h5>
+                            <p class="card-text">Planifica el banquete y la celebración</p>
                         </div>
-                        <div class="budget-summary">
-                            <h6>Resumen de Gastos</h6>
-                            <table class="table table-sm">
-                                <tr>
-                                    <td>Ceremonia Civil</td>
-                                    <td id="civil-cost">0 €</td>
-                                </tr>
-                                <tr>
-                                    <td>Ceremonia Religiosa</td>
-                                    <td id="religious-cost">0 €</td>
-                                </tr>
-                                <tr>
-                                    <td>Convite</td>
-                                    <td id="banquet-cost">0 €</td>
-                                </tr>
-                            </table>
-                            <hr>
-                            <div class="d-flex justify-content-between">
-                                <span>Total Estimado:</span>
-                                <span id="total-estimated">0 €</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='app.html#guests'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                👥
                             </div>
-                            <div class="d-flex justify-content-between">
-                                <span>Total Real:</span>
-                                <span id="total-real">0 €</span>
+                            <h5 class="card-title">Invitados</h5>
+                            <p class="card-text">Gestiona la lista de invitados</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='app.html#tables'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                🪑
                             </div>
-                            <div class="d-flex justify-content-between">
-                                <span>Restante:</span>
-                                <span id="remaining-budget">0 €</span>
+                            <h5 class="card-title">Mesas</h5>
+                            <p class="card-text">Organiza la distribución de mesas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-lg-3">
+                    <div class="card menu-card h-100" onclick="window.location.href='app.html#summary'">
+                        <div class="card-body text-center">
+                            <div class="icon-container">
+                                📊
                             </div>
+                            <h5 class="card-title">Resumen</h5>
+                            <p class="card-text">Ver resumen general y estadísticas</p>
                         </div>
                     </div>
                 </div>
@@ -268,6 +115,5 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
 </body>
 </html>
