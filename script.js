@@ -1,4 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Handle hash navigation
+    if (window.location.hash) {
+        const section = window.location.hash.slice(1); // Remove the # symbol
+        showSection(section);
+        
+        // Update navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('data-section') === section) {
+                link.classList.add('active');
+            }
+        });
+    }
+    
     // Navigation
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', function(e) {
