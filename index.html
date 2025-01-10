@@ -16,7 +16,8 @@
         <a href="#" onclick="navigateTo('basic-details')">Inicio</a>
         <a href="#" onclick="navigateTo('manage-guests')">Invitados</a>
         <a href="#" onclick="navigateTo('manage-tables')">Mesas</a>
-        <a href="#" onclick="navigateTo('ceremony-management')">Ceremonias</a>
+        <a href="#" onclick="navigateTo('ceremony-civil')">Ceremonia Civil</a>
+        <a href="#" onclick="navigateTo('ceremony-religious')">Ceremonia Religiosa</a>
         <a href="#" onclick="navigateTo('banquet-management')">Convite</a>
         <a href="#" onclick="navigateTo('summary')">Resumen</a>
     </nav>
@@ -37,68 +38,17 @@
             </form>
         </div>
 
-        <!-- Section for guests management -->
-        <div class="section" id="manage-guests">
-            <h2>2. Gestión de Invitados</h2>
-            <table id="guest-table">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Personas Adicionales</th>
-                        <th>Confirmación</th>
-                        <th>Mesa</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td contenteditable="true">Juan Pérez</td>
-                        <td contenteditable="true">2</td>
-                        <td contenteditable="true">Sí</td>
-                        <td contenteditable="true">Mesa 1</td>
-                        <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button onclick="addGuest()">Añadir Invitado</button>
-        </div>
-
-        <!-- Section for table assignments -->
-        <div class="section" id="manage-tables">
-            <h2>3. Organización de Mesas</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mesa</th>
-                        <th>Invitados</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td contenteditable="true">Mesa 1</td>
-                        <td contenteditable="true">3 Invitados</td>
-                        <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
-                    </tr>
-                    <tr>
-                        <td contenteditable="true">Mesa 2</td>
-                        <td contenteditable="true">2 Invitados</td>
-                        <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button onclick="addTable()">Añadir Mesa</button>
-        </div>
-
-        <!-- Section for ceremony management -->
-        <div class="section" id="ceremony-management">
-            <h2>4. Gestión de Ceremonias</h2>
+        <!-- Section for Civil Ceremony management -->
+        <div class="section" id="ceremony-civil">
+            <h2>4.1. Gestión de Ceremonia Civil</h2>
             <table>
                 <thead>
                     <tr>
                         <th>Elemento</th>
                         <th>Gasto Estimado</th>
                         <th>Gasto Real</th>
+                        <th>Estado</th>
+                        <th>Prioridad</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -107,11 +57,67 @@
                         <td contenteditable="true">Lugar de la ceremonia</td>
                         <td contenteditable="true">1000</td>
                         <td contenteditable="true">950</td>
+                        <td>
+                            <select>
+                                <option>Pendiente</option>
+                                <option>En curso</option>
+                                <option>Terminado</option>
+                                <option>No interesado</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select>
+                                <option>Alta</option>
+                                <option>Media</option>
+                                <option>Baja</option>
+                            </select>
+                        </td>
                         <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
                     </tr>
                 </tbody>
             </table>
-            <button onclick="addCeremonyItem()">Añadir Elemento</button>
+            <button onclick="addCivilCeremonyItem()">Añadir Elemento</button>
+        </div>
+
+        <!-- Section for Religious Ceremony management -->
+        <div class="section" id="ceremony-religious">
+            <h2>4.2. Gestión de Ceremonia Religiosa</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Elemento</th>
+                        <th>Gasto Estimado</th>
+                        <th>Gasto Real</th>
+                        <th>Estado</th>
+                        <th>Prioridad</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td contenteditable="true">Alquiler del templo</td>
+                        <td contenteditable="true">2000</td>
+                        <td contenteditable="true">1800</td>
+                        <td>
+                            <select>
+                                <option>Pendiente</option>
+                                <option>En curso</option>
+                                <option>Terminado</option>
+                                <option>No interesado</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select>
+                                <option>Alta</option>
+                                <option>Media</option>
+                                <option>Baja</option>
+                            </select>
+                        </td>
+                        <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="addReligiousCeremonyItem()">Añadir Elemento</button>
         </div>
 
         <!-- Section for banquet management -->
@@ -172,64 +178,24 @@
             alert("Detalles básicos guardados correctamente.");
         }
 
-        function addGuest() {
-            const table = document.getElementById('guest-table').querySelector('tbody');
-            const row = table.insertRow();
-
-            const nameCell = row.insertCell(0);
-            const additionalCell = row.insertCell(1);
-            const confirmationCell = row.insertCell(2);
-            const tableCell = row.insertCell(3);
-            const actionsCell = row.insertCell(4);
-
-            nameCell.textContent = "Invitado Nuevo";
-            nameCell.setAttribute('contenteditable', 'true');
-
-            additionalCell.textContent = 0;
-            additionalCell.setAttribute('contenteditable', 'true');
-
-            confirmationCell.textContent = "Pendiente";
-            confirmationCell.setAttribute('contenteditable', 'true');
-
-            tableCell.textContent = "Sin Asignar";
-            tableCell.setAttribute('contenteditable', 'true');
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = "Eliminar";
-            deleteButton.onclick = () => row.remove();
-
-            actionsCell.appendChild(deleteButton);
+        function addCivilCeremonyItem() {
+            addCeremonyItem('#ceremony-civil table tbody');
         }
 
-                function addTable() {
-            const table = document.querySelector('#manage-tables table tbody');
-            const row = table.insertRow();
-
-            const tableNameCell = row.insertCell(0);
-            const guestCountCell = row.insertCell(1);
-            const actionsCell = row.insertCell(2);
-
-            tableNameCell.textContent = "Nueva Mesa";
-            tableNameCell.setAttribute('contenteditable', 'true');
-
-            guestCountCell.textContent = "0 Invitados";
-            guestCountCell.setAttribute('contenteditable', 'true');
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = "Eliminar";
-            deleteButton.onclick = () => row.remove();
-
-            actionsCell.appendChild(deleteButton);
+        function addReligiousCeremonyItem() {
+            addCeremonyItem('#ceremony-religious table tbody');
         }
 
-        function addCeremonyItem() {
-            const table = document.querySelector('#ceremony-management table tbody');
+        function addCeremonyItem(selector) {
+            const table = document.querySelector(selector);
             const row = table.insertRow();
 
             const itemCell = row.insertCell(0);
             const estimatedCostCell = row.insertCell(1);
             const realCostCell = row.insertCell(2);
-            const actionsCell = row.insertCell(3);
+            const stateCell = row.insertCell(3);
+            const priorityCell = row.insertCell(4);
+            const actionsCell = row.insertCell(5);
 
             itemCell.textContent = "Nuevo Elemento";
             itemCell.setAttribute('contenteditable', 'true');
@@ -239,6 +205,23 @@
 
             realCostCell.textContent = "0";
             realCostCell.setAttribute('contenteditable', 'true');
+
+                       stateCell.innerHTML = `
+                <select>
+                    <option>Pendiente</option>
+                    <option>En curso</option>
+                    <option>Terminado</option>
+                    <option>No interesado</option>
+                </select>
+            `;
+
+            priorityCell.innerHTML = `
+                <select>
+                    <option>Alta</option>
+                    <option>Media</option>
+                    <option>Baja</option>
+                </select>
+            `;
 
             const deleteButton = document.createElement('button');
             deleteButton.textContent = "Eliminar";
@@ -282,4 +265,3 @@
     </script>
 </body>
 </html>
-
