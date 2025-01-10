@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded'); // Debug log
     
+    // Initialize predefined elements first
+    initializePredefinedElements();
+    
     // Setup event listeners first
     setupEventListeners();
     
@@ -67,10 +70,6 @@ function showSection(sectionId) {
     const targetSection = document.getElementById(`${sectionId}-section`);
     if (targetSection) {
         targetSection.style.display = 'block';
-        // Reinitialize the section's elements if needed
-        if (['civil', 'religious', 'banquet'].includes(sectionId)) {
-            initializePredefinedElements();
-        }
         // Update budget display
         updateBudget();
     } else {
@@ -239,7 +238,7 @@ function initializePredefinedElements() {
 
     const banquetElements = [
         { category: 'Lugar del convite', items: [
-            'Alquiler del espacio',
+            'Alquiler de espacio',
             'Servicios adicionales (iluminación, etc)'
         ]},
         { category: 'Catering', items: [
