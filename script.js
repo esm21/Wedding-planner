@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded'); // Debug log
+    
     // Handle hash navigation
     if (window.location.hash) {
         const section = window.location.hash.slice(1); // Remove the # symbol
@@ -15,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // If no hash, show civil section by default
         showSection('civil');
     }
+    
+    // Initialize predefined elements first
+    initializePredefinedElements();
     
     // Navigation
     document.querySelectorAll('.nav-link').forEach(link => {
@@ -48,9 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
     document.getElementById('save-details').addEventListener('click', saveBasicDetails);
 
-    // Initialize predefined elements
-    initializePredefinedElements();
-    
     // Load saved details
     const savedDate = localStorage.getItem('weddingDate');
     const savedGuests = localStorage.getItem('totalGuests');
@@ -116,6 +118,7 @@ function attachBudgetListeners(row) {
 }
 
 function initializePredefinedElements() {
+    console.log('Initializing predefined elements...'); // Debug log
     const civilElements = [
         { category: 'Lugar de la ceremonia', items: [
             'Alquiler de espacio',
@@ -308,6 +311,10 @@ function initializePredefinedElements() {
     // Clear existing table contents
     ['civil', 'religious', 'banquet'].forEach(type => {
         const tbody = document.querySelector(`#${type}-table tbody`);
+        if (!tbody) {
+            console.error(`Table body not found for ${type}`);
+            return;
+        }
         tbody.innerHTML = '';
     });
 
