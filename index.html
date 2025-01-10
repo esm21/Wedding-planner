@@ -8,177 +8,207 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Planificador de Bodas</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="basic">Detalles Básicos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="guests">Invitados</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="tables">Mesas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="ceremony">Ceremonias</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="banquet">Banquete</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="summary">Resumen</a>
-                    </li>
-                </ul>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-md-2 sidebar">
+                <div class="d-flex flex-column flex-shrink-0 p-3 bg-light">
+                    <span class="fs-4 mb-3">Planificador de Bodas</span>
+                    <hr>
+                    <ul class="nav nav-pills flex-column mb-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active" data-section="civil">
+                                Ceremonia Civil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="religious">
+                                Ceremonia Religiosa
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="banquet">
+                                Convite
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="guests">
+                                Invitados
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="tables">
+                                Mesas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-md-7 main-content">
+                <!-- Civil Ceremony Section -->
+                <section id="civil-section" class="section-content">
+                    <h2>Ceremonia Civil</h2>
+                    <button class="btn btn-success mb-3" id="add-civil-item">Añadir Elemento</button>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="civil-table">
+                            <thead>
+                                <tr>
+                                    <th>Elemento</th>
+                                    <th>Gasto estimado</th>
+                                    <th>Gasto real</th>
+                                    <th>Estado</th>
+                                    <th>Prioridad</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Religious Ceremony Section -->
+                <section id="religious-section" class="section-content" style="display: none;">
+                    <h2>Ceremonia Religiosa</h2>
+                    <button class="btn btn-success mb-3" id="add-religious-item">Añadir Elemento</button>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="religious-table">
+                            <thead>
+                                <tr>
+                                    <th>Elemento</th>
+                                    <th>Gasto estimado</th>
+                                    <th>Gasto real</th>
+                                    <th>Estado</th>
+                                    <th>Prioridad</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Banquet Section -->
+                <section id="banquet-section" class="section-content" style="display: none;">
+                    <h2>Convite</h2>
+                    <button class="btn btn-success mb-3" id="add-banquet-item">Añadir Elemento</button>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="banquet-table">
+                            <thead>
+                                <tr>
+                                    <th>Elemento</th>
+                                    <th>Gasto estimado</th>
+                                    <th>Gasto real</th>
+                                    <th>Estado</th>
+                                    <th>Prioridad</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Guests Section -->
+                <section id="guests-section" class="section-content" style="display: none;">
+                    <h2>Invitados</h2>
+                    <button class="btn btn-success mb-3" id="add-guest">Añadir Invitado</button>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="guests-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Personas Adicionales</th>
+                                    <th>Categoría</th>
+                                    <th>Invitación enviada</th>
+                                    <th>Confirmación</th>
+                                    <th>Grupo Mesa</th>
+                                    <th>Regalo aportado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Tables Section -->
+                <section id="tables-section" class="section-content" style="display: none;">
+                    <h2>Mesas</h2>
+                    <button class="btn btn-success mb-3" id="add-table">Añadir Mesa</button>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="tables-table">
+                            <thead>
+                                <tr>
+                                    <th>Mesa</th>
+                                    <th>Capacidad</th>
+                                    <th>Asignados</th>
+                                    <th>Disponibles</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Budget Calculator Sidebar -->
+            <div class="col-md-3 budget-sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Calculadora de Presupuesto</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Presupuesto Inicial</label>
+                            <input type="number" class="form-control" id="initial-budget">
+                        </div>
+                        <div class="budget-summary">
+                            <h6>Resumen de Gastos</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td>Ceremonia Civil</td>
+                                    <td id="civil-cost">0 €</td>
+                                </tr>
+                                <tr>
+                                    <td>Ceremonia Religiosa</td>
+                                    <td id="religious-cost">0 €</td>
+                                </tr>
+                                <tr>
+                                    <td>Convite</td>
+                                    <td id="banquet-cost">0 €</td>
+                                </tr>
+                            </table>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <span>Total Estimado:</span>
+                                <span id="total-estimated">0 €</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Total Real:</span>
+                                <span id="total-real">0 €</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Restante:</span>
+                                <span id="remaining-budget">0 €</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
-
-    <div class="container mt-4">
-        <!-- Basic Details Section -->
-        <section id="basic-section" class="section-content">
-            <h2>Detalles Básicos</h2>
-            <form id="basic-form">
-                <div class="mb-3">
-                    <label for="wedding-date" class="form-label">Fecha de la Boda</label>
-                    <input type="date" class="form-control" id="wedding-date" required>
-                </div>
-                <div class="mb-3">
-                    <label for="total-guests" class="form-label">Número Total de Invitados</label>
-                    <input type="number" class="form-control" id="total-guests" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Guardar Detalles</button>
-            </form>
-        </section>
-
-        <!-- Guests Section -->
-        <section id="guests-section" class="section-content" style="display: none;">
-            <h2>Gestión de Invitados</h2>
-            <button class="btn btn-success mb-3" id="add-guest">Añadir Invitado</button>
-            <div class="table-responsive">
-                <table class="table" id="guests-table">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Acompañantes</th>
-                            <th>Confirmación</th>
-                            <th>Mesa Asignada</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Tables Section -->
-        <section id="tables-section" class="section-content" style="display: none;">
-            <h2>Gestión de Mesas</h2>
-            <button class="btn btn-success mb-3" id="add-table">Añadir Mesa</button>
-            <div class="table-responsive">
-                <table class="table" id="tables-table">
-                    <thead>
-                        <tr>
-                            <th>Nombre de Mesa</th>
-                            <th>Número de Invitados</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Ceremony Section -->
-        <section id="ceremony-section" class="section-content" style="display: none;">
-            <h2>Gestión de Ceremonias</h2>
-            
-            <h3>Ceremonia Civil</h3>
-            <button class="btn btn-success mb-3" id="add-civil">Añadir Elemento</button>
-            <div class="table-responsive">
-                <table class="table" id="civil-table">
-                    <thead>
-                        <tr>
-                            <th>Elemento</th>
-                            <th>Coste Estimado</th>
-                            <th>Coste Real</th>
-                            <th>Estado</th>
-                            <th>Prioridad</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <h3>Ceremonia Religiosa</h3>
-            <button class="btn btn-success mb-3" id="add-religious">Añadir Elemento</button>
-            <div class="table-responsive">
-                <table class="table" id="religious-table">
-                    <thead>
-                        <tr>
-                            <th>Elemento</th>
-                            <th>Coste Estimado</th>
-                            <th>Coste Real</th>
-                            <th>Estado</th>
-                            <th>Prioridad</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Banquet Section -->
-        <section id="banquet-section" class="section-content" style="display: none;">
-            <h2>Gestión del Banquete</h2>
-            <button class="btn btn-success mb-3" id="add-banquet">Añadir Elemento</button>
-            <div class="table-responsive">
-                <table class="table" id="banquet-table">
-                    <thead>
-                        <tr>
-                            <th>Elemento</th>
-                            <th>Coste Estimado</th>
-                            <th>Coste Real</th>
-                            <th>Estado</th>
-                            <th>Prioridad</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Summary Section -->
-        <section id="summary-section" class="section-content" style="display: none;">
-            <h2>Resumen</h2>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Estadísticas</h5>
-                            <div id="statistics"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Exportar</h5>
-                            <button class="btn btn-primary me-2" id="export-excel">Exportar a Excel</button>
-                            <button class="btn btn-primary" id="export-pdf">Exportar a PDF</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
