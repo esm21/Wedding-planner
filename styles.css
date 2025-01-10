@@ -82,3 +82,19 @@
         min-height: auto;
     }
 }
+
+.basic-details-banner {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+#summary-section .card {
+    height: 100%;
+}
+
+#summary-section .list-unstyled li {
+    margin-bottom: 0.5rem;
+}
