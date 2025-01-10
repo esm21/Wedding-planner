@@ -3,10 +3,13 @@
     background-color: #f8f9fa;
     border-right: 1px solid #dee2e6;
     padding: 0;
+    position: fixed;
+    width: inherit;
 }
 
 .main-content {
     padding: 20px;
+    margin-left: 16.666667%;
 }
 
 .budget-sidebar {
@@ -14,6 +17,9 @@
     border-left: 1px solid #dee2e6;
     background-color: #f8f9fa;
     min-height: 100vh;
+    position: fixed;
+    right: 0;
+    width: inherit;
 }
 
 .nav-link {
@@ -79,7 +85,17 @@
 
 @media (max-width: 768px) {
     .sidebar, .budget-sidebar {
-        min-height: auto;
+        position: relative;
+        width: 100%;
+    }
+    .main-content {
+        margin-left: 0;
+    }
+    .section-content {
+        margin-right: 0;
+    }
+    .basic-details-banner {
+        margin-left: 0;
     }
 }
 
@@ -89,6 +105,8 @@
     position: sticky;
     top: 0;
     z-index: 1000;
+    margin-left: 16.666667%;
+    padding: 10px 0;
 }
 
 #summary-section .card {
@@ -97,4 +115,9 @@
 
 #summary-section .list-unstyled li {
     margin-bottom: 0.5rem;
+}
+
+.section-content {
+    margin-top: 20px;
+    margin-right: 25%;
 }
