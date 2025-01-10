@@ -41,7 +41,35 @@
                                 Mesas
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="summary">
+                                Resumen
+                            </a>
+                        </li>
                     </ul>
+                </div>
+            </div>
+
+            <!-- Basic Details Banner -->
+            <div class="basic-details-banner" id="basic-details-banner">
+                <div class="container-fluid py-2">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">Fecha de boda</span>
+                                <input type="date" class="form-control" id="wedding-date">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">Total invitados</span>
+                                <input type="number" class="form-control" id="total-guests" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary" id="save-details">Guardar Detalles</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -152,6 +180,38 @@
                         </table>
                     </div>
                 </section>
+
+                <!-- Summary Section -->
+                <section id="summary-section" class="section-content" style="display: none;">
+                    <h2>Resumen del Evento</h2>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>Estadísticas Generales</h5>
+                                    <ul class="list-unstyled">
+                                        <li>Total Invitados: <span id="summary-total-guests">0</span></li>
+                                        <li>Confirmados: <span id="summary-confirmed-guests">0</span></li>
+                                        <li>Mesas Asignadas: <span id="summary-tables">0</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>Exportar Datos</h5>
+                                    <button class="btn btn-success me-2" id="export-excel">
+                                        Exportar a Excel
+                                    </button>
+                                    <button class="btn btn-danger" id="export-pdf">
+                                        Exportar a PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
 
             <!-- Budget Calculator Sidebar -->
@@ -205,9 +265,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>/cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
