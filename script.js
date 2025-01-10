@@ -19,41 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
         showSection('civil');
     }
     
-    // Initialize predefined elements first
+    // Initialize all sections first
     initializePredefinedElements();
     
-    // Navigation
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const section = this.getAttribute('data-section');
-            
-            // Remove active class from all links
-            document.querySelectorAll('.nav-link').forEach(l => {
-                l.classList.remove('active');
-            });
-            
-            // Add active class to clicked link
-            this.classList.add('active');
-            
-            // Show selected section
-            showSection(section);
-            // Update URL parameter without reloading
-            history.pushState(null, '', `?section=${section}`);
-        });
-    });
-
-    // Add buttons event listeners
-    document.getElementById('add-civil-item').addEventListener('click', () => addNewItem('civil'));
-    document.getElementById('add-religious-item').addEventListener('click', () => addNewItem('religious'));
-    document.getElementById('add-banquet-item').addEventListener('click', () => addNewItem('banquet'));
-    document.getElementById('add-guest').addEventListener('click', addGuest);
-    document.getElementById('add-table').addEventListener('click', addTable);
-
-    // Initialize budget calculator
-    document.getElementById('initial-budget').addEventListener('input', updateBudget);
-    document.getElementById('save-details').addEventListener('click', saveBasicDetails);
-
+    // Setup event listeners
+    setupEventListeners();
+    
     // Load saved details
     const savedDate = localStorage.getItem('weddingDate');
     const savedGuests = localStorage.getItem('totalGuests');
@@ -71,6 +42,12 @@ function showSection(sectionId) {
     const targetSection = document.getElementById(`${sectionId}-section`);
     if (targetSection) {
         targetSection.style.display = 'block';
+        // Reinitialize the section's elements if needed
+        if (['civil', 'religious', 'banquet'].includes(sectionId)) {
+            initializePredefinedElements();
+        }
+        // Update budget display
+        updateBudget();
     } else {
         console.error(`Section not found: ${sectionId}-section`);
     }
@@ -316,19 +293,28 @@ function initializePredefinedElements() {
     ];
 
     // Clear existing table contents
-    ['civil', 'religious', 'banquet'].forEach(type => {
+    const sections = ['civil', 'religious', 'banquet'];
+    sections.forEach(type => {
         const tbody = document.querySelector(`#${type}-table tbody`);
         if (!tbody) {
             console.error(`Table body not found for ${type}`);
             return;
         }
         tbody.innerHTML = '';
+        
+        // Initialize the section with its elements
+        switch(type) {
+            case 'civil':
+                civilElements.forEach(category => addCategoryWithItems('civil', category));
+                break;
+            case 'religious':
+                religiousElements.forEach(category => addCategoryWithItems('religious', category));
+                break;
+            case 'banquet':
+                banquetElements.forEach(category => addCategoryWithItems('banquet', category));
+                break;
+        }
     });
-
-    // Add predefined elements for each section
-    civilElements.forEach(category => addCategoryWithItems('civil', category));
-    religiousElements.forEach(category => addCategoryWithItems('religious', category));
-    banquetElements.forEach(category => addCategoryWithItems('banquet', category));
 }
 
 function addCategoryWithItems(type, category) {
@@ -508,3 +494,16 @@ document.getElementById('export-excel').addEventListener('click', () => {
 document.getElementById('export-pdf').addEventListener('click', () => {
     alert('Funcionalidad de exportación a PDF en desarrollo');
 });
+
+// Move event listeners setup to a separate function
+function setupEventListeners() {
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const section = this.getAttribute('data-section');
+            showSection(section);
+            history.pushState(null, '', `?section=${section}`);
+        });
+    });
+}
