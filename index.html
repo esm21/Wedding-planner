@@ -54,7 +54,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td contenteditable="true">Lugar de la ceremonia</td>
+                        <td contenteditable="true">Alquiler de espacio</td>
                         <td contenteditable="true">1000</td>
                         <td contenteditable="true">950</td>
                         <td>
@@ -129,6 +129,8 @@
                         <th>Elemento</th>
                         <th>Gasto Estimado</th>
                         <th>Gasto Real</th>
+                        <th>Estado</th>
+                        <th>Prioridad</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -137,6 +139,21 @@
                         <td contenteditable="true">Catering</td>
                         <td contenteditable="true">5000</td>
                         <td contenteditable="true">4800</td>
+                        <td>
+                            <select>
+                                <option>Pendiente</option>
+                                <option>En curso</option>
+                                <option>Terminado</option>
+                                <option>No interesado</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select>
+                                <option>Alta</option>
+                                <option>Media</option>
+                                <option>Baja</option>
+                            </select>
+                        </td>
                         <td><button onclick="this.closest('tr').remove()">Eliminar</button></td>
                     </tr>
                 </tbody>
@@ -195,6 +212,23 @@
             const realCostCell = row.insertCell(2);
             const stateCell = row.insertCell(3);
             const priorityCell = row.insertCell(4);
+            const actionsCell
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = "Eliminar";
+            deleteButton.onclick = () => row.remove();
+
+            actionsCell.appendChild(deleteButton);
+        }
+
+        function addBanquetItem() {
+            const table = document.querySelector('#banquet-management table tbody');
+            const row = table.insertRow();
+
+            const itemCell = row.insertCell(0);
+            const estimatedCostCell = row.insertCell(1);
+            const realCostCell = row.insertCell(2);
+            const stateCell = row.insertCell(3);
+            const priorityCell = row.insertCell(4);
             const actionsCell = row.insertCell(5);
 
             itemCell.textContent = "Nuevo Elemento";
@@ -206,7 +240,7 @@
             realCostCell.textContent = "0";
             realCostCell.setAttribute('contenteditable', 'true');
 
-                       stateCell.innerHTML = `
+            stateCell.innerHTML = `
                 <select>
                     <option>Pendiente</option>
                     <option>En curso</option>
@@ -230,31 +264,6 @@
             actionsCell.appendChild(deleteButton);
         }
 
-        function addBanquetItem() {
-            const table = document.querySelector('#banquet-management table tbody');
-            const row = table.insertRow();
-
-            const itemCell = row.insertCell(0);
-            const estimatedCostCell = row.insertCell(1);
-            const realCostCell = row.insertCell(2);
-            const actionsCell = row.insertCell(3);
-
-            itemCell.textContent = "Nuevo Elemento";
-            itemCell.setAttribute('contenteditable', 'true');
-
-            estimatedCostCell.textContent = "0";
-            estimatedCostCell.setAttribute('contenteditable', 'true');
-
-            realCostCell.textContent = "0";
-            realCostCell.setAttribute('contenteditable', 'true');
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = "Eliminar";
-            deleteButton.onclick = () => row.remove();
-
-            actionsCell.appendChild(deleteButton);
-        }
-
         function exportToExcel() {
             alert("Función de exportación a Excel en desarrollo.");
         }
@@ -265,3 +274,4 @@
     </script>
 </body>
 </html>
+
