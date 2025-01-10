@@ -427,3 +427,52 @@ function updateTableGroups() {
         select.value = currentValue;
     });
 }
+
+function saveBasicDetails() {
+    const weddingDate = document.getElementById('wedding-date').value;
+    const totalGuests = document.getElementById('total-guests').value;
+    
+    if (!weddingDate) {
+        alert('Por favor, seleccione una fecha de boda');
+        return;
+    }
+    
+    if (!totalGuests || totalGuests <= 0) {
+        alert('Por favor, ingrese un número válido de invitados');
+        return;
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('weddingDate', weddingDate);
+    localStorage.setItem('totalGuests', totalGuests);
+    
+    alert('Detalles guardados correctamente');
+    updateSummary();
+}
+
+function updateSummary() {
+    const confirmedGuests = Array.from(document.querySelectorAll('#guests-table tbody tr'))
+        .filter(row => row.querySelector('select').value === 'Confirmado').length;
+    
+    const totalTables = document.querySelectorAll('#tables-table tbody tr').length;
+    
+    document.getElementById('summary-total-guests').textContent = 
+        localStorage.getItem('totalGuests') || '0';
+    document.getElementById('summary-confirmed-guests').textContent = confirmedGuests;
+    document.getElementById('summary-tables').textContent = totalTables;
+}
+
+// Add these event listeners in the DOMContentLoaded event
+document.getElementById('save-details').addEventListener('click', saveBasicDetails);
+document.getElementById('export-excel').addEventListener('click', () => {
+    alert('Funcionalidad de exportación a Excel en desarrollo');
+});
+document.getElementById('export-pdf').addEventListener('click', () => {
+    alert('Funcionalidad de exportación a PDF en desarrollo');
+});
+
+// Load saved details on page load
+const savedDate = localStorage.getItem('weddingDate');
+const savedGuests = localStorage.getItem('totalGuests');
+if (savedDate) document.getElementById('wedding-date').value = savedDate;
+if (savedGuests) document.getElementById('total-guests').value = savedGuests;
