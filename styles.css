@@ -18,6 +18,7 @@
 
 .nav-link {
     color: #333;
+    cursor: pointer;
 }
 
 .nav-link:hover {
@@ -25,40 +26,55 @@
 }
 
 .nav-link.active {
-    background-color: #0d6efd;
-    color: white;
+    background-color: #0d6efd !important;
+    color: white !important;
 }
 
 .table th {
     background-color: #f8f9fa;
 }
 
+.table-secondary {
+    background-color: #e2e3e5 !important;
+}
+
 .budget-summary {
     font-size: 0.9rem;
 }
 
-.status-pending {
-    color: #dc3545;
+.category-row {
+    background-color: #e2e3e5;
+    font-weight: bold;
 }
 
-.status-progress {
-    color: #ffc107;
+.form-select {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
 }
 
-.status-completed {
-    color: #28a745;
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
 }
 
-.priority-high {
-    background-color: #ffd7d7;
+.table td {
+    vertical-align: middle;
 }
 
-.priority-medium {
-    background-color: #fff3cd;
+[contenteditable="true"] {
+    padding: 0.25rem 0.5rem;
+    background-color: #fff;
+    border: 1px solid transparent;
 }
 
-.priority-low {
-    background-color: #d1e7dd;
+[contenteditable="true"]:hover {
+    border-color: #dee2e6;
+}
+
+[contenteditable="true"]:focus {
+    outline: none;
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 @media (max-width: 768px) {
