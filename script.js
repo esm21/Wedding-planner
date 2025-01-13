@@ -910,3 +910,145 @@ function parseCSV(csv) {
 
 // Update the event listener for import button
 document.getElementById('import-guests').addEventListener('click', importGuests);
+
+// Export functions
+function exportToExcel() {
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    
+    // Export Guests
+    const guestsData = [];
+    document.querySelectorAll('#guests-table tbody tr').forEach(row => {
+        guestsData.push({
+            'Nombre': row.cells[0].textContent,
+            'Personas Adicionales': row.cells[1].textContent,
+            'Categoría': row.querySelector('.guest-category').value,
+            'Invitación': row.querySelector('.invitation-status').value,
+            'Confirmación': row.querySelector('.confirmation-status').value,
+            'Mesa Asignada': row.querySelector('.table-group').value,
+            'Regalo': row.cells[6].textContent
+        });
+    });
+    const wsGuests = XLSX.utils.json_to_sheet(guestsData);
+    XLSX.utils.book_append_sheet(wb, wsGuests, "Invitados");
+
+    // Export Tables
+    const tablesData = [];
+    document.querySelectorAll('.table-card').forEach(table => {
+        const tableName = table.querySelector('h5').textContent;
+        const capacity = table.querySelector('.table-capacity span').textContent;
+        const guests = Array.from(table.querySelectorAll('.guest-item div'))
+            .map(guest => guest.textContent)
+            .join(', ');
+        
+        tablesData.push({
+            'Mesa': tableName,
+            'Capacidad': capacity,
+            'Invitados Asignados': guests
+        });
+    });
+    const wsTables = XLSX.utils.json_to_sheet(tablesData);
+    XLSX.utils.book_append_sheet(wb, wsTables, "Mesas");
+
+    // Export Budget
+    const budgetData = [];
+    ['civil', 'religious', 'banquet'].forEach(section => {
+        document.querySelectorAll(`#${section}-table tbody tr:not(.table-secondary)`).forEach(row => {
+            if (row.cells[0].textContent) {
+                budgetData.push({
+                    'Sección': section === 'civil' ? 'Ceremonia Civil' : 
+                              section === 'religious' ? 'Ceremonia Religiosa' : 'Convite',
+                    'Elemento': row.cells[0].textContent,
+                    'Gasto Estimado': row.cells[1].textContent,
+                    'Gasto Real': row.cells[2].textContent,
+                    'Estado': row.querySelector('select').value,
+                    'Prioridad': row.cells[4].querySelector('select').value
+                });
+            }
+        });
+    });
+    const wsBudget = XLSX.utils.json_to_sheet(budgetData);
+    XLSX.utils.book_append_sheet(wb, wsBudget, "Presupuesto");
+
+    // Save the file
+    XLSX.writeFile(wb, "Planificacion_Boda.xlsx");
+}
+
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let yPos = 20;
+
+    // Title
+    doc.setFontSize(20);
+    doc.text("Planificación de Boda", 105, yPos, { align: "center" });
+    yPos += 20;
+
+    // Basic Details
+    doc.setFontSize(16);
+    doc.text("Detalles Básicos", 20, yPos);
+    yPos += 10;
+    doc.setFontSize(12);
+    doc.text(`Fecha de Boda: ${document.getElementById('wedding-date').value}`, 20, yPos);
+    yPos += 10;
+    doc.text(`Total Invitados: ${document.getElementById('total-guests').value}`, 20, yPos);
+    yPos += 20;
+
+    // Guest Summary
+    doc.setFontSize(16);
+    doc.text("Resumen de Invitados", 20, yPos);
+    yPos += 10;
+    doc.setFontSize(12);
+    doc.text(`Total: ${document.getElementById('guest-count').textContent}`, 20, yPos);
+    yPos += 7;
+    doc.text(`Confirmados: ${document.getElementById('confirmed-count').textContent}`, 20, yPos);
+    yPos += 7;
+    doc.text(`Pendientes: ${document.getElementById('pending-count').textContent}`, 20, yPos);
+    yPos += 20;
+
+    // Budget Summary
+    doc.setFontSize(16);
+    doc.text("Resumen de Presupuesto", 20, yPos);
+    yPos += 10;
+    doc.setFontSize(12);
+    doc.text(`Presupuesto Inicial: ${document.getElementById('initial-budget').value}€`, 20, yPos);
+    yPos += 7;
+    doc.text(`Total Estimado: ${document.getElementById('total-estimated').textContent}`, 20, yPos);
+    yPos += 7;
+    doc.text(`Total Real: ${document.getElementById('total-real').textContent}`, 20, yPos);
+    yPos += 7;
+    doc.text(`Restante: ${document.getElementById('remaining-budget').textContent}`, 20, yPos);
+    yPos += 20;
+
+    // Guest List
+    doc.addPage();
+    doc.setFontSize(16);
+    doc.text("Lista de Invitados", 20, 20);
+    
+    const guestHeaders = [['Nombre', 'Adicionales', 'Categoría', 'Confirmación', 'Mesa']];
+    const guestData = Array.from(document.querySelectorAll('#guests-table tbody tr')).map(row => [
+        row.cells[0].textContent,
+        row.cells[1].textContent,
+        row.querySelector('.guest-category').value,
+        row.querySelector('.confirmation-status').value,
+        row.querySelector('.table-group').value
+    ]);
+
+    doc.autoTable({
+        startY: 30,
+        head: guestHeaders,
+        body: guestData,
+    });
+
+    // Save the PDF
+    doc.save("Planificacion_Boda.pdf");
+}
+
+// Update the event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing code ...
+
+    // Export buttons
+    document.getElementById('export-excel').addEventListener('click', exportToExcel);
+    document.getElementById('export-pdf').addEventListener('click', exportToPDF);
+});
