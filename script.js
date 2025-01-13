@@ -485,6 +485,7 @@ function addGuest() {
             </select>
         </td>
         <td contenteditable="true"></td>
+        <td contenteditable="true"></td>
         <td>
             <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
         </td>
@@ -526,9 +527,29 @@ function updateGuestCounts() {
     document.getElementById('confirmed-count').textContent = confirmed;
     document.getElementById('pending-count').textContent = total - confirmed;
     
-    // Update summary section
-    document.getElementById('summary-total-guests').textContent = total;
-    document.getElementById('summary-confirmed-guests').textContent = confirmed;
+    // Update category counts
+    const categories = {
+        'Familia Novia': 0,
+        'Familia Novio': 0,
+        'Amigos Novia': 0,
+        'Amigos Novio': 0,
+        'Trabajo Novia': 0,
+        'Trabajo Novio': 0,
+        'Otros': 0
+    };
+    
+    rows.forEach(row => {
+        const category = row.querySelector('.guest-category').value;
+        categories[category]++;
+    });
+    
+    document.getElementById('bride-family-count').textContent = categories['Familia Novia'];
+    document.getElementById('groom-family-count').textContent = categories['Familia Novio'];
+    document.getElementById('bride-friends-count').textContent = categories['Amigos Novia'];
+    document.getElementById('groom-friends-count').textContent = categories['Amigos Novio'];
+    document.getElementById('bride-work-count').textContent = categories['Trabajo Novia'];
+    document.getElementById('groom-work-count').textContent = categories['Trabajo Novio'];
+    document.getElementById('other-count').textContent = categories['Otros'];
 }
 
 function filterGuests(status) {
@@ -542,6 +563,18 @@ function filterGuests(status) {
         }
     });
 }
+
+function filterGuestsByName() {
+    const searchValue = document.getElementById('guest-search').value.toLowerCase();
+    const rows = document.querySelectorAll('#guests-table tbody tr');
+    
+    rows.forEach(row => {
+        const guestName = row.cells[0].textContent.toLowerCase();
+        row.style.display = guestName.includes(searchValue) ? '' : 'none';
+    });
+}
+
+document.getElementById('guest-search').addEventListener('input', filterGuestsByName);
 
 function addTable() {
     const tableCount = document.querySelectorAll('.table-card').length + 1;
