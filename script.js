@@ -630,20 +630,32 @@ function setupDragAndDrop(element) {
         element.addEventListener('dragend', handleDragEnd);
     }
 
-    // Setup drop zones
-    function setupDropZones() {
-        // Setup table drop zones
-        document.querySelectorAll('.table-guests').forEach(dropZone => {
+    // Make table areas droppable
+    if (element.classList.contains('table-card')) {
+        const dropZone = element.querySelector('.table-guests');
+        if (dropZone) {
             dropZone.addEventListener('dragover', handleDragOver);
             dropZone.addEventListener('drop', handleDrop);
             dropZone.addEventListener('dragleave', handleDragLeave);
-        });
-        
-        // Setup unassigned guests drop zone
-        const unassignedZone = document.getElementById('unassigned-guests');
-        unassignedZone.addEventListener('dragover', handleDragOver);
-        unassignedZone.addEventListener('drop', handleDrop);
-        unassignedZone.addEventListener('dragleave', handleDragLeave);
+        }
+    }
+}
+
+// Add this function to initialize all drop zones
+function initializeDropZones() {
+    // Initialize table drop zones
+    document.querySelectorAll('.table-guests').forEach(dropZone => {
+        dropZone.addEventListener('dragover', handleDragOver);
+        dropZone.addEventListener('drop', handleDrop);
+        dropZone.addEventListener('dragleave', handleDragLeave);
+    });
+
+    // Initialize unassigned guests area
+    const unassignedArea = document.getElementById('unassigned-guests');
+    if (unassignedArea) {
+        unassignedArea.addEventListener('dragover', handleDragOver);
+        unassignedArea.addEventListener('drop', handleDrop);
+        unassignedArea.addEventListener('dragleave', handleDragLeave);
     }
 }
 
@@ -675,34 +687,28 @@ function handleDrop(e) {
     const guestId = e.dataTransfer.getData('text/plain');
     const guestElement = document.querySelector(`[data-guest-id="${guestId}"]`);
     
-    if (guestElement) {
-        // Check if dropping in unassigned area
-        if (dropZone.id === 'unassigned-guests') {
-            dropZone.appendChild(guestElement);
-            updateGuestTableAssignment(guestElement.querySelector('div').textContent, '');
-            updateTableStats();
-            return;
-        }
-        
-        // Check table capacity before adding
-        const tableCard = dropZone.closest('.table-card');
+    if (!guestElement) return;
+
+    // Handle drop in unassigned area
+    if (dropZone.id === 'unassigned-guests') {
+        dropZone.appendChild(guestElement);
+        const guestName = guestElement.querySelector('div').textContent;
+        updateGuestTableAssignment(guestName, '');
+        updateTableStats();
+        return;
+    }
+
+    // Handle drop in table
+    const tableCard = dropZone.closest('.table-card');
+    if (tableCard) {
         const capacity = parseInt(tableCard.querySelector('.table-capacity span').textContent);
         const currentGuests = dropZone.querySelectorAll('.guest-item').length;
         
         if (currentGuests < capacity) {
-            // Remove from previous location
-            if (guestElement.parentNode) {
-                guestElement.parentNode.removeChild(guestElement);
-            }
-            
-            // Add to new table
             dropZone.appendChild(guestElement);
-            
-            // Update table name in guests table
             const tableName = tableCard.querySelector('h5').textContent;
             const guestName = guestElement.querySelector('div').textContent;
             updateGuestTableAssignment(guestName, tableName);
-            
             updateTableStats();
         } else {
             alert('Esta mesa está llena');
