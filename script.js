@@ -445,10 +445,23 @@ function addGuest() {
         <td contenteditable="true">0</td>
         <td>
             <select class="form-select guest-category">
-                <option>Familia</option>
-                <option>Amigos</option>
-                <option>Trabajo</option>
+                <option>Familia Novia</option>
+                <option>Familia Novio</option>
+                <option>Amigos Novia</option>
+                <option>Amigos Novio</option>
+                <option>Trabajo Novia</option>
+                <option>Trabajo Novio</option>
                 <option>Otros</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select dietary-restrictions" multiple>
+                <option value="none" selected>Sin restricciones</option>
+                <option value="vegetarian">Vegetariano</option>
+                <option value="vegan">Vegano</option>
+                <option value="gluten">Sin gluten</option>
+                <option value="lactose">Sin lactosa</option>
+                <option value="allergies">Alergias</option>
             </select>
         </td>
         <td>
@@ -831,10 +844,23 @@ function importGuests() {
                     <td contenteditable="true">${guest.adicionales || '0'}</td>
                     <td>
                         <select class="form-select guest-category">
-                            <option ${guest.categoria === 'Familia' ? 'selected' : ''}>Familia</option>
-                            <option ${guest.categoria === 'Amigos' ? 'selected' : ''}>Amigos</option>
-                            <option ${guest.categoria === 'Trabajo' ? 'selected' : ''}>Trabajo</option>
+                            <option ${guest.categoria === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
+                            <option ${guest.categoria === 'Familia Novio' ? 'selected' : ''}>Familia Novio</option>
+                            <option ${guest.categoria === 'Amigos Novia' ? 'selected' : ''}>Amigos Novia</option>
+                            <option ${guest.categoria === 'Amigos Novio' ? 'selected' : ''}>Amigos Novio</option>
+                            <option ${guest.categoria === 'Trabajo Novia' ? 'selected' : ''}>Trabajo Novia</option>
+                            <option ${guest.categoria === 'Trabajo Novio' ? 'selected' : ''}>Trabajo Novio</option>
                             <option ${guest.categoria === 'Otros' ? 'selected' : ''}>Otros</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select dietary-restrictions" multiple>
+                            <option value="none" ${!guest.restricciones ? 'selected' : ''}>Sin restricciones</option>
+                            <option value="vegetarian" ${guest.restricciones?.includes('vegetarian') ? 'selected' : ''}>Vegetariano</option>
+                            <option value="vegan" ${guest.restricciones?.includes('vegan') ? 'selected' : ''}>Vegano</option>
+                            <option value="gluten" ${guest.restricciones?.includes('gluten') ? 'selected' : ''}>Sin gluten</option>
+                            <option value="lactose" ${guest.restricciones?.includes('lactose') ? 'selected' : ''}>Sin lactosa</option>
+                            <option value="allergies" ${guest.restricciones?.includes('allergies') ? 'selected' : ''}>Alergias</option>
                         </select>
                     </td>
                     <td>
@@ -923,6 +949,10 @@ function exportToExcel() {
             'Nombre': row.cells[0].textContent,
             'Personas Adicionales': row.cells[1].textContent,
             'Categoría': row.querySelector('.guest-category').value,
+            'Restricciones Alimentarias': Array.from(row.querySelector('.dietary-restrictions').selectedOptions)
+                .map(opt => opt.text)
+                .filter(text => text !== 'Sin restricciones')
+                .join(', '),
             'Invitación': row.querySelector('.invitation-status').value,
             'Confirmación': row.querySelector('.confirmation-status').value,
             'Mesa Asignada': row.querySelector('.table-group').value,
