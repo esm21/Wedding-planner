@@ -432,46 +432,18 @@ function updateBudget() {
 }
 
 function addGuest() {
-    const tbody = document.querySelector('#guests-table tbody');
-    const row = tbody.insertRow();
-    row.innerHTML = `
-        <td contenteditable="true">Nuevo invitado</td>
-        <td contenteditable="true">0</td>
-        <td>
-            <select class="form-select guest-category">
-                <option>Familia</option>
-                <option>Amigos</option>
-                <option>Trabajo</option>
-                <option>Otros</option>
-            </select>
-        </td>
-        <td>
-            <select class="form-select invitation-status">
-                <option>No</option>
-                <option>Sí</option>
-            </select>
-        </td>
-        <td>
-            <select class="form-select confirmation-status">
-                <option>Pendiente</option>
-                <option>Confirmado</option>
-                <option>Rechazado</option>
-            </select>
-        </td>
-        <td>
-            <select class="form-select table-group">
-                <option value="">Sin asignar</option>
-                ${getTableOptions()}
-            </select>
-        </td>
-        <td contenteditable="true"></td>
-        <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
-        </td>
+    const guestCount = document.querySelectorAll('.guest-item').length + 1;
+    const guestElement = document.createElement('div');
+    guestElement.className = 'guest-item';
+    guestElement.setAttribute('data-guest-id', `guest-${guestCount}`);
+    guestElement.draggable = true;
+    guestElement.innerHTML = `
+        <div contenteditable="true">Invitado ${guestCount}</div>
+        <small class="text-muted">Arrastra a una mesa</small>
     `;
     
-    // Add change listener for confirmation status
-    row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
+    document.getElementById('unassigned-guests').appendChild(guestElement);
+    setupDragAndDrop(guestElement);
     updateGuestCounts();
 }
 
@@ -509,32 +481,119 @@ function filterGuests(status) {
 }
 
 function addTable() {
-    const tbody = document.querySelector('#tables-table tbody');
-    const row = tbody.insertRow();
-    row.innerHTML = `
-        <td contenteditable="true">Nueva Mesa</td>
-        <td contenteditable="true">8</td>
-        <td>0</td>
-        <td>8</td>
-        <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Eliminar</button>
-        </td>
+    const tableCount = document.querySelectorAll('.table-card').length + 1;
+    const tableGrid = document.getElementById('tables-grid');
+    
+    const tableCard = document.createElement('div');
+    tableCard.className = 'table-card';
+    tableCard.setAttribute('data-table-id', `table-${tableCount}`);
+    tableCard.innerHTML = `
+        <h5 contenteditable="true">Mesa ${tableCount}</h5>
+        <div class="table-capacity">
+            Capacidad: <span contenteditable="true">8</span> personas
+        </div>
+        <div class="table-guests" data-table-id="table-${tableCount}">
+            <!-- Guests will be dropped here -->
+        </div>
+        <button class="btn btn-danger btn-sm mt-2" onclick="deleteTable(this)">
+            Eliminar Mesa
+        </button>
     `;
-    updateTableGroups();
+    
+    tableGrid.appendChild(tableCard);
+    setupDragAndDrop(tableCard);
+    updateTableStats();
 }
 
-function updateTableGroups() {
-    const tables = Array.from(document.querySelector('#tables-table tbody').rows)
-        .map(row => row.cells[0].textContent);
+function deleteTable(button) {
+    const tableCard = button.closest('.table-card');
+    const unassignedContainer = document.getElementById('unassigned-guests');
     
-    document.querySelectorAll('.table-group').forEach(select => {
-        const currentValue = select.value;
-        select.innerHTML = `
-            <option value="">Sin asignar</option>
-            ${tables.map(table => `<option value="${table}">${table}</option>`).join('')}
-        `;
-        select.value = currentValue;
+    // Move all guests back to unassigned
+    const guests = tableCard.querySelectorAll('.guest-item');
+    guests.forEach(guest => {
+        unassignedContainer.appendChild(guest);
     });
+    
+    tableCard.remove();
+    updateTableStats();
+}
+
+function setupDragAndDrop(element) {
+    // Make guests draggable
+    element.querySelectorAll('.guest-item').forEach(guest => {
+        guest.draggable = true;
+        guest.addEventListener('dragstart', handleDragStart);
+        guest.addEventListener('dragend', handleDragEnd);
+    });
+    
+    // Make table areas droppable
+    if (element.classList.contains('table-card')) {
+        const dropZone = element.querySelector('.table-guests');
+        dropZone.addEventListener('dragover', handleDragOver);
+        dropZone.addEventListener('drop', handleDrop);
+        dropZone.addEventListener('dragleave', handleDragLeave);
+    }
+}
+
+function handleDragStart(e) {
+    e.target.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', e.target.getAttribute('data-guest-id'));
+}
+
+function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('can-drop');
+}
+
+function handleDragLeave(e) {
+    e.currentTarget.classList.remove('can-drop');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    const dropZone = e.currentTarget;
+    dropZone.classList.remove('can-drop');
+    
+    const guestId = e.dataTransfer.getData('text/plain');
+    const guestElement = document.querySelector(`[data-guest-id="${guestId}"]`);
+    
+    if (guestElement) {
+        // Check table capacity before adding
+        const tableCard = dropZone.closest('.table-card');
+        const capacity = parseInt(tableCard.querySelector('.table-capacity span').textContent);
+        const currentGuests = dropZone.querySelectorAll('.guest-item').length;
+        
+        if (currentGuests < capacity) {
+            dropZone.appendChild(guestElement);
+            updateTableStats();
+        } else {
+            alert('Esta mesa está llena');
+        }
+    }
+}
+
+function updateTableStats() {
+    const tables = document.querySelectorAll('.table-card');
+    const totalTables = tables.length;
+    let totalSeats = 0;
+    let occupiedSeats = 0;
+    
+    tables.forEach(table => {
+        const capacity = parseInt(table.querySelector('.table-capacity span').textContent);
+        const occupied = table.querySelectorAll('.guest-item').length;
+        totalSeats += capacity;
+        occupiedSeats += occupied;
+    });
+    
+    document.getElementById('tables-count').textContent = totalTables;
+    document.getElementById('total-seats').textContent = totalSeats;
+    document.getElementById('available-seats').textContent = totalSeats - occupiedSeats;
+    document.getElementById('summary-tables').textContent = totalTables;
 }
 
 function saveBasicDetails() {
@@ -650,4 +709,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('export-guests').addEventListener('click', () => {
         alert('Funcionalidad de exportación en desarrollo');
     });
+    
+    // Initialize drag and drop
+    setupDragAndDrop(document.getElementById('tables-grid'));
+    setupDragAndDrop(document.getElementById('unassigned-guests'));
+    
+    // Make unassigned guests area droppable
+    const unassignedArea = document.getElementById('unassigned-guests');
+    unassignedArea.addEventListener('dragover', handleDragOver);
+    unassignedArea.addEventListener('drop', handleDrop);
+    unassignedArea.addEventListener('dragleave', handleDragLeave);
 });
