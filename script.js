@@ -426,6 +426,9 @@ function updateBudget() {
     document.getElementById('total-estimated').textContent = `${totalEstimated.toFixed(2)} €`;
     document.getElementById('total-real').textContent = `${totalReal.toFixed(2)} €`;
     document.getElementById('remaining-budget').textContent = `${(initialBudget - totalReal).toFixed(2)} €`;
+
+    updateBudgetProgress();
+    updatePriorityCosts();
 }
 
 function addGuest() {
@@ -435,7 +438,7 @@ function addGuest() {
         <td contenteditable="true">Nuevo invitado</td>
         <td contenteditable="true">0</td>
         <td>
-            <select class="form-select">
+            <select class="form-select guest-category">
                 <option>Familia</option>
                 <option>Amigos</option>
                 <option>Trabajo</option>
@@ -443,13 +446,13 @@ function addGuest() {
             </select>
         </td>
         <td>
-            <select class="form-select">
+            <select class="form-select invitation-status">
                 <option>No</option>
                 <option>Sí</option>
             </select>
         </td>
         <td>
-            <select class="form-select">
+            <select class="form-select confirmation-status">
                 <option>Pendiente</option>
                 <option>Confirmado</option>
                 <option>Rechazado</option>
@@ -457,15 +460,52 @@ function addGuest() {
         </td>
         <td>
             <select class="form-select table-group">
-                <!-- Will be populated dynamically -->
+                <option value="">Sin asignar</option>
+                ${getTableOptions()}
             </select>
         </td>
         <td contenteditable="true"></td>
         <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteRow(this)">Eliminar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
         </td>
     `;
-    updateTableGroups();
+    
+    // Add change listener for confirmation status
+    row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
+    updateGuestCounts();
+}
+
+function deleteGuest(button) {
+    button.closest('tr').remove();
+    updateGuestCounts();
+}
+
+function updateGuestCounts() {
+    const rows = document.querySelectorAll('#guests-table tbody tr');
+    const total = rows.length;
+    const confirmed = Array.from(rows).filter(row => 
+        row.querySelector('select.confirmation-status').value === 'Confirmado'
+    ).length;
+    
+    document.getElementById('guest-count').textContent = total;
+    document.getElementById('confirmed-count').textContent = confirmed;
+    document.getElementById('pending-count').textContent = total - confirmed;
+    
+    // Update summary section
+    document.getElementById('summary-total-guests').textContent = total;
+    document.getElementById('summary-confirmed-guests').textContent = confirmed;
+}
+
+function filterGuests(status) {
+    const rows = document.querySelectorAll('#guests-table tbody tr');
+    rows.forEach(row => {
+        if (status === 'all') {
+            row.style.display = '';
+        } else {
+            const confirmation = row.querySelector('select.confirmation-status').value;
+            row.style.display = (status === confirmation) ? '' : 'none';
+        }
+    });
 }
 
 function addTable() {
@@ -538,4 +578,76 @@ document.getElementById('export-excel').addEventListener('click', () => {
 });
 document.getElementById('export-pdf').addEventListener('click', () => {
     alert('Funcionalidad de exportación a PDF en desarrollo');
+});
+
+// Enhanced Budget Analysis Functions
+function updateBudgetProgress() {
+    const initialBudget = parseFloat(document.getElementById('initial-budget').value) || 0;
+    const totalReal = parseFloat(document.getElementById('total-real').textContent) || 0;
+    
+    if (initialBudget > 0) {
+        const percentage = (totalReal / initialBudget) * 100;
+        const progressBar = document.getElementById('budget-progress');
+        progressBar.style.width = `${Math.min(percentage, 100)}%`;
+        progressBar.textContent = `${percentage.toFixed(1)}%`;
+        
+        // Update color based on percentage
+        if (percentage > 100) {
+            progressBar.classList.remove('bg-success', 'bg-warning');
+            progressBar.classList.add('bg-danger');
+        } else if (percentage > 80) {
+            progressBar.classList.remove('bg-success', 'bg-danger');
+            progressBar.classList.add('bg-warning');
+        } else {
+            progressBar.classList.remove('bg-warning', 'bg-danger');
+            progressBar.classList.add('bg-success');
+        }
+    }
+}
+
+function updatePriorityCosts() {
+    let highPriority = 0;
+    let mediumPriority = 0;
+    let lowPriority = 0;
+    
+    ['civil', 'religious', 'banquet'].forEach(section => {
+        document.querySelectorAll(`#${section}-table tbody tr:not(.table-secondary)`).forEach(row => {
+            const cost = parseFloat(row.cells[2].textContent) || 0;
+            const priority = row.querySelector('select').value;
+            
+            switch(priority) {
+                case 'Alta':
+                    highPriority += cost;
+                    break;
+                case 'Media':
+                    mediumPriority += cost;
+                    break;
+                case 'Baja':
+                    lowPriority += cost;
+                    break;
+            }
+        });
+    });
+    
+    document.getElementById('high-priority-cost').textContent = `${highPriority.toFixed(2)} €`;
+    document.getElementById('medium-priority-cost').textContent = `${mediumPriority.toFixed(2)} €`;
+    document.getElementById('low-priority-cost').textContent = `${lowPriority.toFixed(2)} €`;
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing DOMContentLoaded code ...
+    
+    // Add new event listeners
+    document.getElementById('filter-all').addEventListener('click', () => filterGuests('all'));
+    document.getElementById('filter-confirmed').addEventListener('click', () => filterGuests('Confirmado'));
+    document.getElementById('filter-pending').addEventListener('click', () => filterGuests('Pendiente'));
+    
+    document.getElementById('import-guests').addEventListener('click', () => {
+        alert('Funcionalidad de importación en desarrollo');
+    });
+    
+    document.getElementById('export-guests').addEventListener('click', () => {
+        alert('Funcionalidad de exportación en desarrollo');
+    });
 });
