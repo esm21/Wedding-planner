@@ -432,18 +432,63 @@ function updateBudget() {
 }
 
 function addGuest() {
+    // Add to both the table and the draggable area
     const guestCount = document.querySelectorAll('.guest-item').length + 1;
+    
+    // Add to the table
+    const tbody = document.querySelector('#guests-table tbody');
+    const row = tbody.insertRow();
+    const guestName = `Invitado ${guestCount}`;
+    row.innerHTML = `
+        <td contenteditable="true">${guestName}</td>
+        <td contenteditable="true">0</td>
+        <td>
+            <select class="form-select guest-category">
+                <option>Familia</option>
+                <option>Amigos</option>
+                <option>Trabajo</option>
+                <option>Otros</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select invitation-status">
+                <option>No</option>
+                <option>Sí</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select confirmation-status">
+                <option>Pendiente</option>
+                <option>Confirmado</option>
+                <option>Rechazado</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select table-group">
+                <option value="">Sin asignar</option>
+            </select>
+        </td>
+        <td contenteditable="true"></td>
+        <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
+        </td>
+    `;
+
+    // Add to the draggable area
     const guestElement = document.createElement('div');
     guestElement.className = 'guest-item';
     guestElement.setAttribute('data-guest-id', `guest-${guestCount}`);
     guestElement.draggable = true;
     guestElement.innerHTML = `
-        <div contenteditable="true">Invitado ${guestCount}</div>
+        <div contenteditable="true">${guestName}</div>
         <small class="text-muted">Arrastra a una mesa</small>
     `;
     
     document.getElementById('unassigned-guests').appendChild(guestElement);
     setupDragAndDrop(guestElement);
+    
+    // Add change listener for confirmation status
+    row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
     updateGuestCounts();
 }
 
@@ -702,9 +747,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('filter-confirmed').addEventListener('click', () => filterGuests('Confirmado'));
     document.getElementById('filter-pending').addEventListener('click', () => filterGuests('Pendiente'));
     
-    document.getElementById('import-guests').addEventListener('click', () => {
-        alert('Funcionalidad de importación en desarrollo');
-    });
+    document.getElementById('import-guests').addEventListener('click', importGuests);
     
     document.getElementById('export-guests').addEventListener('click', () => {
         alert('Funcionalidad de exportación en desarrollo');
@@ -720,3 +763,106 @@ document.addEventListener('DOMContentLoaded', function() {
     unassignedArea.addEventListener('drop', handleDrop);
     unassignedArea.addEventListener('dragleave', handleDragLeave);
 });
+
+// Add import functionality
+function importGuests() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv';
+    
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(event) {
+            const csvData = event.target.result;
+            const guests = parseCSV(csvData);
+            
+            guests.forEach(guest => {
+                // Add each guest from the CSV
+                const tbody = document.querySelector('#guests-table tbody');
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td contenteditable="true">${guest.nombre || ''}</td>
+                    <td contenteditable="true">${guest.adicionales || '0'}</td>
+                    <td>
+                        <select class="form-select guest-category">
+                            <option ${guest.categoria === 'Familia' ? 'selected' : ''}>Familia</option>
+                            <option ${guest.categoria === 'Amigos' ? 'selected' : ''}>Amigos</option>
+                            <option ${guest.categoria === 'Trabajo' ? 'selected' : ''}>Trabajo</option>
+                            <option ${guest.categoria === 'Otros' ? 'selected' : ''}>Otros</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select invitation-status">
+                            <option ${guest.invitacion === 'No' ? 'selected' : ''}>No</option>
+                            <option ${guest.invitacion === 'Sí' ? 'selected' : ''}>Sí</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select confirmation-status">
+                            <option ${guest.confirmacion === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                            <option ${guest.confirmacion === 'Confirmado' ? 'selected' : ''}>Confirmado</option>
+                            <option ${guest.confirmacion === 'Rechazado' ? 'selected' : ''}>Rechazado</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select table-group">
+                            <option value="">Sin asignar</option>
+                        </select>
+                    </td>
+                    <td contenteditable="true">${guest.regalo || ''}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
+                    </td>
+                `;
+
+                // Add to draggable area
+                const guestElement = document.createElement('div');
+                guestElement.className = 'guest-item';
+                guestElement.setAttribute('data-guest-id', `guest-${tbody.rows.length}`);
+                guestElement.draggable = true;
+                guestElement.innerHTML = `
+                    <div contenteditable="true">${guest.nombre}</div>
+                    <small class="text-muted">Arrastra a una mesa</small>
+                `;
+                
+                document.getElementById('unassigned-guests').appendChild(guestElement);
+                setupDragAndDrop(guestElement);
+                
+                // Add change listener
+                row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
+            });
+            
+            updateGuestCounts();
+        };
+        
+        reader.readAsText(file);
+    };
+    
+    input.click();
+}
+
+function parseCSV(csv) {
+    const lines = csv.split('\n');
+    const result = [];
+    const headers = lines[0].split(',').map(header => header.trim());
+    
+    for(let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        
+        const obj = {};
+        const currentline = lines[i].split(',').map(cell => cell.trim());
+        
+        headers.forEach((header, index) => {
+            obj[header] = currentline[index];
+        });
+        
+        result.push(obj);
+    }
+    
+    return result;
+}
+
+// Update the event listener for import button
+document.getElementById('import-guests').addEventListener('click', importGuests);
