@@ -444,7 +444,7 @@ function addGuest() {
         <td contenteditable="true">${guestName}</td>
         <td contenteditable="true">0</td>
         <td>
-            <select class="form-select guest-category">
+            <select class="form-select guest-category" onchange="updateGuestCounts()">
                 <option>Familia Novia</option>
                 <option>Familia Novio</option>
                 <option>Amigos Novia</option>
@@ -508,6 +508,7 @@ function addGuest() {
     
     // Add change listener for confirmation status
     row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
+    row.querySelector('.guest-category').addEventListener('change', updateGuestCounts);
     updateGuestCounts();
 }
 
@@ -517,6 +518,7 @@ function deleteGuest(button) {
 }
 
 function updateGuestCounts() {
+    console.log('Updating guest counts...'); // Debug log
     const rows = document.querySelectorAll('#guests-table tbody tr');
     const total = rows.length;
     const confirmed = Array.from(rows).filter(row => 
@@ -538,8 +540,10 @@ function updateGuestCounts() {
         'Otros': 0
     };
     
+    console.log('Counting categories...'); // Debug log
     rows.forEach(row => {
         const category = row.querySelector('.guest-category').value;
+        console.log('Found category:', category); // Debug log
         categories[category]++;
     });
     
@@ -550,6 +554,10 @@ function updateGuestCounts() {
     document.getElementById('bride-work-count').textContent = categories['Trabajo Novia'];
     document.getElementById('groom-work-count').textContent = categories['Trabajo Novio'];
     document.getElementById('other-count').textContent = categories['Otros'];
+    
+    // Update summary section
+    document.getElementById('summary-total-guests').textContent = total;
+    document.getElementById('summary-confirmed-guests').textContent = confirmed;
 }
 
 function filterGuests(status) {
@@ -877,7 +885,7 @@ function importGuests() {
                     <td contenteditable="true">${guest.nombre || ''}</td>
                     <td contenteditable="true">${guest.adicionales || '0'}</td>
                     <td>
-                        <select class="form-select guest-category">
+                        <select class="form-select guest-category" onchange="updateGuestCounts()">
                             <option ${guest.categoria === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
                             <option ${guest.categoria === 'Familia Novio' ? 'selected' : ''}>Familia Novio</option>
                             <option ${guest.categoria === 'Amigos Novia' ? 'selected' : ''}>Amigos Novia</option>
@@ -937,6 +945,7 @@ function importGuests() {
                 
                 // Add change listener
                 row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
+                row.querySelector('.guest-category').addEventListener('change', updateGuestCounts);
             });
             
             updateGuestCounts();
