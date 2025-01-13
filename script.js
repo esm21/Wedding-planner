@@ -605,7 +605,7 @@ function addTable() {
     `;
     
     tableGrid.appendChild(tableCard);
-    setupDragAndDrop(tableCard);
+    setupDropZones();
     updateTableStats();
 }
 
@@ -630,14 +630,20 @@ function setupDragAndDrop(element) {
         element.addEventListener('dragend', handleDragEnd);
     }
 
-    // Make table areas droppable
-    if (element.classList.contains('table-card')) {
-        const dropZone = element.querySelector('.table-guests');
-        if (dropZone) {
+    // Setup drop zones
+    function setupDropZones() {
+        // Setup table drop zones
+        document.querySelectorAll('.table-guests').forEach(dropZone => {
             dropZone.addEventListener('dragover', handleDragOver);
             dropZone.addEventListener('drop', handleDrop);
             dropZone.addEventListener('dragleave', handleDragLeave);
-        }
+        });
+        
+        // Setup unassigned guests drop zone
+        const unassignedZone = document.getElementById('unassigned-guests');
+        unassignedZone.addEventListener('dragover', handleDragOver);
+        unassignedZone.addEventListener('drop', handleDrop);
+        unassignedZone.addEventListener('dragleave', handleDragLeave);
     }
 }
 
@@ -670,6 +676,14 @@ function handleDrop(e) {
     const guestElement = document.querySelector(`[data-guest-id="${guestId}"]`);
     
     if (guestElement) {
+        // Check if dropping in unassigned area
+        if (dropZone.id === 'unassigned-guests') {
+            dropZone.appendChild(guestElement);
+            updateGuestTableAssignment(guestElement.querySelector('div').textContent, '');
+            updateTableStats();
+            return;
+        }
+        
         // Check table capacity before adding
         const tableCard = dropZone.closest('.table-card');
         const capacity = parseInt(tableCard.querySelector('.table-capacity span').textContent);
