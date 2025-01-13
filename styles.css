@@ -214,8 +214,9 @@
 }
 
 .main-guest-area {
-    margin-left: 280px;
-    width: calc(100% - 280px);
+    margin-left: 300px;
+    width: calc(100% - 580px); /* Accounting for both sidebars */
+    padding-right: 20px;
 }
 
 /* Responsive adjustments */
@@ -243,4 +244,35 @@
     .basic-details-banner {
         margin-left: 0;
     }
+}
+
+/* Adjust table column widths */
+#guests-table th,
+#guests-table td {
+    white-space: nowrap;
+}
+
+#guests-table th:nth-child(1), /* Nombre */
+#guests-table td:nth-child(1) {
+    min-width: 120px;
+}
+
+#guests-table th:nth-child(2), /* Personas Adicionales */
+#guests-table td:nth-child(2) {
+    width: 80px;
+}
+
+#guests-table th:nth-child(3), /* Categoría */
+#guests-table td:nth-child(3) {
+    width: 140px;
+}
+
+#guests-table th:nth-child(4), /* Restricciones */
+#guests-table td:nth-child(4) {
+    width: 140px;
+}
+
+#guests-table th:last-child, /* Acciones */
+#guests-table td:last-child {
+    width: 100px;
 }
