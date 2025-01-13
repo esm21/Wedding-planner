@@ -433,12 +433,13 @@ function updateBudget() {
 
 function addGuest() {
     // Add to both the table and the draggable area
-    const guestCount = document.querySelectorAll('.guest-item').length + 1;
+    const guestCount = document.querySelectorAll('#guests-table tbody tr').length + 1;
+    const guestName = `Invitado ${guestCount}`;
     
     // Add to the table
     const tbody = document.querySelector('#guests-table tbody');
     const row = tbody.insertRow();
-    const guestName = `Invitado ${guestCount}`;
+    row.style.display = ''; // Make sure the row is visible
     row.innerHTML = `
         <td contenteditable="true">${guestName}</td>
         <td contenteditable="true">0</td>
@@ -466,6 +467,7 @@ function addGuest() {
         <td>
             <select class="form-select table-group">
                 <option value="">Sin asignar</option>
+                ${getTableOptions()}
             </select>
         </td>
         <td contenteditable="true"></td>
@@ -485,6 +487,8 @@ function addGuest() {
     `;
     
     document.getElementById('unassigned-guests').appendChild(guestElement);
+    
+    // Setup drag and drop
     setupDragAndDrop(guestElement);
     
     // Add change listener for confirmation status
@@ -565,25 +569,27 @@ function deleteTable(button) {
 }
 
 function setupDragAndDrop(element) {
-    // Make guests draggable
-    element.querySelectorAll('.guest-item').forEach(guest => {
-        guest.draggable = true;
-        guest.addEventListener('dragstart', handleDragStart);
-        guest.addEventListener('dragend', handleDragEnd);
-    });
-    
+    if (element.classList.contains('guest-item')) {
+        element.draggable = true;
+        element.addEventListener('dragstart', handleDragStart);
+        element.addEventListener('dragend', handleDragEnd);
+    }
+
     // Make table areas droppable
     if (element.classList.contains('table-card')) {
         const dropZone = element.querySelector('.table-guests');
-        dropZone.addEventListener('dragover', handleDragOver);
-        dropZone.addEventListener('drop', handleDrop);
-        dropZone.addEventListener('dragleave', handleDragLeave);
+        if (dropZone) {
+            dropZone.addEventListener('dragover', handleDragOver);
+            dropZone.addEventListener('drop', handleDrop);
+            dropZone.addEventListener('dragleave', handleDragLeave);
+        }
     }
 }
 
 function handleDragStart(e) {
     e.target.classList.add('dragging');
     e.dataTransfer.setData('text/plain', e.target.getAttribute('data-guest-id'));
+    e.dataTransfer.effectAllowed = 'move';
 }
 
 function handleDragEnd(e) {
@@ -593,6 +599,7 @@ function handleDragEnd(e) {
 function handleDragOver(e) {
     e.preventDefault();
     e.currentTarget.classList.add('can-drop');
+    e.dataTransfer.dropEffect = 'move';
 }
 
 function handleDragLeave(e) {
@@ -614,12 +621,49 @@ function handleDrop(e) {
         const currentGuests = dropZone.querySelectorAll('.guest-item').length;
         
         if (currentGuests < capacity) {
+            // Remove from previous location
+            if (guestElement.parentNode) {
+                guestElement.parentNode.removeChild(guestElement);
+            }
+            
+            // Add to new table
             dropZone.appendChild(guestElement);
+            
+            // Update table name in guests table
+            const tableName = tableCard.querySelector('h5').textContent;
+            const guestName = guestElement.querySelector('div').textContent;
+            updateGuestTableAssignment(guestName, tableName);
+            
             updateTableStats();
         } else {
             alert('Esta mesa está llena');
         }
     }
+}
+
+function updateGuestTableAssignment(guestName, tableName) {
+    const rows = document.querySelectorAll('#guests-table tbody tr');
+    rows.forEach(row => {
+        if (row.cells[0].textContent === guestName) {
+            const tableSelect = row.querySelector('.table-group');
+            if (tableSelect) {
+                // Add option if it doesn't exist
+                if (!Array.from(tableSelect.options).some(opt => opt.value === tableName)) {
+                    const option = new Option(tableName, tableName);
+                    tableSelect.add(option);
+                }
+                tableSelect.value = tableName;
+            }
+        }
+    });
+}
+
+// Add this helper function to get table options
+function getTableOptions() {
+    const tables = document.querySelectorAll('.table-card h5');
+    return Array.from(tables)
+        .map(table => `<option value="${table.textContent}">${table.textContent}</option>`)
+        .join('');
 }
 
 function updateTableStats() {
