@@ -193,7 +193,7 @@
 
 /* Adjust table container height */
 .table-responsive {
-    max-height: calc(100vh - 250px);
+    max-height: calc(100vh - 200px);
     overflow-y: auto;
 }
 
@@ -203,4 +203,44 @@
     top: 0;
     background: white;
     z-index: 1;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+}
+
+/* Guest section specific styles */
+.sidebar-stats {
+    position: fixed;
+    width: inherit;
+    max-width: 280px;
+}
+
+.main-guest-area {
+    margin-left: 280px;
+    width: calc(100% - 280px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar-stats {
+        position: relative;
+        max-width: 100%;
+    }
+
+    .main-guest-area {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .sidebar, .budget-sidebar {
+        position: relative;
+        width: 100%;
+    }
+    .main-content {
+        margin-left: 0;
+    }
+    .section-content {
+        margin-right: 0;
+    }
+    .basic-details-banner {
+        margin-left: 0;
+    }
 }
