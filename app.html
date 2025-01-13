@@ -144,8 +144,8 @@
                 <!-- Guests Section -->
                 <section id="guests-section" class="section-content" style="display: none;">
                     <h2>Invitados</h2>
-                    <div class="row mb-3">
-                        <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-3 sidebar-stats">
                             <div class="card">
                                 <div class="card-body">
                                     <h6>Resumen Invitados</h6>
@@ -194,7 +194,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-9">
+                        <div class="col-md-9 main-guest-area">
                             <div class="btn-group mb-3">
                                 <button class="btn btn-success" id="add-guest">Añadir Invitado</button>
                                 <button class="btn btn-outline-primary" id="import-guests">Importar Lista</button>
@@ -208,26 +208,26 @@
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" id="guest-search" placeholder="Buscar invitado...">
                             </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="guests-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Personas Adicionales</th>
+                                            <th>Categoría</th>
+                                            <th>Restricciones Alimentarias</th>
+                                            <th>Invitación enviada</th>
+                                            <th>Confirmación</th>
+                                            <th>Grupo Mesa</th>
+                                            <th>Regalo aportado</th>
+                                            <th>Notas/Comentarios</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="guests-table">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Personas Adicionales</th>
-                                    <th>Categoría</th>
-                                    <th>Restricciones Alimentarias</th>
-                                    <th>Invitación enviada</th>
-                                    <th>Confirmación</th>
-                                    <th>Grupo Mesa</th>
-                                    <th>Regalo aportado</th>
-                                    <th>Notas/Comentarios</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
                     </div>
                 </section>
 
