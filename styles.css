@@ -10,6 +10,8 @@
 .main-content {
     padding: 20px;
     margin-left: 16.666667%;
+    height: calc(100vh - 40px);
+    overflow-y: auto;
 }
 
 .budget-sidebar {
@@ -187,4 +189,18 @@
 
 .table-guests {
     min-height: 100px;
+}
+
+/* Adjust table container height */
+.table-responsive {
+    max-height: calc(100vh - 250px);
+    overflow-y: auto;
+}
+
+/* Keep the header visible while scrolling */
+.table thead th {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
 }
