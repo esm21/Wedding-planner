@@ -1364,3 +1364,66 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update countdown when wedding date changes
     document.getElementById('wedding-date').addEventListener('change', updateWeddingCountdown);
 });
+
+// Guest modal handling
+document.getElementById('add-guest-btn').addEventListener('click', () => {
+    const guestModal = new bootstrap.Modal(document.getElementById('guestModal'));
+    guestModal.show();
+});
+
+document.getElementById('save-guest').addEventListener('click', () => {
+    const name = document.getElementById('guest-name').value;
+    const plusOnes = document.getElementById('guest-plus-ones').value;
+    const category = document.getElementById('guest-category').value;
+    const dietary = document.getElementById('guest-dietary').value;
+    
+    addGuest(name, plusOnes, category, dietary);
+    bootstrap.Modal.getInstance(document.getElementById('guestModal')).hide();
+});
+
+// Update countdown calculation
+function updateWeddingCountdown() {
+    const weddingDateInput = document.getElementById('wedding-date');
+    if (!weddingDateInput) return;
+    
+    const weddingDate = new Date(weddingDateInput.value);
+    const today = new Date();
+    const diffTime = weddingDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    const countdownElement = document.getElementById('wedding-countdown');
+    if (countdownElement) {
+        countdownElement.textContent = diffDays > 0 ? diffDays : 0;
+    }
+}
+
+// Checklist functionality
+function updateChecklistProgress() {
+    const totalTasks = document.querySelectorAll('.form-check-input').length;
+    const completedTasks = document.querySelectorAll('.form-check-input:checked').length;
+    const progress = (completedTasks / totalTasks) * 100;
+    
+    document.getElementById('checklist-progress').style.width = `${progress}%`;
+    document.getElementById('checklist-progress').textContent = `${Math.round(progress)}%`;
+    document.getElementById('completed-tasks').textContent = completedTasks;
+    document.getElementById('pending-tasks').textContent = totalTasks - completedTasks;
+}
+
+// Add event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing code ...
+    
+    // Setup checklist listeners
+    document.querySelectorAll('.form-check-input').forEach(checkbox => {
+        checkbox.addEventListener('change', updateChecklistProgress);
+    });
+    
+    // Initial countdown update
+    updateWeddingCountdown();
+    
+    // Update countdown when wedding date changes
+    const weddingDateInput = document.getElementById('wedding-date');
+    if (weddingDateInput) {
+        weddingDateInput.addEventListener('change', updateWeddingCountdown);
+    }
+});
