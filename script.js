@@ -639,12 +639,6 @@ function addTable() {
             Capacidad: <span contenteditable="true" onblur="updateTableStats()">8</span> personas
         </div>
         <div class="table-guests" data-table-id="table-${tableCount}"></div>
-        <div class="table-preferences mt-2">
-            <small class="text-muted">Preferencias de proximidad:</small>
-            <select class="form-select form-select-sm mt-1" multiple>
-                ${getTableOptions()}
-            </select>
-        </div>
         <button class="btn btn-danger btn-sm mt-2" onclick="deleteTable(this)">Eliminar Mesa</button>
     `;
     
@@ -1311,46 +1305,3 @@ function showGuestDetails(guestId) {
     
     modal.show();
 }
-
-// Add automatic table arrangement function
-function suggestTableArrangement() {
-    const guests = Array.from(document.querySelectorAll('#guests-table tbody tr'));
-    const tables = Array.from(document.querySelectorAll('.table-card'));
-    
-    // Group guests by category
-    const guestsByCategory = guests.reduce((acc, guest) => {
-        const category = guest.querySelector('.guest-category').value;
-        if (!acc[category]) acc[category] = [];
-        acc[category].push(guest);
-        return acc;
-    }, {});
-    
-    // Clear current assignments
-    tables.forEach(table => {
-        table.querySelector('.table-guests').innerHTML = '';
-    });
-    
-    // Assign guests to tables based on category and relationships
-    Object.entries(guestsByCategory).forEach(([category, categoryGuests]) => {
-        const categoryTables = tables.filter(table => 
-            table.querySelector('.table-category').value === category
-        );
-        
-        if (categoryTables.length === 0) return;
-        
-        categoryGuests.forEach((guest, index) => {
-            const targetTable = categoryTables[index % categoryTables.length];
-            const guestName = guest.cells[0].textContent;
-            const guestId = guest.getAttribute('data-guest-id');
-            const plusOnes = parseInt(guest.cells[1].textContent) || 0;
-            
-            const guestElement = createGuestItem(guestName, guestId, plusOnes);
-            targetTable.querySelector('.table-guests').appendChild(guestElement);
-        });
-    });
-    
-    updateTableStats();
-}
-
-// Add event listener for auto-arrange button
-document.getElementById('auto-arrange').addEventListener('click', suggestTableArrangement);
