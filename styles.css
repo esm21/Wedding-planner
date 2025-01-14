@@ -172,26 +172,31 @@
 }
 
 .guest-item {
-    background: #f8f9fa;
+    background: #fff;
     border: 1px solid #dee2e6;
     border-radius: 4px;
-    padding: 6px 12px;
-    margin-bottom: 5px;
+    padding: 6px 10px;
+    margin: 5px;
     cursor: move;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
-.guest-item .text-muted {
-    font-size: 0.85rem;
+.guest-item span {
+    margin-right: 5px;
+}
+
+.guest-item small {
+    color: #666;
+    margin-right: 5px;
 }
 
 .guest-item a {
     margin-left: auto;
+    color: #0d6efd;
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .guest-item:hover {
@@ -226,11 +231,12 @@
 }
 
 .table-guests {
-    min-height: 100px;
+    min-height: 80px;
     padding: 10px;
     border: 1px dashed #dee2e6;
     border-radius: 4px;
     margin-top: 10px;
+    background: #f8f9fa;
 }
 
 /* Adjust table container height */
