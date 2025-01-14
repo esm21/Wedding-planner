@@ -33,6 +33,29 @@ document.addEventListener('DOMContentLoaded', function() {
     if (savedGuests) document.getElementById('total-guests').value = savedGuests;
 
     updateBudget();
+
+    // Update countdown on landing page if we're on index.html
+    const countdownElement = document.getElementById('countdown');
+    if (countdownElement) {
+        const weddingDate = localStorage.getItem('wedding-date');
+        if (weddingDate) {
+            const today = new Date();
+            const wedding = new Date(weddingDate);
+            const diffTime = wedding - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            countdownElement.textContent = diffDays > 0 ? diffDays : 0;
+        }
+    }
+
+    // Update planning progress on landing page
+    const progressBar = document.getElementById('planning-progress');
+    if (progressBar) {
+        const completedTasks = localStorage.getItem('completed-tasks') || 0;
+        const totalTasks = localStorage.getItem('total-tasks') || 1;
+        const progress = (completedTasks / totalTasks) * 100;
+        progressBar.style.width = `${progress}%`;
+        progressBar.textContent = `${Math.round(progress)}%`;
+    }
 });
 
 function setupEventListeners() {
@@ -1427,3 +1450,24 @@ document.addEventListener('DOMContentLoaded', function() {
         weddingDateInput.addEventListener('change', updateWeddingCountdown);
     }
 });
+
+// Update the saveDetails function to handle the new planning card
+function saveDetails() {
+    const weddingDate = document.getElementById('wedding-date').value;
+    const totalGuests = document.getElementById('total-guests').value;
+
+    localStorage.setItem('wedding-date', weddingDate);
+    localStorage.setItem('total-guests', totalGuests);
+
+    // Update the countdown if we're on the landing page
+    const countdownElement = document.getElementById('countdown');
+    if (countdownElement && weddingDate) {
+        const today = new Date();
+        const wedding = new Date(weddingDate);
+        const diffTime = wedding - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        countdownElement.textContent = diffDays > 0 ? diffDays : 0;
+    }
+
+    alert('Detalles guardados correctamente');
+}
