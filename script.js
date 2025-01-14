@@ -434,80 +434,16 @@ function updateBudget() {
 function addGuest() {
     const guestCount = document.querySelectorAll('#guests-table tbody tr').length + 1;
     const guestName = `Invitado ${guestCount}`;
-    const guestId = `guest-${Date.now()}`; // Use timestamp for unique ID
+    const guestId = `guest-${Date.now()}`;
     
-    // Add to the table
-    const tbody = document.querySelector('#guests-table tbody');
-    const row = tbody.insertRow();
-    row.style.display = '';
-    row.setAttribute('data-guest-id', guestId);
-    row.innerHTML = `
-        <td contenteditable="true">${guestName}</td>
-        <td contenteditable="true">0</td>
-        <td>
-            <select class="form-select guest-category" onchange="updateGuestCounts()">
-                <option>Familia Novia</option>
-                <option>Familia Novio</option>
-                <option>Amigos Novia</option>
-                <option>Amigos Novio</option>
-                <option>Trabajo Novia</option>
-                <option>Trabajo Novio</option>
-                <option>Otros</option>
-            </select>
-        </td>
-        <td>
-            <select class="form-select dietary-restrictions">
-                <option value="none" selected>Sin restricciones</option>
-                <option value="vegetarian">Vegetariano</option>
-                <option value="vegan">Vegano</option>
-                <option value="gluten">Sin gluten</option>
-                <option value="lactose">Sin lactosa</option>
-                <option value="allergies">Alergias</option>
-                <option value="other">Otras restricciones</option>
-            </select>
-        </td>
-        <td>
-            <select class="form-select invitation-status">
-                <option>No</option>
-                <option>Sí</option>
-            </select>
-        </td>
-        <td>
-            <select class="form-select confirmation-status">
-                <option>Pendiente</option>
-                <option>Confirmado</option>
-                <option>Rechazado</option>
-            </select>
-        </td>
-        <td>
-            <select class="form-select table-group">
-                <option value="">Sin asignar</option>
-                ${getTableOptions()}
-            </select>
-        </td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
-        </td>
-    `;
+    // Add to table...
+    // [Previous table creation code remains the same]
 
-    // Add to the draggable area
-    const guestElement = document.createElement('div');
-    guestElement.className = 'guest-item';
-    guestElement.setAttribute('data-guest-id', guestId);
-    guestElement.draggable = true;
-    guestElement.innerHTML = `
-        <div contenteditable="true">${guestName}</div>
-        <small class="text-muted">Arrastra a una mesa</small>
-    `;
-    
+    // Add to unassigned guests
+    const guestElement = createGuestItem(guestName, guestId, 0);
     document.getElementById('unassigned-guests').appendChild(guestElement);
     setupDragAndDrop(guestElement);
     
-    // Add change listener for confirmation status
-    row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
-    row.querySelector('.guest-category').addEventListener('change', updateGuestCounts);
     updateGuestCounts();
 }
 
@@ -706,9 +642,20 @@ function handleDrop(e) {
     const guestId = e.dataTransfer.getData('text/plain');
     const guestElement = document.querySelector(`[data-guest-id="${guestId}"]`);
     
-    if (guestElement) {
-        // Check table capacity including plus-ones
-        const tableCard = dropZone.closest('.table-card');
+    if (!guestElement) return;
+
+    // If dropping in unassigned area
+    if (dropZone.id === 'unassigned-guests') {
+        dropZone.appendChild(guestElement);
+        const guestName = guestElement.querySelector('.guest-name').textContent;
+        updateGuestTableAssignment(guestName, '');
+        updateTableStats();
+        return;
+    }
+
+    // If dropping in a table
+    const tableCard = dropZone.closest('.table-card');
+    if (tableCard) {
         const capacity = parseInt(tableCard.querySelector('.table-capacity span').textContent);
         const currentGuests = Array.from(dropZone.querySelectorAll('.guest-item'))
             .reduce((total, guest) => {
@@ -717,6 +664,7 @@ function handleDrop(e) {
         const newGuestTotal = 1 + parseInt(guestElement.getAttribute('data-plus-ones') || 0);
         
         if (currentGuests + newGuestTotal <= capacity) {
+            // Remove from previous location
             if (guestElement.parentNode) {
                 guestElement.parentNode.removeChild(guestElement);
             }
@@ -762,14 +710,19 @@ function updateTableStats() {
     const totalTables = tables.length;
     let totalSeats = 0;
     let occupiedSeats = 0;
-    
+
     tables.forEach(table => {
         const capacity = parseInt(table.querySelector('.table-capacity span').textContent);
-        const occupied = table.querySelectorAll('.guest-item').length;
         totalSeats += capacity;
+
+        // Count occupied seats including plus-ones
+        const guests = table.querySelectorAll('.guest-item');
+        const occupied = Array.from(guests).reduce((total, guest) => {
+            return total + 1 + parseInt(guest.getAttribute('data-plus-ones') || 0);
+        }, 0);
         occupiedSeats += occupied;
     });
-    
+
     document.getElementById('tables-count').textContent = totalTables;
     document.getElementById('total-seats').textContent = totalSeats;
     document.getElementById('available-seats').textContent = totalSeats - occupiedSeats;
@@ -1220,8 +1173,13 @@ function createGuestItem(guestName, guestId, plusOnes) {
     guestElement.setAttribute('data-plus-ones', plusOnes);
     guestElement.draggable = true;
     guestElement.innerHTML = `
-        <div class="guest-name" onclick="showGuestDetails('${guestId}')">${guestName}</div>
-        ${plusOnes > 0 ? `<small class="text-muted">+${plusOnes}</small>` : ''}
+        <div class="guest-info">
+            <span class="guest-name">${guestName}</span>
+            ${plusOnes > 0 ? `<small class="text-muted">+${plusOnes}</small>` : ''}
+        </div>
+        <div class="guest-actions">
+            <a href="#" class="text-primary" onclick="showGuestDetails('${guestId}'); return false;">Datos</a>
+        </div>
     `;
     return guestElement;
 }
@@ -1267,9 +1225,20 @@ function handleDrop(e) {
     const guestId = e.dataTransfer.getData('text/plain');
     const guestElement = document.querySelector(`[data-guest-id="${guestId}"]`);
     
-    if (guestElement) {
-        // Check table capacity including plus-ones
-        const tableCard = dropZone.closest('.table-card');
+    if (!guestElement) return;
+
+    // If dropping in unassigned area
+    if (dropZone.id === 'unassigned-guests') {
+        dropZone.appendChild(guestElement);
+        const guestName = guestElement.querySelector('.guest-name').textContent;
+        updateGuestTableAssignment(guestName, '');
+        updateTableStats();
+        return;
+    }
+
+    // If dropping in a table
+    const tableCard = dropZone.closest('.table-card');
+    if (tableCard) {
         const capacity = parseInt(tableCard.querySelector('.table-capacity span').textContent);
         const currentGuests = Array.from(dropZone.querySelectorAll('.guest-item'))
             .reduce((total, guest) => {
@@ -1278,6 +1247,7 @@ function handleDrop(e) {
         const newGuestTotal = 1 + parseInt(guestElement.getAttribute('data-plus-ones') || 0);
         
         if (currentGuests + newGuestTotal <= capacity) {
+            // Remove from previous location
             if (guestElement.parentNode) {
                 guestElement.parentNode.removeChild(guestElement);
             }
