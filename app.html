@@ -256,6 +256,24 @@
                             <button class="btn btn-success w-100 mt-3" id="add-table">Añadir Mesa</button>
                         </div>
                         <div class="col-md-9">
+                            <div class="table-controls mb-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <select class="form-select" id="table-category-filter">
+                                            <option value="">Todas las categorías</option>
+                                            <option value="familia">Familia</option>
+                                            <option value="amigos">Amigos</option>
+                                            <option value="trabajo">Trabajo</option>
+                                            <option value="otros">Otros</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-outline-primary" id="auto-arrange">
+                                            Sugerir disposición
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="tables-container" id="tables-grid">
                                 <!-- Tables will be added here dynamically -->
                             </div>
