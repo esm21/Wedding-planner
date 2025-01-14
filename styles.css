@@ -210,12 +210,13 @@
 .sidebar-stats {
     position: fixed;
     width: inherit;
-    max-width: 280px;
+    max-width: 250px;
 }
 
 .main-guest-area {
-    margin-left: 280px;
-    width: calc(100% - 280px);
+    margin-left: 260px;
+    margin-right: 25%;
+    width: auto;
 }
 
 /* Responsive adjustments */
@@ -243,4 +244,67 @@
     .basic-details-banner {
         margin-left: 0;
     }
+}
+
+/* Adjust table layout */
+#guests-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+#guests-table th,
+#guests-table td {
+    padding: 8px;
+    font-size: 0.9rem;
+}
+
+/* Set specific widths for columns */
+#guests-table th:nth-child(1), /* Nombre */
+#guests-table td:nth-child(1) {
+    width: 15%;
+}
+
+#guests-table th:nth-child(2), /* Personas Adicionales */
+#guests-table td:nth-child(2) {
+    width: 8%;
+}
+
+#guests-table th:nth-child(3), /* Categoría */
+#guests-table td:nth-child(3) {
+    width: 12%;
+}
+
+#guests-table th:nth-child(4), /* Restricciones */
+#guests-table td:nth-child(4) {
+    width: 12%;
+}
+
+#guests-table th:nth-child(5), /* Invitación */
+#guests-table td:nth-child(5) {
+    width: 10%;
+}
+
+#guests-table th:nth-child(6), /* Confirmación */
+#guests-table td:nth-child(6) {
+    width: 10%;
+}
+
+#guests-table th:nth-child(7), /* Grupo Mesa */
+#guests-table td:nth-child(7) {
+    width: 10%;
+}
+
+#guests-table th:nth-child(8), /* Regalo */
+#guests-table td:nth-child(8) {
+    width: 8%;
+}
+
+#guests-table th:nth-child(9), /* Notas */
+#guests-table td:nth-child(9) {
+    width: 10%;
+}
+
+#guests-table th:nth-child(10), /* Acciones */
+#guests-table td:nth-child(10) {
+    width: 5%;
 }
