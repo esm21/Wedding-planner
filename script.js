@@ -436,13 +436,93 @@ function addGuest() {
     const guestName = `Invitado ${guestCount}`;
     const guestId = `guest-${Date.now()}`;
     
-    // Add to table...
-    // [Previous table creation code remains the same]
+    // Add to the table
+    const tbody = document.querySelector('#guests-table tbody');
+    const row = tbody.insertRow();
+    row.style.display = '';
+    row.setAttribute('data-guest-id', guestId);
+    row.innerHTML = `
+        <td contenteditable="true">${guestName}</td>
+        <td contenteditable="true">0</td>
+        <td>
+            <select class="form-select guest-category" onchange="updateGuestCounts()">
+                <option>Familia Novia</option>
+                <option>Familia Novio</option>
+                <option>Amigos Novia</option>
+                <option>Amigos Novio</option>
+                <option>Trabajo Novia</option>
+                <option>Trabajo Novio</option>
+                <option>Otros</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select dietary-restrictions">
+                <option value="none" selected>Sin restricciones</option>
+                <option value="vegetarian">Vegetariano</option>
+                <option value="vegan">Vegano</option>
+                <option value="gluten">Sin gluten</option>
+                <option value="lactose">Sin lactosa</option>
+                <option value="allergies">Alergias</option>
+                <option value="other">Otras restricciones</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select invitation-status">
+                <option>No</option>
+                <option>Sí</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select confirmation-status">
+                <option>Pendiente</option>
+                <option>Confirmado</option>
+                <option>Rechazado</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select table-group">
+                <option value="">Sin asignar</option>
+                ${getTableOptions()}
+            </select>
+        </td>
+        <td contenteditable="true"></td>
+        <td contenteditable="true"></td>
+        <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
+        </td>
+    `;
 
-    // Add to unassigned guests
+    // Add to unassigned guests area (Mesas page)
     const guestElement = createGuestItem(guestName, guestId, 0);
     document.getElementById('unassigned-guests').appendChild(guestElement);
     setupDragAndDrop(guestElement);
+    
+    // Add change listeners
+    row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
+    row.querySelector('.guest-category').addEventListener('change', updateGuestCounts);
+
+    // Watch for changes in the plus-ones field
+    const plusOnesCell = row.cells[1];
+    plusOnesCell.addEventListener('input', () => {
+        const plusOnes = parseInt(plusOnesCell.textContent) || 0;
+        const guestItem = document.querySelector(`.guest-item[data-guest-id="${guestId}"]`);
+        if (guestItem) {
+            guestItem.setAttribute('data-plus-ones', plusOnes);
+            // Update the plus-ones display
+            const plusOnesDisplay = guestItem.querySelector('.text-muted');
+            if (plusOnes > 0) {
+                if (plusOnesDisplay) {
+                    plusOnesDisplay.textContent = `+${plusOnes}`;
+                } else {
+                    guestItem.querySelector('.guest-info').insertAdjacentHTML('beforeend', 
+                        `<small class="text-muted">+${plusOnes}</small>`);
+                }
+            } else if (plusOnesDisplay) {
+                plusOnesDisplay.remove();
+            }
+            updateTableStats();
+        }
+    });
     
     updateGuestCounts();
 }
