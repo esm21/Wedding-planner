@@ -625,12 +625,8 @@ function addTable() {
         <div class="table-capacity">
             Capacidad: <span contenteditable="true" onblur="updateTableStats()">8</span> personas
         </div>
-        <div class="table-guests" data-table-id="table-${tableCount}">
-            <!-- Guests will be dropped here -->
-        </div>
-        <button class="btn btn-danger btn-sm mt-2" onclick="deleteTable(this)">
-            Eliminar Mesa
-        </button>
+        <div class="table-guests" data-table-id="table-${tableCount}"></div>
+        <button class="btn btn-danger btn-sm mt-2" onclick="deleteTable(this)">Eliminar Mesa</button>
     `;
     
     tableGrid.appendChild(tableCard);
@@ -798,16 +794,14 @@ function updateTableStats() {
         occupiedSeats += occupied;
     });
 
-    // Update the stats display
+    // Update all stats displays
     document.getElementById('tables-count').textContent = totalTables;
     document.getElementById('total-seats').textContent = totalSeats;
     document.getElementById('available-seats').textContent = totalSeats - occupiedSeats;
-
-    // Update Asientos Totales and Asientos Libres in the Resumen Mesas card
-    const resumenAsientosTotales = document.querySelector('.card:first-of-type .d-flex:nth-child(2) span:last-child');
-    const resumenAsientosLibres = document.querySelector('.card:first-of-type .d-flex:last-child span:last-child');
-    if (resumenAsientosTotales) resumenAsientosTotales.textContent = totalSeats;
-    if (resumenAsientosLibres) resumenAsientosLibres.textContent = totalSeats - occupiedSeats;
+    
+    // Update Resumen Mesas stats
+    document.querySelector('#tables-section .card:first-of-type .d-flex:nth-child(2) span:last-child').textContent = totalSeats;
+    document.querySelector('#tables-section .card:first-of-type .d-flex:last-child span:last-child').textContent = totalSeats - occupiedSeats;
 }
 
 function saveBasicDetails() {
@@ -1254,11 +1248,9 @@ function createGuestItem(guestName, guestId, plusOnes) {
     guestElement.setAttribute('data-plus-ones', plusOnes);
     guestElement.draggable = true;
     guestElement.innerHTML = `
-        <div class="guest-info">
-            <span class="guest-name">${guestName}</span>
-            ${plusOnes > 0 ? `<small class="text-muted">+${plusOnes}</small>` : ''}
-        </div>
-        <a href="#" class="text-primary" onclick="showGuestDetails('${guestId}'); return false;">Datos</a>
+        ${guestName}
+        ${plusOnes > 0 ? `<small class="text-muted">(+${plusOnes})</small>` : ''}
+        <a href="#" class="text-primary ms-2" onclick="showGuestDetails('${guestId}'); return false;">Datos</a>
     `;
     return guestElement;
 }
