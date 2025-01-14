@@ -432,14 +432,15 @@ function updateBudget() {
 }
 
 function addGuest() {
-    // Add to both the table and the draggable area
     const guestCount = document.querySelectorAll('#guests-table tbody tr').length + 1;
     const guestName = `Invitado ${guestCount}`;
+    const guestId = `guest-${Date.now()}`; // Use timestamp for unique ID
     
     // Add to the table
     const tbody = document.querySelector('#guests-table tbody');
     const row = tbody.insertRow();
-    row.style.display = ''; // Make sure the row is visible
+    row.style.display = '';
+    row.setAttribute('data-guest-id', guestId);
     row.innerHTML = `
         <td contenteditable="true">${guestName}</td>
         <td contenteditable="true">0</td>
@@ -494,7 +495,7 @@ function addGuest() {
     // Add to the draggable area
     const guestElement = document.createElement('div');
     guestElement.className = 'guest-item';
-    guestElement.setAttribute('data-guest-id', `guest-${guestCount}`);
+    guestElement.setAttribute('data-guest-id', guestId);
     guestElement.draggable = true;
     guestElement.innerHTML = `
         <div contenteditable="true">${guestName}</div>
@@ -502,8 +503,6 @@ function addGuest() {
     `;
     
     document.getElementById('unassigned-guests').appendChild(guestElement);
-    
-    // Setup drag and drop
     setupDragAndDrop(guestElement);
     
     // Add change listener for confirmation status
@@ -513,8 +512,22 @@ function addGuest() {
 }
 
 function deleteGuest(button) {
+    // Get the guest name before removing the row
+    const guestName = button.closest('tr').cells[0].textContent;
+    
+    // Remove from guests table
     button.closest('tr').remove();
+    
+    // Remove from draggable area (Mesas page)
+    const guestItems = document.querySelectorAll('.guest-item');
+    guestItems.forEach(item => {
+        if (item.querySelector('div').textContent === guestName) {
+            item.remove();
+        }
+    });
+    
     updateGuestCounts();
+    updateTableStats();
 }
 
 function updateGuestCounts() {
