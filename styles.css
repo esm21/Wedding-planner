@@ -210,12 +210,12 @@
 .sidebar-stats {
     position: fixed;
     width: inherit;
-    max-width: 250px;
+    max-width: 220px;
 }
 
 .main-guest-area {
-    margin-left: 260px;
-    margin-right: 25%;
+    margin-left: 230px;
+    margin-right: 23%;
     width: auto;
 }
 
@@ -255,7 +255,7 @@
 #guests-table th,
 #guests-table td {
     padding: 8px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }
 
 /* Set specific widths for columns */
