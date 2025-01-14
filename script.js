@@ -623,7 +623,7 @@ function addTable() {
     tableCard.innerHTML = `
         <h5 contenteditable="true">Mesa ${tableCount}</h5>
         <div class="table-capacity">
-            Capacidad: <span contenteditable="true">8</span> personas
+            Capacidad: <span contenteditable="true" onblur="updateTableStats()">8</span> personas
         </div>
         <div class="table-guests" data-table-id="table-${tableCount}">
             <!-- Guests will be dropped here -->
@@ -634,13 +634,7 @@ function addTable() {
     `;
     
     tableGrid.appendChild(tableCard);
-    
-    // Setup drop zone for new table
-    const dropZone = tableCard.querySelector('.table-guests');
-    dropZone.addEventListener('dragover', handleDragOver);
-    dropZone.addEventListener('drop', handleDrop);
-    dropZone.addEventListener('dragleave', handleDragLeave);
-    
+    setupDropZones();
     updateTableStats();
 }
 
@@ -792,21 +786,28 @@ function updateTableStats() {
     let occupiedSeats = 0;
 
     tables.forEach(table => {
-        const capacity = parseInt(table.querySelector('.table-capacity span').textContent);
+        const capacity = parseInt(table.querySelector('.table-capacity span').textContent) || 0;
         totalSeats += capacity;
 
         // Count occupied seats including plus-ones
         const guests = table.querySelectorAll('.guest-item');
         const occupied = Array.from(guests).reduce((total, guest) => {
-            return total + 1 + parseInt(guest.getAttribute('data-plus-ones') || 0);
+            const plusOnes = parseInt(guest.getAttribute('data-plus-ones')) || 0;
+            return total + 1 + plusOnes;
         }, 0);
         occupiedSeats += occupied;
     });
 
+    // Update the stats display
     document.getElementById('tables-count').textContent = totalTables;
     document.getElementById('total-seats').textContent = totalSeats;
     document.getElementById('available-seats').textContent = totalSeats - occupiedSeats;
-    document.getElementById('summary-tables').textContent = totalTables;
+
+    // Update Asientos Totales and Asientos Libres in the Resumen Mesas card
+    const resumenAsientosTotales = document.querySelector('.card:first-of-type .d-flex:nth-child(2) span:last-child');
+    const resumenAsientosLibres = document.querySelector('.card:first-of-type .d-flex:last-child span:last-child');
+    if (resumenAsientosTotales) resumenAsientosTotales.textContent = totalSeats;
+    if (resumenAsientosLibres) resumenAsientosLibres.textContent = totalSeats - occupiedSeats;
 }
 
 function saveBasicDetails() {
@@ -1257,9 +1258,7 @@ function createGuestItem(guestName, guestId, plusOnes) {
             <span class="guest-name">${guestName}</span>
             ${plusOnes > 0 ? `<small class="text-muted">+${plusOnes}</small>` : ''}
         </div>
-        <div class="guest-actions">
-            <a href="#" class="text-primary" onclick="showGuestDetails('${guestId}'); return false;">Datos</a>
-        </div>
+        <a href="#" class="text-primary" onclick="showGuestDetails('${guestId}'); return false;">Datos</a>
     `;
     return guestElement;
 }
