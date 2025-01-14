@@ -500,3 +500,43 @@
     background: #d4edda;
     color: #155724;
 }
+
+/* Checklist Styles */
+.checklist-categories {
+    padding: 20px;
+}
+
+.category-group {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.category-group h4 {
+    color: #0d6efd;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.checklist-items {
+    display: grid;
+    gap: 10px;
+}
+
+.form-check {
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.form-check:hover {
+    background-color: #f8f9fa;
+}
+
+.form-check-input:checked + .form-check-label {
+    text-decoration: line-through;
+    color: #6c757d;
+}
