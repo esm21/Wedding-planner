@@ -166,57 +166,12 @@
 }
 
 .table-card h5 {
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #dee2e6;
+    margin: 0;
+    min-width: 100px;
 }
 
-.guest-item {
-    background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 6px 10px;
-    margin: 5px;
-    cursor: move;
-    display: flex;
-    align-items: center;
-    font-size: 0.9rem;
-}
-
-.guest-item span {
-    margin-right: 5px;
-}
-
-.guest-item small {
-    color: #666;
-    margin-right: 5px;
-}
-
-.guest-item a {
-    margin-left: auto;
-    color: #0d6efd;
-    text-decoration: none;
-    font-size: 0.8rem;
-}
-
-.guest-item:hover {
-    background: #e9ecef;
-    transform: translateY(-2px);
-}
-
-.guest-item.dragging {
-    opacity: 0.5;
-    background: #e9ecef;
-}
-
-.unassigned-guests-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 0.5rem;
-    padding: 1rem;
-    min-height: 100px;
-    border: 2px dashed #dee2e6;
-    border-radius: 8px;
+.table-card select {
+    min-width: 120px;
 }
 
 .table-capacity {
@@ -378,6 +333,54 @@
 .guest-name {
     margin: 0;
     font-size: 0.95rem;
+}
+
+.guest-item {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin: 5px;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.guest-item span {
+    margin-right: 5px;
+}
+
+.guest-item small {
+    color: #666;
+    margin-right: 5px;
+}
+
+.guest-item a {
+    margin-left: auto;
+    color: #0d6efd;
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+.guest-item:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+}
+
+.guest-item.dragging {
+    opacity: 0.5;
+    background: #e9ecef;
+}
+
+.unassigned-guests-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.5rem;
+    padding: 1rem;
+    min-height: 100px;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
 }
 
 .table-card {
