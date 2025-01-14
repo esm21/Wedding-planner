@@ -201,7 +201,7 @@
                         </div>
                         <div class="col-md-9 main-guest-area">
                             <div class="btn-group mb-3">
-                                <button class="btn btn-success" id="add-guest">Añadir Invitado</button>
+                                <button class="btn btn-success" id="add-guest-btn">Añadir Invitado</button>
                                 <button class="btn btn-outline-primary" id="import-guests">Importar Lista</button>
                                 <button class="btn btn-outline-secondary" id="export-guests">Exportar Lista</button>
                             </div>
@@ -424,6 +424,46 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Checklist Section -->
+                <section id="checklist-section" class="section-content" style="display: none;">
+                    <h2>Lista de Tareas</h2>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Progreso</h5>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar" id="checklist-progress" role="progressbar" style="width: 0%">0%</div>
+                                    </div>
+                                    <div class="checklist-stats">
+                                        <div>Completadas: <span id="completed-tasks">0</span></div>
+                                        <div>Pendientes: <span id="pending-tasks">0</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="checklist-categories">
+                                <div class="category-group mb-4">
+                                    <h4>12 meses antes</h4>
+                                    <div class="checklist-items">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="task-1">
+                                            <label class="form-check-label" for="task-1">Fijar la fecha de la boda</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="task-2">
+                                            <label class="form-check-label" for="task-2">Establecer el presupuesto</label>
+                                        </div>
+                                        <!-- Add more predefined tasks -->
+                                    </div>
+                                </div>
+                                <!-- Add more time categories -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
 
             <!-- Budget Calculator Sidebar -->
@@ -517,6 +557,58 @@
                 </div>
                 <div class="modal-body">
                     <!-- Guest details will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Guest Modal -->
+    <div class="modal fade" id="guestModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nuevo Invitado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="guest-form">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="guest-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Personas Adicionales</label>
+                            <input type="number" class="form-control" id="guest-plus-ones" value="0" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Categoría</label>
+                            <select class="form-select" id="guest-category">
+                                <option>Familia Novia</option>
+                                <option>Familia Novio</option>
+                                <option>Amigos Novia</option>
+                                <option>Amigos Novio</option>
+                                <option>Trabajo Novia</option>
+                                <option>Trabajo Novio</option>
+                                <option>Otros</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Restricciones Alimentarias</label>
+                            <select class="form-select" id="guest-dietary">
+                                <option value="none">Sin restricciones</option>
+                                <option value="vegetarian">Vegetariano</option>
+                                <option value="vegan">Vegano</option>
+                                <option value="gluten">Sin gluten</option>
+                                <option value="lactose">Sin lactosa</option>
+                                <option value="allergies">Alergias</option>
+                                <option value="other">Otras restricciones</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-guest">Guardar</button>
                 </div>
             </div>
         </div>
