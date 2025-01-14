@@ -706,31 +706,28 @@ function handleDrop(e) {
     const guestId = e.dataTransfer.getData('text/plain');
     const guestElement = document.querySelector(`[data-guest-id="${guestId}"]`);
     
-    if (!guestElement) return;
-
-    // Handle drop in unassigned area
-    if (dropZone.id === 'unassigned-guests') {
-        dropZone.appendChild(guestElement);
-        const guestName = guestElement.querySelector('div').textContent;
-        updateGuestTableAssignment(guestName, '');
-        updateTableStats();
-        return;
-    }
-
-    // Handle drop in table
-    const tableCard = dropZone.closest('.table-card');
-    if (tableCard) {
+    if (guestElement) {
+        // Check table capacity including plus-ones
+        const tableCard = dropZone.closest('.table-card');
         const capacity = parseInt(tableCard.querySelector('.table-capacity span').textContent);
-        const currentGuests = dropZone.querySelectorAll('.guest-item').length;
+        const currentGuests = Array.from(dropZone.querySelectorAll('.guest-item'))
+            .reduce((total, guest) => {
+                return total + 1 + parseInt(guest.getAttribute('data-plus-ones') || 0);
+            }, 0);
+        const newGuestTotal = 1 + parseInt(guestElement.getAttribute('data-plus-ones') || 0);
         
-        if (currentGuests < capacity) {
+        if (currentGuests + newGuestTotal <= capacity) {
+            if (guestElement.parentNode) {
+                guestElement.parentNode.removeChild(guestElement);
+            }
             dropZone.appendChild(guestElement);
+            
             const tableName = tableCard.querySelector('h5').textContent;
-            const guestName = guestElement.querySelector('div').textContent;
+            const guestName = guestElement.querySelector('.guest-name').textContent;
             updateGuestTableAssignment(guestName, tableName);
             updateTableStats();
         } else {
-            alert('Esta mesa está llena');
+            alert('No hay suficiente espacio en esta mesa');
         }
     }
 }
@@ -1196,3 +1193,102 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Add sidebar toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Add toggle button to sidebar
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'btn btn-sm btn-outline-secondary mt-2';
+    toggleBtn.innerHTML = '⇄';
+    toggleBtn.onclick = toggleSidebar;
+    sidebar.querySelector('.d-flex').prepend(toggleBtn);
+});
+
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    sidebar.classList.toggle('collapsed');
+    mainContent.classList.toggle('expanded');
+}
+
+// Update guest item creation for tables
+function createGuestItem(guestName, guestId, plusOnes) {
+    const guestElement = document.createElement('div');
+    guestElement.className = 'guest-item';
+    guestElement.setAttribute('data-guest-id', guestId);
+    guestElement.setAttribute('data-plus-ones', plusOnes);
+    guestElement.draggable = true;
+    guestElement.innerHTML = `
+        <div class="guest-name" onclick="showGuestDetails('${guestId}')">${guestName}</div>
+        ${plusOnes > 0 ? `<small class="text-muted">+${plusOnes}</small>` : ''}
+    `;
+    return guestElement;
+}
+
+function showGuestDetails(guestId) {
+    const row = document.querySelector(`tr[data-guest-id="${guestId}"]`);
+    if (!row) return;
+
+    const modal = new bootstrap.Modal(document.getElementById('guestDetailsModal'));
+    const modalBody = document.querySelector('#guestDetailsModal .modal-body');
+    
+    modalBody.innerHTML = `
+        <dl class="row">
+            <dt class="col-sm-4">Nombre</dt>
+            <dd class="col-sm-8">${row.cells[0].textContent}</dd>
+            
+            <dt class="col-sm-4">Personas Adicionales</dt>
+            <dd class="col-sm-8">${row.cells[1].textContent}</dd>
+            
+            <dt class="col-sm-4">Categoría</dt>
+            <dd class="col-sm-8">${row.querySelector('.guest-category').value}</dd>
+            
+            <dt class="col-sm-4">Restricciones</dt>
+            <dd class="col-sm-8">${row.querySelector('.dietary-restrictions').value}</dd>
+            
+            <dt class="col-sm-4">Estado</dt>
+            <dd class="col-sm-8">${row.querySelector('.confirmation-status').value}</dd>
+            
+            <dt class="col-sm-4">Mesa</dt>
+            <dd class="col-sm-8">${row.querySelector('.table-group').value || 'Sin asignar'}</dd>
+        </dl>
+    `;
+    
+    modal.show();
+}
+
+// Update table capacity handling
+function handleDrop(e) {
+    e.preventDefault();
+    const dropZone = e.currentTarget;
+    dropZone.classList.remove('can-drop');
+    
+    const guestId = e.dataTransfer.getData('text/plain');
+    const guestElement = document.querySelector(`[data-guest-id="${guestId}"]`);
+    
+    if (guestElement) {
+        // Check table capacity including plus-ones
+        const tableCard = dropZone.closest('.table-card');
+        const capacity = parseInt(tableCard.querySelector('.table-capacity span').textContent);
+        const currentGuests = Array.from(dropZone.querySelectorAll('.guest-item'))
+            .reduce((total, guest) => {
+                return total + 1 + parseInt(guest.getAttribute('data-plus-ones') || 0);
+            }, 0);
+        const newGuestTotal = 1 + parseInt(guestElement.getAttribute('data-plus-ones') || 0);
+        
+        if (currentGuests + newGuestTotal <= capacity) {
+            if (guestElement.parentNode) {
+                guestElement.parentNode.removeChild(guestElement);
+            }
+            dropZone.appendChild(guestElement);
+            
+            const tableName = tableCard.querySelector('h5').textContent;
+            const guestName = guestElement.querySelector('.guest-name').textContent;
+            updateGuestTableAssignment(guestName, tableName);
+            updateTableStats();
+        } else {
+            alert('No hay suficiente espacio en esta mesa');
+        }
+    }
+}
