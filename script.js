@@ -631,6 +631,7 @@ function addTable() {
     
     tableGrid.appendChild(tableCard);
     setupDropZones();
+    setupTableCapacityListeners();
     updateTableStats();
 }
 
@@ -714,39 +715,31 @@ function handleDrop(e) {
     
     if (!guestElement) return;
 
-    // If dropping in unassigned area
-    if (dropZone.id === 'unassigned-guests') {
+    const tableCard = dropZone.closest('.table-card');
+    if (!tableCard) {
+        // Dropping in unassigned area
         dropZone.appendChild(guestElement);
-        const guestName = guestElement.querySelector('.guest-name').textContent;
-        updateGuestTableAssignment(guestName, '');
         updateTableStats();
         return;
     }
 
-    // If dropping in a table
-    const tableCard = dropZone.closest('.table-card');
-    if (tableCard) {
-        const capacity = parseInt(tableCard.querySelector('.table-capacity span').textContent);
+    // Check table capacity
+    const capacity = parseInt(tableCard.querySelector('.table-capacity span').textContent) || 0;
         const currentGuests = Array.from(dropZone.querySelectorAll('.guest-item'))
             .reduce((total, guest) => {
-                return total + 1 + parseInt(guest.getAttribute('data-plus-ones') || 0);
+            const plusOnes = parseInt(guest.getAttribute('data-plus-ones')) || 0;
+            return total + 1 + plusOnes;
             }, 0);
-        const newGuestTotal = 1 + parseInt(guestElement.getAttribute('data-plus-ones') || 0);
+    const newGuestPlusOnes = parseInt(guestElement.getAttribute('data-plus-ones')) || 0;
         
-        if (currentGuests + newGuestTotal <= capacity) {
-            // Remove from previous location
+    if (currentGuests + 1 + newGuestPlusOnes <= capacity) {
             if (guestElement.parentNode) {
                 guestElement.parentNode.removeChild(guestElement);
             }
             dropZone.appendChild(guestElement);
-            
-            const tableName = tableCard.querySelector('h5').textContent;
-            const guestName = guestElement.querySelector('.guest-name').textContent;
-            updateGuestTableAssignment(guestName, tableName);
             updateTableStats();
         } else {
             alert('No hay suficiente espacio en esta mesa');
-        }
     }
 }
 
@@ -777,31 +770,44 @@ function getTableOptions() {
 
 function updateTableStats() {
     const tables = document.querySelectorAll('.table-card');
-    const totalTables = tables.length;
+    let totalTables = tables.length;
     let totalSeats = 0;
     let occupiedSeats = 0;
 
     tables.forEach(table => {
-        const capacity = parseInt(table.querySelector('.table-capacity span').textContent) || 0;
+        // Get table capacity
+        const capacitySpan = table.querySelector('.table-capacity span');
+        const capacity = parseInt(capacitySpan.textContent) || 0;
         totalSeats += capacity;
 
-        // Count occupied seats including plus-ones
+        // Calculate occupied seats
         const guests = table.querySelectorAll('.guest-item');
-        const occupied = Array.from(guests).reduce((total, guest) => {
+        const tableOccupied = Array.from(guests).reduce((total, guest) => {
             const plusOnes = parseInt(guest.getAttribute('data-plus-ones')) || 0;
             return total + 1 + plusOnes;
         }, 0);
-        occupiedSeats += occupied;
+        occupiedSeats += tableOccupied;
     });
 
-    // Update all stats displays
+    // Update main stats
     document.getElementById('tables-count').textContent = totalTables;
     document.getElementById('total-seats').textContent = totalSeats;
     document.getElementById('available-seats').textContent = totalSeats - occupiedSeats;
+
+    // Update Resumen Mesas
+    const asientosTotales = document.querySelector('.card .d-flex:nth-child(2) span:last-child');
+    const asientosLibres = document.querySelector('.card .d-flex:last-child span:last-child');
     
-    // Update Resumen Mesas stats
-    document.querySelector('#tables-section .card:first-of-type .d-flex:nth-child(2) span:last-child').textContent = totalSeats;
-    document.querySelector('#tables-section .card:first-of-type .d-flex:last-child span:last-child').textContent = totalSeats - occupiedSeats;
+    if (asientosTotales) asientosTotales.textContent = totalSeats;
+    if (asientosLibres) asientosLibres.textContent = totalSeats - occupiedSeats;
+}
+
+// Add event listener for table capacity changes
+function setupTableCapacityListeners() {
+    document.querySelectorAll('.table-capacity span[contenteditable]').forEach(span => {
+        span.addEventListener('input', updateTableStats);
+        span.addEventListener('blur', updateTableStats);
+    });
 }
 
 function saveBasicDetails() {
@@ -1248,9 +1254,9 @@ function createGuestItem(guestName, guestId, plusOnes) {
     guestElement.setAttribute('data-plus-ones', plusOnes);
     guestElement.draggable = true;
     guestElement.innerHTML = `
-        ${guestName}
-        ${plusOnes > 0 ? `<small class="text-muted">(+${plusOnes})</small>` : ''}
-        <a href="#" class="text-primary ms-2" onclick="showGuestDetails('${guestId}'); return false;">Datos</a>
+        <span>${guestName}</span>
+        ${plusOnes > 0 ? `<small>(+${plusOnes})</small>` : ''}
+        <a href="#" onclick="showGuestDetails('${guestId}'); return false;">Datos</a>
     `;
     return guestElement;
 }
@@ -1285,51 +1291,4 @@ function showGuestDetails(guestId) {
     `;
     
     modal.show();
-}
-
-// Update table capacity handling
-function handleDrop(e) {
-    e.preventDefault();
-    const dropZone = e.currentTarget;
-    dropZone.classList.remove('can-drop');
-    
-    const guestId = e.dataTransfer.getData('text/plain');
-    const guestElement = document.querySelector(`[data-guest-id="${guestId}"]`);
-    
-    if (!guestElement) return;
-
-    // If dropping in unassigned area
-    if (dropZone.id === 'unassigned-guests') {
-        dropZone.appendChild(guestElement);
-        const guestName = guestElement.querySelector('.guest-name').textContent;
-        updateGuestTableAssignment(guestName, '');
-        updateTableStats();
-        return;
-    }
-
-    // If dropping in a table
-    const tableCard = dropZone.closest('.table-card');
-    if (tableCard) {
-        const capacity = parseInt(tableCard.querySelector('.table-capacity span').textContent);
-        const currentGuests = Array.from(dropZone.querySelectorAll('.guest-item'))
-            .reduce((total, guest) => {
-                return total + 1 + parseInt(guest.getAttribute('data-plus-ones') || 0);
-            }, 0);
-        const newGuestTotal = 1 + parseInt(guestElement.getAttribute('data-plus-ones') || 0);
-        
-        if (currentGuests + newGuestTotal <= capacity) {
-            // Remove from previous location
-            if (guestElement.parentNode) {
-                guestElement.parentNode.removeChild(guestElement);
-            }
-            dropZone.appendChild(guestElement);
-            
-            const tableName = tableCard.querySelector('h5').textContent;
-            const guestName = guestElement.querySelector('.guest-name').textContent;
-            updateGuestTableAssignment(guestName, tableName);
-            updateTableStats();
-        } else {
-            alert('No hay suficiente espacio en esta mesa');
-        }
-    }
 }
