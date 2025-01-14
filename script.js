@@ -605,7 +605,13 @@ function addTable() {
     `;
     
     tableGrid.appendChild(tableCard);
-    setupDropZones();
+    
+    // Setup drop zone for new table
+    const dropZone = tableCard.querySelector('.table-guests');
+    dropZone.addEventListener('dragover', handleDragOver);
+    dropZone.addEventListener('drop', handleDrop);
+    dropZone.addEventListener('dragleave', handleDragLeave);
+    
     updateTableStats();
 }
 
@@ -1144,4 +1150,36 @@ document.addEventListener('DOMContentLoaded', function() {
     // Export buttons
     document.getElementById('export-excel').addEventListener('click', exportToExcel);
     document.getElementById('export-pdf').addEventListener('click', exportToPDF);
+});
+
+function setupDropZones() {
+    // Setup table drop zones
+    document.querySelectorAll('.table-guests').forEach(dropZone => {
+        dropZone.addEventListener('dragover', handleDragOver);
+        dropZone.addEventListener('drop', handleDrop);
+        dropZone.addEventListener('dragleave', handleDragLeave);
+    });
+    
+    // Setup unassigned guests drop zone
+    const unassignedZone = document.getElementById('unassigned-guests');
+    if (unassignedZone) {
+        unassignedZone.addEventListener('dragover', handleDragOver);
+        unassignedZone.addEventListener('drop', handleDrop);
+        unassignedZone.addEventListener('dragleave', handleDragLeave);
+    }
+}
+
+// Add this to your DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing code ...
+    setupDropZones();
+    
+    // Re-setup drop zones when switching to tables section
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function() {
+            if (this.getAttribute('data-section') === 'tables') {
+                setTimeout(setupDropZones, 100); // Small delay to ensure DOM is ready
+            }
+        });
+    });
 });
