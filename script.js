@@ -1305,3 +1305,62 @@ function showGuestDetails(guestId) {
     
     modal.show();
 }
+
+// Planning functionality
+function updateWeddingCountdown() {
+    const weddingDate = new Date(document.getElementById('wedding-date').value);
+    const today = new Date();
+    const diffTime = weddingDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    document.getElementById('wedding-countdown').textContent = diffDays > 0 ? diffDays : 0;
+}
+
+function createTimelineItem(task) {
+    const timelineItem = document.createElement('div');
+    timelineItem.className = `timeline-item ${task.status}`;
+    timelineItem.innerHTML = `
+        <div class="timeline-card">
+            <div class="timeline-date">${new Date(task.deadline).toLocaleDateString()}</div>
+            <div class="timeline-title">
+                ${task.title}
+                <span class="task-priority ${task.priority}">${task.priority}</span>
+            </div>
+            <div class="timeline-description">${task.description}</div>
+            <div class="timeline-assignee">
+                Responsable: ${task.assignee || 'Sin asignar'}
+            </div>
+            <div class="mt-2">
+                <button class="btn btn-sm btn-outline-primary" onclick="editTask('${task.id}')">
+                    Editar
+                </button>
+                <button class="btn btn-sm btn-outline-success" onclick="completeTask('${task.id}')">
+                    Completar
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteTask('${task.id}')">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    `;
+    return timelineItem;
+}
+
+// Add event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing code ...
+
+    // Planning event listeners
+    document.getElementById('add-task').addEventListener('click', () => {
+        const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+        taskModal.show();
+    });
+
+    document.getElementById('save-task').addEventListener('click', saveTask);
+    
+    document.getElementById('task-status-filter').addEventListener('change', filterTasks);
+    document.getElementById('task-timeline-filter').addEventListener('change', filterTasks);
+    
+    // Update countdown when wedding date changes
+    document.getElementById('wedding-date').addEventListener('change', updateWeddingCountdown);
+});
