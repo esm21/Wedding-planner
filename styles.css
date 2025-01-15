@@ -158,6 +158,9 @@
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 15px;
+    margin: 10px;
+    display: inline-block;
+    vertical-align: top;
 }
 
 .table-card.can-drop {
@@ -186,12 +189,11 @@
 }
 
 .table-guests {
-    min-height: 80px;
+    min-height: 50px;
+    border: 1px dashed #ccc;
     padding: 10px;
-    border: 1px dashed #dee2e6;
-    border-radius: 4px;
     margin-top: 10px;
-    background: #f8f9fa;
+    border-radius: 4px;
 }
 
 /* Adjust table container height */
@@ -336,15 +338,9 @@
 }
 
 .guest-item {
-    background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 6px 10px;
-    margin: 5px;
     cursor: move;
-    display: flex;
-    align-items: center;
-    font-size: 0.9rem;
+    background: white;
+    margin-bottom: 5px;
 }
 
 .guest-item span {
