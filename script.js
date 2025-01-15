@@ -1383,32 +1383,49 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function createTimelineItem(task) {
     const timelineItem = document.createElement('div');
-    timelineItem.className = `timeline-item ${task.status}`;
+    timelineItem.className = `timeline-item ${task.status} mb-3`;
+    timelineItem.setAttribute('data-task-id', task.id);
     timelineItem.innerHTML = `
-           <div class="timeline-card">
-               <div class="timeline-date">${new Date(task.deadline).toLocaleDateString()}</div>
-               <div class="timeline-title">
-                   ${task.title}
-                   <span class="task-priority ${task.priority}">${task.priority}</span>
-               </div>
-               <div class="timeline-description">${task.description}</div>
-               <div class="timeline-assignee">
-                   Responsable: ${task.assignee || 'Sin asignar'}
-               </div>
-               <div class="mt-2">
-                   <button class="btn btn-sm btn-outline-primary" onclick="editTask('${task.id}')">
-                       Editar
-                   </button>
-                   <button class="btn btn-sm btn-outline-success" onclick="completeTask('${task.id}')">
-                       Completar
-                   </button>
-                   <button class="btn btn-sm btn-outline-danger" onclick="deleteTask('${task.id}')">
-                       Eliminar
-                   </button>
-               </div>
-           </div>
-       `;
+        <div class="timeline-card card">
+            <div class="timeline-date">${new Date(task.deadline).toLocaleDateString()}</div>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">${task.title}</h5>
+                <span class="badge bg-${getPriorityColor(task.priority)}">${task.priority}</span>
+            </div>
+            <div class="card-body">
+                <p class="card-text">${task.description}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Responsable: ${task.assignee || 'Sin asignar'}</small>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-primary" onclick="editTask('${task.id}')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="completeTask('${task.id}')">
+                            <i class="bi bi-check2"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTask('${task.id}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
     return timelineItem;
+    }
+    
+    // Add this helper function
+    function getPriorityColor(priority) {
+        switch(priority.toLowerCase()) {
+            case 'alta':
+                return 'danger';
+            case 'media':
+                return 'warning';
+            case 'baja':
+                return 'success';
+            default:
+                return 'secondary';
+        }
     }
     
     // Add event listeners
@@ -1627,37 +1644,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Save to localStorage
         saveTaskToStorage(task);
         updateTasksProgress();
-    }
-
-    function createTimelineItem(task) {
-        const timelineItem = document.createElement('div');
-        timelineItem.className = `timeline-item ${task.status}`;
-        timelineItem.setAttribute('data-task-id', task.id);
-        timelineItem.innerHTML = `
-            <div class="timeline-card">
-                <div class="timeline-date">${new Date(task.deadline).toLocaleDateString()}</div>
-                <div class="timeline-title">
-                    ${task.title}
-                    <span class="task-priority ${task.priority}">${task.priority}</span>
-                </div>
-                <div class="timeline-description">${task.description}</div>
-                <div class="timeline-assignee">
-                    Responsable: ${task.assignee || 'Sin asignar'}
-                </div>
-                <div class="mt-2">
-                    <button class="btn btn-sm btn-outline-primary" onclick="editTask('${task.id}')">
-                        Editar
-                    </button>
-                    <button class="btn btn-sm btn-outline-success" onclick="completeTask('${task.id}')">
-                        Completar
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTask('${task.id}')">
-                        Eliminar
-                    </button>
-                </div>
-            </div>
-        `;
-        return timelineItem;
     }
 
     function completeTask(taskId) {
