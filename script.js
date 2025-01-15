@@ -91,7 +91,43 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-religious-item').addEventListener('click', () => addNewItem('religious'));
     document.getElementById('add-banquet-item').addEventListener('click', () => addNewItem('banquet'));
     document.getElementById('add-guest').addEventListener('click', addGuest);
-    document.getElementById('add-table').addEventListener('click', addTable);
+    const addTableButton = document.getElementById('add-table');
+    if (addTableButton) {
+        addTableButton.addEventListener('click', function() {
+            const tableCount = document.querySelectorAll('.table-card').length + 1;
+            const tableGrid = document.getElementById('tables-grid');
+            
+            const tableCard = document.createElement('div');
+            tableCard.className = 'table-card';
+            tableCard.setAttribute('data-table-id', `table-${tableCount}`);
+            tableCard.innerHTML = `
+                <div class="table-header">
+                    <h5 contenteditable="true">Mesa ${tableCount}</h5>
+                    <select class="form-select form-select-sm table-category" style="width: auto;">
+                        <option value="">Categoría</option>
+                        <option value="familia">Familia</option>
+                        <option value="amigos">Amigos</option>
+                        <option value="trabajo">Trabajo</option>
+                        <option value="otros">Otros</option>
+                    </select>
+                    <select class="form-select form-select-sm table-shape" style="width: auto;">
+                        <option value="round">Redonda</option>
+                        <option value="rectangular">Rectangular</option>
+                    </select>
+                </div>
+                <div class="table-capacity">
+                    Capacidad: <span contenteditable="true" onblur="updateTableStats()">8</span> personas
+                </div>
+                <div class="table-guests" data-table-id="table-${tableCount}"></div>
+                <button class="btn btn-danger btn-sm mt-2" onclick="deleteTable(this)">Eliminar Mesa</button>
+            `;
+            
+            tableGrid.appendChild(tableCard);
+            setupDropZones();
+            setupTableCapacityListeners();
+            updateTableStats();
+        });
+    }
     
     // Initialize budget calculator
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
