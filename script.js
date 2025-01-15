@@ -91,16 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-religious-item').addEventListener('click', () => addNewItem('religious'));
     document.getElementById('add-banquet-item').addEventListener('click', () => addNewItem('banquet'));
     document.getElementById('add-guest').addEventListener('click', addGuest);
-    const addTableBtn = document.getElementById('add-table');
-    if (addTableBtn) {
-        console.log('Add table button found, adding listener');
-        addTableBtn.addEventListener('click', function() {
-            console.log('Add table button clicked');
-            addTable();
-        });
-    } else {
-        console.error('Add table button not found');
-    }
+    document.getElementById('add-table').addEventListener('click', addTable);
     
     // Initialize budget calculator
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
@@ -645,14 +636,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('guest-search').addEventListener('input', filterGuestsByName);
     
     function addTable() {
-    console.log('Adding new table...'); // Debug log
     const tableCount = document.querySelectorAll('.table-card').length + 1;
     const tableGrid = document.getElementById('tables-grid');
-    
-    if (!tableGrid) {
-        console.error('tables-grid element not found');
-        return;
-    }
 
     const tableCard = document.createElement('div');
     tableCard.className = 'table-card';
@@ -667,6 +652,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <option value="trabajo">Trabajo</option>
                 <option value="otros">Otros</option>
             </select>
+            <select class="form-select form-select-sm table-shape" style="width: auto;">
+                <option value="round">Redonda</option>
+                <option value="rectangular">Rectangular</option>
+            </select>
         </div>
         <div class="table-capacity">
             Capacidad: <span contenteditable="true" onblur="updateTableStats()">8</span> personas
@@ -679,7 +668,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupDropZones();
     setupTableCapacityListeners();
     updateTableStats();
-    console.log('Table added successfully'); // Debug log
     }
     
     function deleteTable(button) {
