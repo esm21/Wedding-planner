@@ -101,30 +101,39 @@ document.addEventListener('DOMContentLoaded', function() {
         // Load saved guests from localStorage
         const savedGuests = JSON.parse(localStorage.getItem('wedding-guests') || '[]');
         
-        // Populate guests table and unassigned area
+        // Populate guests table
+        const tbody = document.querySelector('#guests-table tbody');
         savedGuests.forEach(guest => {
-            // Create guest row in table
-            const tbody = document.querySelector('#guests-table tbody');
             const row = tbody.insertRow();
             row.setAttribute('data-guest-id', guest.id);
-            row.innerHTML = `
-                <td contenteditable="true">${guest.name}</td>
-                <td contenteditable="true">${guest.plusOnes || 0}</td>
-                <!-- ... rest of guest row HTML ... -->
-            `;
+            row.innerHTML = createGuestRowHTML(guest);
             
-            // If guest is not assigned to a table, add to unassigned area
-            if (!guest.tableId) {
-                const guestElement = createGuestItem(guest.name, guest.id, guest.plusOnes);
-                const unassignedArea = document.getElementById('unassigned-guests');
-                if (unassignedArea) {
-                    unassignedArea.appendChild(guestElement);
-                    setupDragAndDrop(guestElement);
-                }
+            // Populate unassigned guests area and tables
+            const unassignedArea = document.getElementById('unassigned-guests');
+            const tables = document.querySelectorAll('.table-guests');
+            
+            if (unassignedArea) {
+                savedGuests.forEach(guest => {
+                    const guestElement = createGuestItem(guest.name, guest.id, guest.plusOnes);
+                    
+                    if (guest.tableId) {
+                        // Find the correct table and add guest
+                        const targetTable = document.querySelector(`.table-guests[data-table-id="${guest.tableId}"]`);
+                        if (targetTable) {
+                            const tableGuest = guestElement.cloneNode(true);
+                            setupDragAndDrop(tableGuest);
+                            targetTable.appendChild(tableGuest);
+                        }
+                    } else {
+                        // Add to unassigned area
+                        setupDragAndDrop(guestElement);
+                        unassignedArea.appendChild(guestElement);
+                    }
+                });
             }
-        });
-        
-        updateGuestCounts();
+            
+            updateGuestCounts();
+        }
     }
 });    
     function setupEventListeners() {
@@ -1792,10 +1801,12 @@ function assignGuestToTable(guestElement, tableElement) {
     const guestId = guestElement.getAttribute('data-guest-id');
     const tableId = tableElement.getAttribute('data-table-id');
     
-    // Add guest to table (using cloneNode to keep the original in the guests list)
-    const tableGuestsArea = tableElement.querySelector('.table-guests');
+    // Create a clone for the table
     const clonedGuest = guestElement.cloneNode(true);
     setupDragAndDrop(clonedGuest);
+    
+    // Add cloned guest to table
+    const tableGuestsArea = tableElement.querySelector('.table-guests');
     tableGuestsArea.appendChild(clonedGuest);
     
     // Update localStorage
