@@ -103,37 +103,38 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Populate guests table
         const tbody = document.querySelector('#guests-table tbody');
-        savedGuests.forEach(guest => {
-            const row = tbody.insertRow();
-            row.setAttribute('data-guest-id', guest.id);
-            row.innerHTML = createGuestRowHTML(guest);
-            
-            // Populate unassigned guests area and tables
-            const unassignedArea = document.getElementById('unassigned-guests');
-            const tables = document.querySelectorAll('.table-guests');
-            
-            if (unassignedArea) {
-                savedGuests.forEach(guest => {
-                    const guestElement = createGuestItem(guest.name, guest.id, guest.plusOnes);
-                    
-                    if (guest.tableId) {
-                        // Find the correct table and add guest
-                        const targetTable = document.querySelector(`.table-guests[data-table-id="${guest.tableId}"]`);
-                        if (targetTable) {
-                            const tableGuest = guestElement.cloneNode(true);
-                            setupDragAndDrop(tableGuest);
-                            targetTable.appendChild(tableGuest);
-                        }
-                    } else {
-                        // Add to unassigned area
-                        setupDragAndDrop(guestElement);
-                        unassignedArea.appendChild(guestElement);
-                    }
-                });
-            }
-            
-            updateGuestCounts();
+        if (tbody) {
+            savedGuests.forEach(guest => {
+                const row = tbody.insertRow();
+                row.setAttribute('data-guest-id', guest.id);
+                row.innerHTML = createGuestRowHTML(guest);
+            });
         }
+        
+        // Populate unassigned guests area and tables
+        const unassignedArea = document.getElementById('unassigned-guests');
+        
+        if (unassignedArea) {
+            savedGuests.forEach(guest => {
+                const guestElement = createGuestItem(guest.name, guest.id, guest.plusOnes);
+                
+                if (guest.tableId) {
+                    // Find the correct table and add guest
+                    const targetTable = document.querySelector(`.table-guests[data-table-id="${guest.tableId}"]`);
+                    if (targetTable) {
+                        const tableGuest = guestElement.cloneNode(true);
+                        setupDragAndDrop(tableGuest);
+                        targetTable.appendChild(tableGuest);
+                    }
+                } else {
+                    // Add to unassigned area
+                    setupDragAndDrop(guestElement);
+                    unassignedArea.appendChild(guestElement);
+                }
+            });
+        }
+        
+        updateGuestCounts();
     }
 });    
     function setupEventListeners() {
