@@ -91,10 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-religious-item').addEventListener('click', () => addNewItem('religious'));
     document.getElementById('add-banquet-item').addEventListener('click', () => addNewItem('banquet'));
     document.getElementById('add-guest').addEventListener('click', addGuest);
-    const addTableBtn = document.getElementById('add-table');
-    if (addTableBtn) {
-        addTableBtn.addEventListener('click', showTableModal);
-    }
+    document.getElementById('add-table').addEventListener('click', addTable);
     
     // Initialize budget calculator
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
