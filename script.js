@@ -118,10 +118,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle "Volver al Inicio" button separately
     const homeButton = document.querySelector('a[href="index.html"]');
     if (homeButton) {
-    homeButton.addEventListener('click', function(e) {
-    // Let this one use its default behavior
-    return true;
-    });
+        homeButton.addEventListener('click', function(e) {
+            // Just let the default behavior happen
+        });
     }
     
     // Add buttons event listeners - Add null checks
