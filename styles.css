@@ -203,3 +203,42 @@ body {
     color: white;
     opacity: 0.8;
 }
+
+/* Icon styling for cards */
+.card .bi {
+    color: var(--primary-color);
+    transition: transform var(--transition-speed) ease;
+}
+
+.card:hover .bi {
+    transform: scale(1.1);
+}
+
+/* Sidebar icon styling */
+.sidebar .nav-link i {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--transition-speed) ease;
+}
+
+.sidebar .nav-link:hover i {
+    transform: scale(1.2);
+}
+
+.sidebar .nav-link.active i {
+    color: white;
+}
+
+/* Add animation for icons */
+@keyframes iconPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.card:hover .bi {
+    animation: iconPulse 1s infinite;
+}
