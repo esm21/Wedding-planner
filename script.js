@@ -94,7 +94,39 @@ document.addEventListener('DOMContentLoaded', function() {
         if (weddingDateInput) {
             weddingDateInput.addEventListener('change', updateWeddingCountdown);
         }
-    });    
+
+    // Initialize guests section if we're on that page
+    const guestsSection = document.getElementById('guests-section');
+    if (guestsSection) {
+        // Load saved guests from localStorage
+        const savedGuests = JSON.parse(localStorage.getItem('wedding-guests') || '[]');
+        
+        // Populate guests table and unassigned area
+        savedGuests.forEach(guest => {
+            // Create guest row in table
+            const tbody = document.querySelector('#guests-table tbody');
+            const row = tbody.insertRow();
+            row.setAttribute('data-guest-id', guest.id);
+            row.innerHTML = `
+                <td contenteditable="true">${guest.name}</td>
+                <td contenteditable="true">${guest.plusOnes || 0}</td>
+                <!-- ... rest of guest row HTML ... -->
+            `;
+            
+            // If guest is not assigned to a table, add to unassigned area
+            if (!guest.tableId) {
+                const guestElement = createGuestItem(guest.name, guest.id, guest.plusOnes);
+                const unassignedArea = document.getElementById('unassigned-guests');
+                if (unassignedArea) {
+                    unassignedArea.appendChild(guestElement);
+                    setupDragAndDrop(guestElement);
+                }
+            }
+        });
+        
+        updateGuestCounts();
+    }
+});    
     function setupEventListeners() {
     console.log('Setting up event listeners...'); // Debug log
     
@@ -754,7 +786,6 @@ function setupDragAndDrop(element) {
         }
     });
 }
-
 // Add this function to initialize all drop zones
 function initializeDropZones() {
     // Initialize table drop zones
@@ -1761,30 +1792,13 @@ function assignGuestToTable(guestElement, tableElement) {
     const guestId = guestElement.getAttribute('data-guest-id');
     const tableId = tableElement.getAttribute('data-table-id');
     
-    // Add guest to table
+    // Add guest to table (using cloneNode to keep the original in the guests list)
     const tableGuestsArea = tableElement.querySelector('.table-guests');
-    tableGuestsArea.appendChild(guestElement.cloneNode(true)); // Clone the guest element
+    const clonedGuest = guestElement.cloneNode(true);
+    setupDragAndDrop(clonedGuest);
+    tableGuestsArea.appendChild(clonedGuest);
     
-    // Update guest's table assignment in guests table
-    const guestRow = document.querySelector(`#guests-table tr[data-guest-id="${guestId}"]`);
-    if (guestRow) {
-        const tableSelect = guestRow.querySelector('.table-group');
-        if (tableSelect) {
-            const tableName = tableElement.querySelector('h5').textContent;
-            
-            // Add table option if it doesn't exist
-            if (!tableSelect.querySelector(`option[value="${tableId}"]`)) {
-                const option = document.createElement('option');
-                option.value = tableId;
-                option.textContent = tableName;
-                tableSelect.appendChild(option);
-            }
-            
-            tableSelect.value = tableId;
-        }
-    }
-    
-    // Save table assignment to localStorage
+    // Update localStorage
     const guests = JSON.parse(localStorage.getItem('wedding-guests') || '[]');
     const guestIndex = guests.findIndex(g => g.id === guestId);
     if (guestIndex !== -1) {
@@ -1821,3 +1835,4 @@ function unassignGuestFromTable(guestElement) {
     
     updateTableStats();
 }
+
