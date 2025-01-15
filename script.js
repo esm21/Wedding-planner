@@ -686,28 +686,24 @@ document.addEventListener('DOMContentLoaded', function() {
     tableCard.className = 'table-card';
     tableCard.setAttribute('data-table-id', `table-${tableCount}`);
     tableCard.innerHTML = `
-        <div class="table-header p-2">
+        <div class="table-header">
             <h5 contenteditable="true">Mesa ${tableCount}</h5>
-            <div class="d-flex gap-2 mb-2">
-                <select class="form-select form-select-sm table-category" style="width: auto;">
-                    <option value="">Categoría</option>
-                    <option value="familia">Familia</option>
-                    <option value="amigos">Amigos</option>
-                    <option value="trabajo">Trabajo</option>
-                    <option value="otros">Otros</option>
-                </select>
-                <select class="form-select form-select-sm table-shape" style="width: auto;">
-                    <option value="round">Redonda</option>
-                    <option value="rectangular">Rectangular</option>
-                </select>
-            </div>
-            <div class="table-capacity mb-2">
-                Capacidad: <span contenteditable="true" onblur="updateTableStats()">8</span> personas
-            </div>
+            <select class="form-select form-select-sm table-category" style="width: auto;">
+                <option value="">Categoría</option>
+                <option value="familia">Familia</option>
+                <option value="amigos">Amigos</option>
+                <option value="trabajo">Trabajo</option>
+                <option value="otros">Otros</option>
+            </select>
+            <select class="form-select form-select-sm table-shape" style="width: auto;">
+                <option value="round">Redonda</option>
+                <option value="rectangular">Rectangular</option>
+            </select>
         </div>
-        <div class="table-guests p-2" data-table-id="table-${tableCount}">
-            <div class="guest-list"></div>
+        <div class="table-capacity">
+            Capacidad: <span contenteditable="true" onblur="updateTableStats()">8</span> personas
         </div>
+        <div class="table-guests" data-table-id="table-${tableCount}"></div>
         <button class="btn btn-danger btn-sm mt-2" onclick="deleteTable(this)">Eliminar Mesa</button>
     `;
 
@@ -1060,15 +1056,15 @@ document.addEventListener('DOMContentLoaded', function() {
                        </td>
                        <td>
                            <select class="form-select invitation-status">
-                               <option>No</option>
-                               <option>Sí</option>
+                               <option ${guest.invitacion === 'No' ? 'selected' : ''}>No</option>
+                               <option ${guest.invitacion === 'Sí' ? 'selected' : ''}>Sí</option>
                            </select>
                        </td>
                        <td>
                            <select class="form-select confirmation-status">
-                               <option>Pendiente</option>
-                               <option>Confirmado</option>
-                               <option>Rechazado</option>
+                               <option ${guest.confirmacion === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                               <option ${guest.confirmacion === 'Confirmado' ? 'selected' : ''}>Confirmado</option>
+                               <option ${guest.confirmacion === 'Rechazado' ? 'selected' : ''}>Rechazado</option>
                            </select>
                        </td>
                        <td>
@@ -1104,6 +1100,9 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     reader.readAsText(file);
+    };
+    
+    input.click();
     }
     
     function parseCSV(csv) {
@@ -1333,15 +1332,9 @@ document.addEventListener('DOMContentLoaded', function() {
     guestElement.setAttribute('data-plus-ones', plusOnes);
     guestElement.draggable = true;
     guestElement.innerHTML = `
-           <div class="d-flex justify-content-between align-items-center p-2 border rounded mb-2">
-               <div>
-                   <span>${guestName}</span>
-                   ${plusOnes > 0 ? `<small class="text-muted">(+${plusOnes})</small>` : ''}
-               </div>
-               <a href="#" class="text-decoration-none" onclick="showGuestDetails('${guestId}'); return false;">
-                   <i class="bi bi-info-circle"></i>
-               </a>
-           </div>
+           <span>${guestName}</span>
+           ${plusOnes > 0 ? `<small>(+${plusOnes})</small>` : ''}
+           <a href="#" onclick="showGuestDetails('${guestId}'); return false;">Datos</a>
        `;
     return guestElement;
     }
@@ -1751,27 +1744,3 @@ document.addEventListener('DOMContentLoaded', function() {
                 return true;
         }
     }
-
-    // Add this function to handle guest assignment
-    function handleGuestAssignment(guestElement, tableElement) {
-        const guestId = guestElement.getAttribute('data-guest-id');
-        const unassignedArea = document.getElementById('unassigned-guests');
-        
-        // If guest was in unassigned area, remove it
-        if (unassignedArea.contains(guestElement)) {
-            unassignedArea.removeChild(guestElement);
-        }
-        
-        // Add to new table
-        const guestList = tableElement.querySelector('.guest-list');
-        guestList.appendChild(guestElement);
-        
-        // Update the guest's table assignment in the table
-        const guestRow = document.querySelector(`tr[data-guest-id="${guestId}"]`);
-        if (guestRow) {
-            const tableSelect = guestRow.querySelector('.table-group');
-            const tableId = tableElement.getAttribute('data-table-id');
-            tableSelect.value = tableId;
-        }
-    }
-};
