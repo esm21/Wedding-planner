@@ -77,6 +77,23 @@ document.addEventListener('DOMContentLoaded', function() {
             progressBar.style.width = `${progress}%`;
             progressBar.textContent = `${Math.round(progress)}%`;
         }
+    
+        // Setup checklist listeners
+        const checkboxes = document.querySelectorAll('.form-check-input');
+        if (checkboxes.length > 0) {
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateChecklistProgress);
+            });
+        }
+        
+        // Initial countdown update
+        updateWeddingCountdown();
+        
+        // Update countdown when wedding date changes
+        const weddingDateInput = document.getElementById('wedding-date');
+        if (weddingDateInput) {
+            weddingDateInput.addEventListener('change', updateWeddingCountdown);
+        }
     });    
     function setupEventListeners() {
     console.log('Setting up event listeners...'); // Debug log
