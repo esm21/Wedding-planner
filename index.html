@@ -34,8 +34,15 @@
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Planificación</h5>
-                        <p class="card-text">Gestiona las tareas y el progreso de la boda.</p>
-                        <a href="app.html?section=planning" class="btn btn-primary">Ir a Planificación</a>
+                        <div class="countdown-display text-center mb-3">
+                            <h6>Cuenta atrás</h6>
+                            <div class="display-6" id="countdown">--</div>
+                            <small class="text-muted">días hasta la boda</small>
+                        </div>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" id="planning-progress">0%</div>
+                        </div>
+                        <a href="app.html?section=planning" class="btn btn-primary w-100">Ir a Planificación</a>
                     </div>
                 </div>
             </div>
