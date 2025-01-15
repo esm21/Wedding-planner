@@ -7,6 +7,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Setup event listeners first
     setupEventListeners();
     
+    // Setup Planning section event listeners
+    const addTaskBtn = document.getElementById('add-task');
+    if (addTaskBtn) {
+        addTaskBtn.addEventListener('click', showTaskModal);
+    }
+    
+    const saveTaskBtn = document.getElementById('save-task');
+    if (saveTaskBtn) {
+        saveTaskBtn.addEventListener('click', saveTask);
+    }
+    
+    const taskStatusFilter = document.getElementById('task-status-filter');
+    if (taskStatusFilter) {
+        taskStatusFilter.addEventListener('change', filterTasks);
+    }
+    
+    const taskTimelineFilter = document.getElementById('task-timeline-filter');
+    if (taskTimelineFilter) {
+        taskTimelineFilter.addEventListener('change', filterTasks);
+    }
+    
     // Handle URL parameter navigation
     const urlParams = new URLSearchParams(window.location.search);
     const section = urlParams.get('section');
