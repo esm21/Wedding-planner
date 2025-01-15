@@ -1471,7 +1471,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update counts
         updateGuestCounts();
     });
-});
     
     // Update countdown calculation
     function updateWeddingCountdown() {
@@ -1838,4 +1837,4 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-});
+
