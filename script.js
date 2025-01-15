@@ -1389,20 +1389,90 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Guest modal handling
-    document.getElementById('add-guest-btn').addEventListener('click', () => {
-    const guestModal = new bootstrap.Modal(document.getElementById('guestModal'));
-    guestModal.show();
-    });
+    document.getElementById('add-guest-btn').addEventListener('click', showGuestModal);
     
-    document.getElementById('save-guest').addEventListener('click', () => {
-    const name = document.getElementById('guest-name').value;
-    const plusOnes = document.getElementById('guest-plus-ones').value;
-    const category = document.getElementById('guest-category').value;
-    const dietary = document.getElementById('guest-dietary').value;
-    
-    addGuest(name, plusOnes, category, dietary);
-    bootstrap.Modal.getInstance(document.getElementById('guestModal')).hide();
+    document.getElementById('save-guest').addEventListener('click', function() {
+        const name = document.getElementById('guest-name').value;
+        const plusOnes = parseInt(document.getElementById('guest-plus-ones').value) || 0;
+        const category = document.getElementById('guest-category').value;
+        const dietary = document.getElementById('guest-dietary').value;
+
+        if (!name) {
+            alert('Por favor, introduce el nombre del invitado');
+            return;
+        }
+
+        // Create guest with the form data
+        const guestId = `guest-${Date.now()}`;
+        
+        // Add to guests table
+        const tbody = document.querySelector('#guests-table tbody');
+        const row = tbody.insertRow();
+        row.setAttribute('data-guest-id', guestId);
+        row.innerHTML = `
+            <td contenteditable="true">${name}</td>
+            <td contenteditable="true">${plusOnes}</td>
+            <td>
+                <select class="form-select guest-category" onchange="updateGuestCounts()">
+                    <option ${category === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
+                    <option ${category === 'Familia Novio' ? 'selected' : ''}>Familia Novio</option>
+                    <option ${category === 'Amigos Novia' ? 'selected' : ''}>Amigos Novia</option>
+                    <option ${category === 'Amigos Novio' ? 'selected' : ''}>Amigos Novio</option>
+                    <option ${category === 'Trabajo Novia' ? 'selected' : ''}>Trabajo Novia</option>
+                    <option ${category === 'Trabajo Novio' ? 'selected' : ''}>Trabajo Novio</option>
+                    <option ${category === 'Otros' ? 'selected' : ''}>Otros</option>
+                </select>
+            </td>
+            <td>
+                <select class="form-select dietary-restrictions">
+                    <option value="none" ${dietary === 'none' ? 'selected' : ''}>Sin restricciones</option>
+                    <option value="vegetarian" ${dietary === 'vegetarian' ? 'selected' : ''}>Vegetariano</option>
+                    <option value="vegan" ${dietary === 'vegan' ? 'selected' : ''}>Vegano</option>
+                    <option value="gluten" ${dietary === 'gluten' ? 'selected' : ''}>Sin gluten</option>
+                    <option value="lactose" ${dietary === 'lactose' ? 'selected' : ''}>Sin lactosa</option>
+                    <option value="allergies" ${dietary === 'allergies' ? 'selected' : ''}>Alergias</option>
+                    <option value="other" ${dietary === 'other' ? 'selected' : ''}>Otras restricciones</option>
+                </select>
+            </td>
+            <td>
+                <select class="form-select invitation-status">
+                    <option>No</option>
+                    <option>Sí</option>
+                </select>
+            </td>
+            <td>
+                <select class="form-select confirmation-status">
+                    <option>Pendiente</option>
+                    <option>Confirmado</option>
+                    <option>Rechazado</option>
+                </select>
+            </td>
+            <td>
+                <select class="form-select table-group">
+                    <option value="">Sin asignar</option>
+                    ${getTableOptions()}
+                </select>
+            </td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td>
+                <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
+            </td>
+        `;
+
+        // Add to unassigned guests area
+        const guestElement = createGuestItem(name, guestId, plusOnes);
+        document.getElementById('unassigned-guests').appendChild(guestElement);
+        setupDragAndDrop(guestElement);
+
+        // Close modal and reset form
+        bootstrap.Modal.getInstance(document.getElementById('guestModal')).hide();
+        document.getElementById('guest-form').reset();
+        
+        // Update counts
+        updateGuestCounts();
     });
+});
     
     // Update countdown calculation
     function updateWeddingCountdown() {
@@ -1471,3 +1541,165 @@ document.addEventListener('DOMContentLoaded', function() {
     
         alert('Detalles guardados correctamente');
     }
+    
+    // Add these functions for the Planning section
+    function showTaskModal() {
+        const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+        taskModal.show();
+    }
+
+    function saveTask() {
+        const title = document.getElementById('task-title').value;
+        const description = document.getElementById('task-description').value;
+        const deadline = document.getElementById('task-deadline').value;
+        const assignee = document.getElementById('task-assignee').value;
+        const priority = document.getElementById('task-priority').value;
+
+        if (!title || !deadline) {
+            alert('Por favor, completa los campos requeridos');
+            return;
+        }
+
+        const taskId = `task-${Date.now()}`;
+        const task = {
+            id: taskId,
+            title,
+            description,
+            deadline,
+            assignee,
+            priority,
+            status: 'pending'
+        };
+
+        // Add task to timeline
+        const timelineContainer = document.getElementById('timeline-container');
+        const taskElement = createTimelineItem(task);
+        timelineContainer.appendChild(taskElement);
+
+        // Close modal and reset form
+        bootstrap.Modal.getInstance(document.getElementById('taskModal')).hide();
+        document.getElementById('task-form').reset();
+
+        // Save to localStorage
+        saveTaskToStorage(task);
+        updateTasksProgress();
+    }
+
+    function createTimelineItem(task) {
+        const timelineItem = document.createElement('div');
+        timelineItem.className = `timeline-item ${task.status}`;
+        timelineItem.setAttribute('data-task-id', task.id);
+        timelineItem.innerHTML = `
+            <div class="timeline-card">
+                <div class="timeline-date">${new Date(task.deadline).toLocaleDateString()}</div>
+                <div class="timeline-title">
+                    ${task.title}
+                    <span class="task-priority ${task.priority}">${task.priority}</span>
+                </div>
+                <div class="timeline-description">${task.description}</div>
+                <div class="timeline-assignee">
+                    Responsable: ${task.assignee || 'Sin asignar'}
+                </div>
+                <div class="mt-2">
+                    <button class="btn btn-sm btn-outline-primary" onclick="editTask('${task.id}')">
+                        Editar
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="completeTask('${task.id}')">
+                        Completar
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTask('${task.id}')">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        `;
+        return timelineItem;
+    }
+
+    function completeTask(taskId) {
+        const taskElement = document.querySelector(`.timeline-item[data-task-id="${taskId}"]`);
+        if (taskElement) {
+            taskElement.classList.remove('pending', 'in-progress');
+            taskElement.classList.add('completed');
+            updateTasksProgress();
+            
+            // Update in localStorage
+            const tasks = JSON.parse(localStorage.getItem('wedding-tasks') || '[]');
+            const taskIndex = tasks.findIndex(t => t.id === taskId);
+            if (taskIndex !== -1) {
+                tasks[taskIndex].status = 'completed';
+                localStorage.setItem('wedding-tasks', JSON.stringify(tasks));
+            }
+        }
+    }
+
+    function deleteTask(taskId) {
+        if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+            const taskElement = document.querySelector(`.timeline-item[data-task-id="${taskId}"]`);
+            if (taskElement) {
+                taskElement.remove();
+                updateTasksProgress();
+                
+                // Remove from localStorage
+                const tasks = JSON.parse(localStorage.getItem('wedding-tasks') || '[]');
+                const filteredTasks = tasks.filter(t => t.id !== taskId);
+                localStorage.setItem('wedding-tasks', JSON.stringify(filteredTasks));
+            }
+        }
+    }
+
+    function saveTaskToStorage(task) {
+        const tasks = JSON.parse(localStorage.getItem('wedding-tasks') || '[]');
+        tasks.push(task);
+        localStorage.setItem('wedding-tasks', JSON.stringify(tasks));
+    }
+
+    function updateTasksProgress() {
+        const tasks = document.querySelectorAll('.timeline-item');
+        const completedTasks = document.querySelectorAll('.timeline-item.completed');
+        const progress = (completedTasks.length / tasks.length) * 100 || 0;
+
+        // Update progress in localStorage
+        localStorage.setItem('completed-tasks', completedTasks.length);
+        localStorage.setItem('total-tasks', tasks.length);
+
+        // Update progress bar if on landing page
+        const progressBar = document.getElementById('planning-progress');
+        if (progressBar) {
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${Math.round(progress)}%`;
+        }
+    }
+
+    // Add to your DOMContentLoaded event listener
+    document.addEventListener('DOMContentLoaded', function() {
+        // ... existing code ...
+
+        // Planning section initialization
+        document.getElementById('add-task').addEventListener('click', showTaskModal);
+        document.getElementById('save-task').addEventListener('click', saveTask);
+
+        // Load saved tasks
+        const savedTasks = JSON.parse(localStorage.getItem('wedding-tasks') || '[]');
+        const timelineContainer = document.getElementById('timeline-container');
+        if (timelineContainer) {
+            savedTasks.forEach(task => {
+                const taskElement = createTimelineItem(task);
+                timelineContainer.appendChild(taskElement);
+            });
+            updateTasksProgress();
+        }
+
+        // Task filter functionality
+        document.getElementById('task-status-filter').addEventListener('change', function() {
+            const status = this.value;
+            document.querySelectorAll('.timeline-item').forEach(item => {
+                if (status === 'all' || item.classList.contains(status)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+});
