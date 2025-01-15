@@ -1388,7 +1388,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Guest modal handling
-    document.getElementById('add-guest-btn').addEventListener('click', showGuestModal);
+    const addGuestBtn = document.getElementById('add-guest-btn');
+    if (addGuestBtn) {
+        addGuestBtn.addEventListener('click', showGuestModal);
+    }
     
     document.getElementById('save-guest').addEventListener('click', function() {
         const name = document.getElementById('guest-name').value;
@@ -1669,172 +1672,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Add these functions at the global scope, before the DOMContentLoaded event
-    function showTaskModal() {
-        const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
-        taskModal.show();
+    // Add this function at the global scope
+    function showGuestModal() {
+        const guestModal = new bootstrap.Modal(document.getElementById('guestModal'));
+        guestModal.show();
     }
-
-    function createTimelineItem(task) {
-        const timelineItem = document.createElement('div');
-        timelineItem.className = `timeline-item ${task.status}`;
-        timelineItem.setAttribute('data-task-id', task.id);
-        timelineItem.innerHTML = `
-            <div class="timeline-card">
-                <div class="timeline-date">${new Date(task.deadline).toLocaleDateString()}</div>
-                <div class="timeline-title">
-                    ${task.title}
-                    <span class="task-priority ${task.priority}">${task.priority}</span>
-                </div>
-                <div class="timeline-description">${task.description}</div>
-                <div class="timeline-assignee">
-                    Responsable: ${task.assignee || 'Sin asignar'}
-                </div>
-                <div class="mt-2">
-                    <button class="btn btn-sm btn-outline-primary" onclick="editTask('${task.id}')">
-                        Editar
-                    </button>
-                    <button class="btn btn-sm btn-outline-success" onclick="completeTask('${task.id}')">
-                        Completar
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTask('${task.id}')">
-                        Eliminar
-                    </button>
-                </div>
-            </div>
-        `;
-        return timelineItem;
-    }
-
-    function completeTask(taskId) {
-        const taskElement = document.querySelector(`.timeline-item[data-task-id="${taskId}"]`);
-        if (taskElement) {
-            taskElement.classList.remove('pending', 'in-progress');
-            taskElement.classList.add('completed');
-            updateTasksProgress();
-            
-            // Update in localStorage
-            const tasks = JSON.parse(localStorage.getItem('wedding-tasks') || '[]');
-            const taskIndex = tasks.findIndex(t => t.id === taskId);
-            if (taskIndex !== -1) {
-                tasks[taskIndex].status = 'completed';
-                localStorage.setItem('wedding-tasks', JSON.stringify(tasks));
-            }
-        }
-    }
-
-    function deleteTask(taskId) {
-        if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
-            const taskElement = document.querySelector(`.timeline-item[data-task-id="${taskId}"]`);
-            if (taskElement) {
-                taskElement.remove();
-                updateTasksProgress();
-                
-                // Remove from localStorage
-                const tasks = JSON.parse(localStorage.getItem('wedding-tasks') || '[]');
-                const filteredTasks = tasks.filter(t => t.id !== taskId);
-                localStorage.setItem('wedding-tasks', JSON.stringify(filteredTasks));
-            }
-        }
-    }
-
-    function saveTaskToStorage(task) {
-        const tasks = JSON.parse(localStorage.getItem('wedding-tasks') || '[]');
-        tasks.push(task);
-        localStorage.setItem('wedding-tasks', JSON.stringify(tasks));
-    }
-
-    function updateTasksProgress() {
-        const tasks = document.querySelectorAll('.timeline-item');
-        const completedTasks = document.querySelectorAll('.timeline-item.completed');
-        const progress = (completedTasks.length / tasks.length) * 100 || 0;
-
-        // Update progress in localStorage
-        localStorage.setItem('completed-tasks', completedTasks.length);
-        localStorage.setItem('total-tasks', tasks.length);
-
-        // Update progress bar if on landing page
-        const progressBar = document.getElementById('planning-progress');
-        if (progressBar) {
-            progressBar.style.width = `${progress}%`;
-            progressBar.textContent = `${Math.round(progress)}%`;
-        }
-    }
-
-    // Inside your existing DOMContentLoaded event listener, add:
-    document.addEventListener('DOMContentLoaded', function() {
-        // ... your existing code ...
-
-        // Planning section initialization
-        const addTaskBtn = document.getElementById('add-task');
-        if (addTaskBtn) {
-            addTaskBtn.addEventListener('click', showTaskModal);
-        }
-
-        const saveTaskBtn = document.getElementById('save-task');
-        if (saveTaskBtn) {
-            saveTaskBtn.addEventListener('click', function() {
-                const title = document.getElementById('task-title').value;
-                const description = document.getElementById('task-description').value;
-                const deadline = document.getElementById('task-deadline').value;
-                const assignee = document.getElementById('task-assignee').value;
-                const priority = document.getElementById('task-priority').value;
-
-                if (!title || !deadline) {
-                    alert('Por favor, completa los campos requeridos');
-                    return;
-                }
-
-                const taskId = `task-${Date.now()}`;
-                const task = {
-                    id: taskId,
-                    title,
-                    description,
-                    deadline,
-                    assignee,
-                    priority,
-                    status: 'pending'
-                };
-
-                // Add task to timeline
-                const timelineContainer = document.getElementById('timeline-container');
-                const taskElement = createTimelineItem(task);
-                timelineContainer.appendChild(taskElement);
-
-                // Close modal and reset form
-                bootstrap.Modal.getInstance(document.getElementById('taskModal')).hide();
-                document.getElementById('task-form').reset();
-
-                // Save to localStorage
-                saveTaskToStorage(task);
-                updateTasksProgress();
-            });
-        }
-
-        // Load saved tasks
-        const timelineContainer = document.getElementById('timeline-container');
-        if (timelineContainer) {
-            const savedTasks = JSON.parse(localStorage.getItem('wedding-tasks') || '[]');
-            savedTasks.forEach(task => {
-                const taskElement = createTimelineItem(task);
-                timelineContainer.appendChild(taskElement);
-            });
-            updateTasksProgress();
-        }
-
-        // Task filter functionality
-        const taskFilter = document.getElementById('task-status-filter');
-        if (taskFilter) {
-            taskFilter.addEventListener('change', function() {
-                const status = this.value;
-                document.querySelectorAll('.timeline-item').forEach(item => {
-                    if (status === 'all' || item.classList.contains(status)) {
-                        item.style.display = '';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-        }
-    });
 
