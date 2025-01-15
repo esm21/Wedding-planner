@@ -86,41 +86,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     }
     
-    // Add buttons event listeners
-    document.getElementById('add-civil-item').addEventListener('click', () => addNewItem('civil'));
-    document.getElementById('add-religious-item').addEventListener('click', () => addNewItem('religious'));
-    document.getElementById('add-banquet-item').addEventListener('click', () => addNewItem('banquet'));
-    document.getElementById('add-guest').addEventListener('click', addGuest);
-    document.getElementById('add-table').addEventListener('click', function() {
-        const tableCount = document.querySelectorAll('.table-card').length + 1;
-        const tableGrid = document.getElementById('tables-grid');
-        
-        const tableCard = document.createElement('div');
-        tableCard.className = 'table-card';
-        tableCard.setAttribute('data-table-id', `table-${tableCount}`);
-        tableCard.innerHTML = `
-            <div class="table-header">
-                <h5 contenteditable="true">Mesa ${tableCount}</h5>
-                <select class="form-select form-select-sm table-category" style="width: auto;">
-                    <option value="">Categoría</option>
-                    <option value="familia">Familia</option>
-                    <option value="amigos">Amigos</option>
-                    <option value="trabajo">Trabajo</option>
-                    <option value="otros">Otros</option>
-                </select>
-            </div>
-            <div class="table-capacity">
-                Capacidad: <span contenteditable="true" onblur="updateTableStats()">8</span> personas
-            </div>
-            <div class="table-guests" data-table-id="table-${tableCount}"></div>
-            <button class="btn btn-danger btn-sm mt-2" onclick="deleteTable(this)">Eliminar Mesa</button>
-        `;
-        
-        tableGrid.appendChild(tableCard);
-        setupDropZones();
-        setupTableCapacityListeners();
-        updateTableStats();
-    });
+    // Add buttons event listeners - Add null checks
+    const addCivilBtn = document.getElementById('add-civil-item');
+    const addReligiousBtn = document.getElementById('add-religious-item');
+    const addBanquetBtn = document.getElementById('add-banquet-item');
+    const addGuestBtn = document.getElementById('add-guest');
+    const addTableBtn = document.getElementById('add-table');
+
+    if (addCivilBtn) addCivilBtn.addEventListener('click', () => addNewItem('civil'));
+    if (addReligiousBtn) addReligiousBtn.addEventListener('click', () => addNewItem('religious'));
+    if (addBanquetBtn) addBanquetBtn.addEventListener('click', () => addNewItem('banquet'));
+    if (addGuestBtn) addGuestBtn.addEventListener('click', addGuest);
+    if (addTableBtn) addTableBtn.addEventListener('click', addTable);
     
     // Initialize budget calculator
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
@@ -1711,4 +1688,39 @@ document.addEventListener('DOMContentLoaded', function() {
         const tableModal = new bootstrap.Modal(document.getElementById('tableModal'));
         tableModal.show();
     }
+
+    function filterTasks() {
+        const status = document.getElementById('task-status-filter').value;
+        const timeline = document.getElementById('task-timeline-filter').value;
+        
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            const taskStatus = item.classList.contains('completed') ? 'completed' : 
+                             item.classList.contains('in-progress') ? 'in-progress' : 'pending';
+            
+            if ((status === 'all' || taskStatus === status) && 
+                (timeline === 'all' || checkTaskTimeline(item, timeline))) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function checkTaskTimeline(item, timeline) {
+        const taskDate = new Date(item.querySelector('.timeline-date').textContent);
+        const today = new Date();
+        
+        switch(timeline) {
+            case 'past':
+                return taskDate < today;
+            case 'today':
+                return taskDate.toDateString() === today.toDateString();
+            case 'future':
+                return taskDate > today;
+            default:
+                return true;
+        }
+    }
+
+
 
