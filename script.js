@@ -1761,16 +1761,9 @@ function assignGuestToTable(guestElement, tableElement) {
     const guestId = guestElement.getAttribute('data-guest-id');
     const tableId = tableElement.getAttribute('data-table-id');
     
-    // Remove guest from unassigned area
-    const unassignedArea = document.getElementById('unassigned-guests');
-    const unassignedGuest = unassignedArea.querySelector(`[data-guest-id="${guestId}"]`);
-    if (unassignedGuest) {
-        unassignedGuest.remove();
-    }
-    
     // Add guest to table
     const tableGuestsArea = tableElement.querySelector('.table-guests');
-    tableGuestsArea.appendChild(guestElement);
+    tableGuestsArea.appendChild(guestElement.cloneNode(true)); // Clone the guest element
     
     // Update guest's table assignment in guests table
     const guestRow = document.querySelector(`#guests-table tr[data-guest-id="${guestId}"]`);
@@ -1806,9 +1799,8 @@ function assignGuestToTable(guestElement, tableElement) {
 function unassignGuestFromTable(guestElement) {
     const guestId = guestElement.getAttribute('data-guest-id');
     
-    // Move guest back to unassigned area
-    const unassignedArea = document.getElementById('unassigned-guests');
-    unassignedArea.appendChild(guestElement);
+    // Remove guest from table
+    guestElement.remove();
     
     // Update guest's table assignment in guests table
     const guestRow = document.querySelector(`#guests-table tr[data-guest-id="${guestId}"]`);
