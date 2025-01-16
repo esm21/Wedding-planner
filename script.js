@@ -194,15 +194,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 function showSection(sectionId) {
+    console.log('Showing section:', sectionId); // Debug log
     // Hide all sections
     document.querySelectorAll('.section-content').forEach(section => {
         section.classList.remove('active');
+        section.style.display = 'none';
     });
 
     // Show selected section
     const selectedSection = document.getElementById(`${sectionId}-section`);
     if (selectedSection) {
         selectedSection.classList.add('active');
+        selectedSection.style.display = 'block';
     }
 
     // Update active nav link
@@ -221,31 +224,46 @@ function showSection(sectionId) {
     const calculatorContainer = document.getElementById('budget-calculator-container');
     
     if (sectionId === 'guests' || sectionId === 'tables') {
-        mainContent.classList.remove('col-lg-9');
-        mainContent.classList.add('col-lg-12');
+        if (mainContent) {
+            mainContent.classList.remove('col-lg-9');
+            mainContent.classList.add('col-lg-12');
+        }
         if (calculatorContainer) {
             calculatorContainer.style.display = 'none';
         }
     } else {
-        mainContent.classList.remove('col-lg-12');
-        mainContent.classList.add('col-lg-9');
+        if (mainContent) {
+            mainContent.classList.remove('col-lg-12');
+            mainContent.classList.add('col-lg-9');
+        }
         if (calculatorContainer) {
             calculatorContainer.style.display = 'block';
         }
     }
 
-    // Load or refresh section content if needed
-    if (sectionId === 'civil' || sectionId === 'religious' || sectionId === 'banquet') {
-        const tbody = document.querySelector(`#${sectionId}-table tbody`);
-        if (tbody) {
-            const items = JSON.parse(localStorage.getItem(`${sectionId}-items`) || '[]');
-            displayItems(items, tbody);
-        }
-    }
+    // Load section content
+    loadSectionContent(sectionId);
+}
 
-    // Scroll to top when changing sections
-    window.scrollTo(0, 0);
-    updateBudget();
+function loadSectionContent(sectionId) {
+    switch(sectionId) {
+        case 'planning':
+            updateDashboardStats();
+            break;
+        case 'civil':
+        case 'religious':
+        case 'banquet':
+            const items = JSON.parse(localStorage.getItem(`${sectionId}-items`) || '[]');
+            const tbody = document.querySelector(`#${sectionId}-table tbody`);
+            if (tbody) displayItems(items, tbody);
+            break;
+        case 'guests':
+            updateGuestCounts();
+            break;
+        case 'tables':
+            updateTableStats();
+            break;
+    }
 }
 
 function displayItems(items, tbody) {
