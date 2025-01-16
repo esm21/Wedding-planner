@@ -204,3 +204,17 @@ body[data-active-section="tables"] #main-content-area {
 .guest-item:active {
     cursor: grabbing;
 }
+
+/* Example of how to add just what you need: */
+.button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  background: #8b5eb9;
+  color: white;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: #7b4ea9;
+}
