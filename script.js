@@ -136,6 +136,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         updateGuestCounts();
     }
+    
+    // Show initial section (Planning)
+    const initialSection = document.querySelector('[data-section="planning"]');
+    if (initialSection) {
+        initialSection.classList.add('active');
+        showSection('planning');
+    }
+    
+    // Initialize dashboard
+    initializeDashboard();
 });    
     function setupEventListeners() {
     console.log('Setting up event listeners...'); // Debug log
