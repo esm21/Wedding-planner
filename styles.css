@@ -13,11 +13,71 @@
 
 /* Global Styles */
 body {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
     background-color: var(--light-bg);
     color: var(--dark-text);
     line-height: 1.6;
     min-height: 100vh;
+}
+
+/* Hero Section */
+.hero-section {
+    height: 80vh;
+    background-image: url('path/to/your/elegant-wedding-image.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4rem;
+}
+
+.hero-section .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    color: white;
+    font-weight: 600;
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    color: white;
+    font-size: 1.8rem;
+    position: relative;
+}
+
+/* Cards Styling */
+.card {
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.card-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.card-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
 }
 
 /* Navigation Bar */
@@ -217,4 +277,25 @@ body[data-active-section="tables"] #main-content-area {
 
 .button:hover {
   background: #7b4ea9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .timeline-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .timeline-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .timeline-filters {
+        width: 100%;
+    }
+
+    .timeline-filters select {
+        flex: 1;
+    }
 }
