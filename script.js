@@ -186,13 +186,13 @@ document.addEventListener('DOMContentLoaded', function() {
 function showSection(sectionId) {
     // Hide all sections
     document.querySelectorAll('.section-content').forEach(section => {
-        section.style.display = 'none';
+        section.classList.remove('active');
     });
 
     // Show selected section
     const selectedSection = document.getElementById(`${sectionId}-section`);
     if (selectedSection) {
-        selectedSection.style.display = 'block';
+        selectedSection.classList.add('active');
     }
 
     // Update active nav link
@@ -224,9 +224,40 @@ function showSection(sectionId) {
         }
     }
 
+    // Load or refresh section content if needed
+    if (sectionId === 'civil' || sectionId === 'religious' || sectionId === 'banquet') {
+        const tbody = document.querySelector(`#${sectionId}-table tbody`);
+        if (tbody) {
+            const items = JSON.parse(localStorage.getItem(`${sectionId}-items`) || '[]');
+            displayItems(items, tbody);
+        }
+    }
+
     // Scroll to top when changing sections
     window.scrollTo(0, 0);
     updateBudget();
+}
+
+function displayItems(items, tbody) {
+    tbody.innerHTML = '';
+    items.forEach(item => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${item.name || ''}</td>
+            <td>${item.estimatedCost || 0} €</td>
+            <td>${item.realCost || 0} €</td>
+            <td>${item.status || 'Pendiente'}</td>
+            <td>${item.priority || 'Media'}</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary edit-item">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger delete-item">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
+    });
 }
 
 function addNewItem(type) {
@@ -263,7 +294,6 @@ function deleteRow(button) {
     button.closest('tr').remove();
     updateBudget();
 }
-
 function attachBudgetListeners(row) {
     const editableCells = row.querySelectorAll('[contenteditable="true"]');
     editableCells.forEach(cell => {
@@ -1188,7 +1218,7 @@ function importGuests() {
                     </td>
                     <td>
                         <select class="form-select dietary-restrictions">
-                            <option value="none" ${!guest.restricciones ? 'selected' : ''}>Sin restricciones</option>
+                            <option value="none" ${guest.restricciones === 'none' ? 'selected' : ''}>Sin restricciones</option>
                             <option value="vegetarian" ${guest.restricciones === 'vegetarian' ? 'selected' : ''}>Vegetariano</option>
                             <option value="vegan" ${guest.restricciones === 'vegan' ? 'selected' : ''}>Vegano</option>
                             <option value="gluten" ${guest.restricciones === 'gluten' ? 'selected' : ''}>Sin gluten</option>
@@ -1905,3 +1935,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function updateDashboardStats() {
+    // Get stats from localStorage or your data source
+    const weddingDate = localStorage.getItem('weddingDate');
+    const totalGuests = localStorage.getItem('totalGuests');
+    
+    // Calculate days remaining
+    const daysRemaining = weddingDate ? 
+        Math.ceil((new Date(weddingDate) - new Date()) / (1000 * 60 * 60 * 24)) : 0;
+
+    // Update stats display
+    document.querySelector('.stat-value').textContent = totalGuests || '0';
+    document.querySelectorAll('.stat-value')[2].textContent = daysRemaining;
+}
+
+function initializeDashboard() {
+    updateDashboardStats();
+    // Add more dashboard initialization as needed
+}
+
+// Call when page loads
+document.addEventListener('DOMContentLoaded', initializeDashboard);
