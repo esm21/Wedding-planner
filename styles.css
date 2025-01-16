@@ -20,62 +20,58 @@ body {
     min-height: 100vh;
 }
 
-/* Horizontal Navigation Bar */
-.sidebar {
+/* Navigation Bar */
+.navbar {
     background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-    padding: 1rem !important;
+    padding: 1rem;
     box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-    width: 100%;
-    position: fixed;
-    top: 0;
-    z-index: 1000;
 }
 
-.sidebar .d-flex {
-    background: transparent !important;
+.navbar-brand {
     color: white;
-    flex-direction: row !important;
-    align-items: center;
-    justify-content: space-between;
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
 }
 
-.sidebar .nav {
-    flex-direction: row !important;
-    align-items: center;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 0.5rem 0;
+.navbar-brand:hover {
+    color: rgba(255,255,255,0.9);
+    transform: translateY(-1px);
 }
 
-.sidebar .nav-link {
-    color: rgba(255,255,255,0.9) !important;
-    padding: 8px 16px;
-    margin: 0 4px;
+.navbar .nav-link {
+    color: rgba(255,255,255,0.9);
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
     border-radius: var(--border-radius);
-    transition: all var(--transition-speed) ease;
-    white-space: nowrap;
+    transition: all 0.3s ease;
 }
 
-.sidebar .nav-link i {
-    margin-right: 8px;
-}
-
-.sidebar .nav-link:hover {
+.navbar .nav-link:hover {
     background-color: rgba(255,255,255,0.1);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
 }
 
-.sidebar .nav-link.active {
-    background-color: rgba(255,255,255,0.2) !important;
-    color: white !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.navbar .nav-link.active {
+    background-color: rgba(255,255,255,0.2);
+    color: white;
 }
 
-/* Adjust main content for fixed header */
+/* Main Content Layout */
 .main-content {
-    margin-top: 120px; /* Adjust based on your header height */
     padding: 2rem;
-    width: 100%;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Budget Calculator */
+.budget-calculator {
+    position: sticky;
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
 }
 
 /* Basic Details Banner */
