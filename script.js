@@ -170,8 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const addReligiousBtn = document.getElementById('add-religious-item');
     const addBanquetBtn = document.getElementById('add-banquet-item');
     const addGuestBtn = document.getElementById('add-guest');
-    const addTableBtn = document.getElementById('add-table');
-
+    
     if (addCivilBtn) addCivilBtn.addEventListener('click', () => addNewItem('civil'));
     if (addReligiousBtn) addReligiousBtn.addEventListener('click', () => addNewItem('religious'));
     if (addBanquetBtn) addBanquetBtn.addEventListener('click', () => addNewItem('banquet'));
@@ -181,7 +180,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize budget calculator
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
     document.getElementById('save-details').addEventListener('click', saveBasicDetails);
+
+    // Tables section
+    const addTableBtn = document.getElementById('add-table-btn');
+    if (addTableBtn) {
+        addTableBtn.addEventListener('click', () => {
+            const tableName = prompt('Nombre de la mesa:');
+            const capacity = parseInt(prompt('Capacidad de la mesa:'));
+            
+            if (tableName && !isNaN(capacity)) {
+                const tables = JSON.parse(localStorage.getItem('tables')) || [];
+                tables.push({
+                    name: tableName,
+                    capacity: capacity,
+                    guests: []
+                });
+                localStorage.setItem('tables', JSON.stringify(tables));
+                updateTables();
+            }
+        });
     }
+}
 
 function showSection(sectionId) {
     // Hide all sections
@@ -227,6 +246,10 @@ function showSection(sectionId) {
     // Scroll to top when changing sections
     window.scrollTo(0, 0);
     updateBudget();
+
+    if (sectionId === 'tables') {
+        updateTables();
+    }
 }
 
 function addNewItem(type) {
@@ -1905,3 +1928,109 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function updateTables() {
+    const tablesContainer = document.querySelector('.tables-container');
+    if (!tablesContainer) return;
+
+    const tables = JSON.parse(localStorage.getItem('tables')) || [];
+    tablesContainer.innerHTML = '';
+    
+    tables.forEach((table, index) => {
+        const card = document.createElement('div');
+        card.className = 'card table-card m-2';
+        card.style.width = '200px';
+        card.innerHTML = `
+            <div class="card-body">
+                <h5 class="card-title">${table.name}</h5>
+                <p class="card-text">Capacidad: ${table.capacity}</p>
+                <p class="card-text">Asignados: ${table.guests.length}</p>
+                <div class="table-guests" data-table-id="table-${index}">
+                    ${table.guests.map(guest => `
+                        <div class="guest-item" draggable="true" data-guest-id="${guest.id}">
+                            ${guest.name}
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn btn-sm btn-danger delete-table" onclick="removeTable(${index})">
+                    <i class="bi bi-trash"></i> Eliminar
+                </button>
+            </div>
+        `;
+        tablesContainer.appendChild(card);
+    });
+    
+    setupTableDropZones();
+    updateSeatingAssignment();
+}
+
+function updateSeatingAssignment() {
+    const seatingAssignment = document.querySelector('.seating-assignment');
+    if (!seatingAssignment) return;
+
+    const tables = JSON.parse(localStorage.getItem('tables')) || [];
+    const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
+    seatingAssignment.innerHTML = '';
+
+    tables.forEach((table, tableIndex) => {
+        const tableDiv = document.createElement('div');
+        tableDiv.className = 'card m-2';
+        tableDiv.style.width = '200px';
+        tableDiv.innerHTML = `
+            <div class="card-body">
+                <h5 class="card-title">${table.name}</h5>
+                <ul class="list-group" id="table-${tableIndex}">
+                    ${table.guests.map(guest => `<li class="list-group-item">${guest.name}</li>`).join('')}
+                </ul>
+                <select class="form-select mt-2" onchange="assignGuest(${tableIndex}, this.value); this.value='';">
+                    <option value="">Asignar invitado...</option>
+                    ${guests.filter(guest => !tables.some(t => t.guests.some(g => g.id === guest.id)))
+                           .map(guest => `<option value="${guest.id}">${guest.name}</option>`).join('')}
+                </select>
+            </div>
+        `;
+        seatingAssignment.appendChild(tableDiv);
+    });
+}
+
+function removeTable(index) {
+    let tables = JSON.parse(localStorage.getItem('tables')) || [];
+    // Move guests back to unassigned
+    const removedTable = tables[index];
+    if (removedTable && removedTable.guests) {
+        removedTable.guests.forEach(guest => {
+            unassignGuestFromTable(guest.id);
+        });
+    }
+    tables.splice(index, 1);
+    localStorage.setItem('tables', JSON.stringify(tables));
+    updateTables();
+}
+
+function assignGuest(tableIndex, guestId) {
+    if (!guestId) return;
+    
+    let tables = JSON.parse(localStorage.getItem('tables')) || [];
+    const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
+    const guest = guests.find(g => g.id === guestId);
+    
+    if (!guest) return;
+
+    if (tables[tableIndex].guests.length < tables[tableIndex].capacity) {
+        // Remove from other tables first
+        tables.forEach(table => {
+            table.guests = table.guests.filter(g => g.id !== guestId);
+        });
+        
+        // Add to new table
+        tables[tableIndex].guests.push({
+            id: guest.id,
+            name: guest.name
+        });
+        
+        localStorage.setItem('tables', JSON.stringify(tables));
+        updateTables();
+    } else {
+        alert('Esta mesa está llena. Por favor, elija otra mesa.');
+    }
+}
