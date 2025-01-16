@@ -69,9 +69,396 @@
             <div class="row">
                 <!-- Main Content (Dynamic width based on section) -->
                 <div class="col-lg-9" id="main-content-area">
-                    <!-- Your sections content -->
+                    <!-- Basic Details Banner -->
+                    <div class="basic-details-banner" id="basic-details-banner">
+                        <div class="container-fluid py-2">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Fecha de boda</span>
+                                        <input type="date" class="form-control" id="wedding-date">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Total invitados</span>
+                                        <input type="number" class="form-control" id="total-guests" min="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-primary" id="save-details">Guardar Detalles</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Civil Ceremony Section -->
                     <section id="civil-section" class="section-content">
-                        <!-- ... -->
+                        <h2>Ceremonia Civil</h2>
+                        <button class="btn btn-success mb-3" id="add-civil-item">Añadir Elemento</button>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="civil-table">
+                                <thead>
+                                    <tr>
+                                        <th>Elemento</th>
+                                        <th>Gasto estimado</th>
+                                        <th>Gasto real</th>
+                                        <th>Estado</th>
+                                        <th>Prioridad</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Religious Ceremony Section -->
+                    <section id="religious-section" class="section-content" style="display: none;">
+                        <h2>Ceremonia Religiosa</h2>
+                        <button class="btn btn-success mb-3" id="add-religious-item">Añadir Elemento</button>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="religious-table">
+                                <thead>
+                                    <tr>
+                                        <th>Elemento</th>
+                                        <th>Gasto estimado</th>
+                                        <th>Gasto real</th>
+                                        <th>Estado</th>
+                                        <th>Prioridad</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Banquet Section -->
+                    <section id="banquet-section" class="section-content" style="display: none;">
+                        <h2>Convite</h2>
+                        <button class="btn btn-success mb-3" id="add-banquet-item">Añadir Elemento</button>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="banquet-table">
+                                <thead>
+                                    <tr>
+                                        <th>Elemento</th>
+                                        <th>Gasto estimado</th>
+                                        <th>Gasto real</th>
+                                        <th>Estado</th>
+                                        <th>Prioridad</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Guests Section -->
+                    <section id="guests-section" class="section-content" style="display: none;">
+                        <h2>Invitados</h2>
+                        <div class="row">
+                            <div class="col-md-3 sidebar-stats">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6>Resumen Invitados</h6>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Total Invitados:</span>
+                                            <span id="guest-count">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Confirmados:</span>
+                                            <span id="confirmed-count">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Pendientes:</span>
+                                            <span id="pending-count">0</span>
+                                        </div>
+                                        <hr>
+                                        <h6>Por Categoría</h6>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Familia Novia:</span>
+                                            <span id="bride-family-count">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Familia Novio:</span>
+                                            <span id="groom-family-count">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Amigos Novia:</span>
+                                            <span id="bride-friends-count">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Amigos Novio:</span>
+                                            <span id="groom-friends-count">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Trabajo Novia:</span>
+                                            <span id="bride-work-count">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Trabajo Novio:</span>
+                                            <span id="groom-work-count">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Otros:</span>
+                                            <span id="other-count">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-9 main-guest-area">
+                                <div class="btn-group mb-3">
+                                    <button class="btn btn-success" id="add-guest-btn">Añadir Invitado</button>
+                                    <button class="btn btn-outline-primary" id="import-guests">Importar Lista</button>
+                                    <button class="btn btn-outline-secondary" id="export-guests">Exportar Lista</button>
+                                </div>
+                                <div class="btn-group mb-3 ms-2">
+                                    <button class="btn btn-outline-info" id="filter-all">Todos</button>
+                                    <button class="btn btn-outline-info" id="filter-confirmed">Confirmados</button>
+                                    <button class="btn btn-outline-info" id="filter-pending">Pendientes</button>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="guest-search" placeholder="Buscar invitado...">
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="guests-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Personas Adicionales</th>
+                                                <th>Categoría</th>
+                                                <th>Restricciones Alimentarias</th>
+                                                <th>Invitación enviada</th>
+                                                <th>Confirmación</th>
+                                                <th>Grupo Mesa</th>
+                                                <th>Regalo aportado</th>
+                                                <th>Notas/Comentarios</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Tables Section -->
+                    <section id="tables-section" class="section-content" style="display: none;">
+                        <h2>Mesas</h2>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6>Resumen Mesas</h6>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Total Mesas:</span>
+                                            <span id="tables-count">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Asientos Totales:</span>
+                                            <span id="total-seats">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Asientos Libres:</span>
+                                            <span id="available-seats">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success w-100 mt-3" id="add-table">Añadir Mesa</button>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="table-controls mb-3">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <select class="form-select" id="table-category-filter">
+                                                <option value="">Todas las categorías</option>
+                                                <option value="familia">Familia</option>
+                                                <option value="amigos">Amigos</option>
+                                                <option value="trabajo">Trabajo</option>
+                                                <option value="otros">Otros</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tables-container" id="tables-grid">
+                                    <!-- Tables will be added here dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Invitados sin Asignar</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="unassigned-guests" class="unassigned-guests-container">
+                                            <!-- Unassigned guests will appear here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Summary Section -->
+                    <section id="summary-section" class="section-content" style="display: none;">
+                        <h2>Resumen del Evento</h2>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5>Estadísticas Generales</h5>
+                                        <ul class="list-unstyled">
+                                            <li>Total Invitados: <span id="summary-total-guests">0</span></li>
+                                            <li>Confirmados: <span id="summary-confirmed-guests">0</span></li>
+                                            <li>Mesas Asignadas: <span id="summary-tables">0</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5>Exportar Datos</h5>
+                                        <button class="btn btn-success me-2" id="export-excel">
+                                            Exportar a Excel
+                                        </button>
+                                        <button class="btn btn-danger" id="export-pdf">
+                                            Exportar a PDF
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Planning Section -->
+                    <section id="planning-section" class="section-content" style="display: none;">
+                        <h2>Planificación</h2>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Cuenta Atrás</h5>
+                                        <div class="countdown-timer text-center">
+                                            <div id="wedding-countdown" class="display-6">--</div>
+                                            <small class="text-muted">días hasta la boda</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Filtros</h5>
+                                        <select class="form-select mb-2" id="task-status-filter">
+                                            <option value="all">Todas las tareas</option>
+                                            <option value="pending">Pendientes</option>
+                                            <option value="in-progress">En progreso</option>
+                                            <option value="completed">Completadas</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <button class="btn btn-success" id="add-task">
+                                        <i class="bi bi-plus-lg"></i> Añadir Tarea
+                                    </button>
+                                </div>
+                                <div class="timeline">
+                                    <div class="timeline-items" id="timeline-container">
+                                        <!-- Timeline items will be added here dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Add Task Modal -->
+                    <div class="modal fade" id="taskModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Nueva Tarea</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="task-form">
+                                        <div class="mb-3">
+                                            <label class="form-label">Título</label>
+                                            <input type="text" class="form-control" id="task-title" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Descripción</label>
+                                            <textarea class="form-control" id="task-description" rows="3"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Fecha límite</label>
+                                            <input type="date" class="form-control" id="task-deadline" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Responsable</label>
+                                            <input type="text" class="form-control" id="task-assignee">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Prioridad</label>
+                                            <select class="form-select" id="task-priority">
+                                                <option value="high">Alta</option>
+                                                <option value="medium">Media</option>
+                                                <option value="low">Baja</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-primary" id="save-task">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checklist Section -->
+                    <section id="checklist-section" class="section-content" style="display: none;">
+                        <h2>Lista de Tareas</h2>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Progreso</h5>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar" id="checklist-progress" role="progressbar" style="width: 0%">0%</div>
+                                        </div>
+                                        <div class="checklist-stats">
+                                            <div>Completadas: <span id="completed-tasks">0</span></div>
+                                            <div>Pendientes: <span id="pending-tasks">0</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="checklist-categories">
+                                    <div class="category-group mb-4">
+                                        <h4>12 meses antes</h4>
+                                        <div class="checklist-items">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="task-1">
+                                                <label class="form-check-label" for="task-1">Fijar la fecha de la boda</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="task-2">
+                                                <label class="form-check-label" for="task-2">Establecer el presupuesto</label>
+                                            </div>
+                                            <!-- Add more predefined tasks -->
+                                        </div>
+                                    </div>
+                                    <!-- Add more time categories -->
+                                </div>
+                            </div>
+                        </div>
                     </section>
                 </div>
 
