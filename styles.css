@@ -157,11 +157,16 @@ h2 {
 
 /* Make sure sections are visible */
 .section-content {
-    display: none;
+    display: block;
 }
 
 .section-content.active {
     display: block;
+}
+
+/* Hide inactive sections */
+.section-content:not(.active) {
+    display: none;
 }
 
 /* Cards */
