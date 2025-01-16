@@ -224,9 +224,60 @@ function showSection(sectionId) {
         }
     }
 
+    // Initialize section-specific content
+    switch(sectionId) {
+        case 'planning':
+            if (typeof initializePredefinedTasks === 'function') {
+                initializePredefinedTasks();
+            }
+            break;
+        case 'guests':
+            if (typeof loadGuests === 'function') {
+                loadGuests();
+            }
+            break;
+        case 'tables':
+            if (typeof setupTableDropZones === 'function') {
+                setupTableDropZones();
+            }
+            break;
+        case 'civil':
+        case 'religious':
+        case 'banquet':
+            loadSectionItems(sectionId);
+            break;
+    }
+
     // Scroll to top when changing sections
     window.scrollTo(0, 0);
     updateBudget();
+}
+
+// Function to load section items
+function loadSectionItems(sectionId) {
+    const items = JSON.parse(localStorage.getItem(`${sectionId}-items`) || '[]');
+    const tbody = document.querySelector(`#${sectionId}-table tbody`);
+    if (tbody) {
+        tbody.innerHTML = '';
+        items.forEach(item => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${item.name || ''}</td>
+                <td>${item.estimatedCost || 0}</td>
+                <td>${item.realCost || 0}</td>
+                <td>${item.status || 'Pendiente'}</td>
+                <td>${item.priority || 'Media'}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary edit-item">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger delete-item">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+        });
+    }
 }
 
 function addNewItem(type) {
