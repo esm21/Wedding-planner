@@ -1905,3 +1905,90 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Add event listeners for modal
+document.addEventListener('DOMContentLoaded', function() {
+    const taskModal = document.getElementById('taskModal');
+    const cancelButton = taskModal.querySelector('[data-bs-dismiss="modal"]');
+    
+    // Handle modal hidden event
+    taskModal.addEventListener('hidden.bs.modal', function () {
+        document.getElementById('task-form').reset();
+    });
+    
+    // Handle cancel button click
+    if (cancelButton) {
+        cancelButton.addEventListener('click', function() {
+            const modal = bootstrap.Modal.getInstance(taskModal);
+            if (modal) {
+                modal.hide();
+            }
+        });
+    }
+});
+
+// Predefined tasks structure
+const predefinedTasks = {
+    '12_months': [
+        { title: 'Fijar fecha de boda', description: 'Decidir y confirmar la fecha de la ceremonia' },
+        { title: 'Establecer presupuesto', description: 'Definir presupuesto total y por categorías' },
+        { title: 'Elegir tipo de ceremonia', description: 'Decidir entre civil, religiosa o ambas' },
+        { title: 'Lista preliminar de invitados', description: 'Crear borrador inicial de invitados' }
+    ],
+    '9_months': [
+        { title: 'Reservar lugar ceremonia', description: 'Confirmar y señalizar el lugar de la ceremonia' },
+        { title: 'Reservar lugar celebración', description: 'Confirmar y señalizar el lugar del convite' },
+        { title: 'Contratar wedding planner', description: 'Opcional: buscar y contratar organizador' }
+    ],
+    '6_months': [
+        { title: 'Elegir vestidos', description: 'Vestido de novia y complementos' },
+        { title: 'Contratar catering', description: 'Definir menú y contratar servicio' },
+        { title: 'Reservar música/DJ', description: 'Contratar servicios musicales' }
+    ],
+    '3_months': [
+        { title: 'Enviar invitaciones', description: 'Distribuir invitaciones a los invitados' },
+        { title: 'Prueba de menú', description: 'Realizar prueba del menú seleccionado' },
+        { title: 'Lista de canciones', description: 'Preparar lista de música para la celebración' }
+    ],
+    '1_month': [
+        { title: 'Confirmar invitados', description: 'Seguimiento de confirmaciones' },
+        { title: 'Distribución de mesas', description: 'Organizar disposición de invitados' },
+        { title: 'Ensayo ceremonia', description: 'Coordinar ensayo con participantes principales' }
+    ],
+    '1_week': [
+        { title: 'Confirmación proveedores', description: 'Reconfirmar todos los servicios' },
+        { title: 'Recogida vestidos', description: 'Recoger vestidos y complementos' },
+        { title: 'Detalles finales', description: 'Revisar últimos detalles pendientes' }
+    ]
+};
+
+// Function to initialize predefined tasks
+function initializePredefinedTasks() {
+    const timelineContainer = document.getElementById('timeline-container');
+    if (!timelineContainer) return;
+    
+    timelineContainer.innerHTML = ''; // Clear existing tasks
+    
+    Object.entries(predefinedTasks).forEach(([timeframe, tasks]) => {
+        const timeframeHeader = document.createElement('div');
+        timeframeHeader.className = 'timeline-header';
+        timeframeHeader.textContent = formatTimeframe(timeframe);
+        timelineContainer.appendChild(timeframeHeader);
+        
+        tasks.forEach(task => {
+            const taskElement = createTimelineItem({
+                id: `task-${Date.now()}-${Math.random()}`,
+                title: task.title,
+                description: task.description,
+                timeframe: timeframe,
+                status: 'pending'
+            });
+            timelineContainer.appendChild(taskElement);
+        });
+    });
+}
+
+function formatTimeframe(timeframe) {
+    const [amount, unit] = timeframe.split('_');
+    return `${amount} ${unit} antes`;
+}
