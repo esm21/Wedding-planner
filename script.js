@@ -186,13 +186,13 @@ document.addEventListener('DOMContentLoaded', function() {
 function showSection(sectionId) {
     // Hide all sections
     document.querySelectorAll('.section-content').forEach(section => {
-        section.classList.remove('active');
+        section.style.display = 'none';
     });
 
     // Show selected section
     const selectedSection = document.getElementById(`${sectionId}-section`);
     if (selectedSection) {
-        selectedSection.classList.add('active');
+        selectedSection.style.display = 'block';
     }
 
     // Update active nav link
@@ -224,40 +224,9 @@ function showSection(sectionId) {
         }
     }
 
-    // Load or refresh section content if needed
-    if (sectionId === 'civil' || sectionId === 'religious' || sectionId === 'banquet') {
-        const tbody = document.querySelector(`#${sectionId}-table tbody`);
-        if (tbody) {
-            const items = JSON.parse(localStorage.getItem(`${sectionId}-items`) || '[]');
-            displayItems(items, tbody);
-        }
-    }
-
     // Scroll to top when changing sections
     window.scrollTo(0, 0);
     updateBudget();
-}
-
-function displayItems(items, tbody) {
-    tbody.innerHTML = '';
-    items.forEach(item => {
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td>${item.name || ''}</td>
-            <td>${item.estimatedCost || 0} €</td>
-            <td>${item.realCost || 0} €</td>
-            <td>${item.status || 'Pendiente'}</td>
-            <td>${item.priority || 'Media'}</td>
-            <td>
-                <button class="btn btn-sm btn-outline-primary edit-item">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger delete-item">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
-    });
 }
 
 function addNewItem(type) {
@@ -294,6 +263,7 @@ function deleteRow(button) {
     button.closest('tr').remove();
     updateBudget();
 }
+
 function attachBudgetListeners(row) {
     const editableCells = row.querySelectorAll('[contenteditable="true"]');
     editableCells.forEach(cell => {
