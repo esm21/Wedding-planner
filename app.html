@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificador de Bodas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <title>Dashboard - Planificador de Bodas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="app-body">
     <div class="container-fluid">
         <!-- Top Navigation Bar -->
         <nav class="navbar navbar-expand-lg">
@@ -64,34 +64,31 @@
             </div>
         </nav>
 
+        <!-- Dashboard Stats -->
+        <div class="dashboard-stats mt-4">
+            <div class="stat-card">
+                <h3>Total Invitados</h3>
+                <div class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Confirmados</h3>
+                <div class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Días Restantes</h3>
+                <div class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Tareas Completadas</h3>
+                <div class="stat-value">0%</div>
+            </div>
+        </div>
+
         <!-- Main Content Area -->
         <div class="container-fluid mt-4">
             <div class="row">
                 <!-- Main Content (Dynamic width based on section) -->
                 <div class="col-lg-9" id="main-content-area">
-                    <!-- Basic Details Banner -->
-                    <div class="basic-details-banner" id="basic-details-banner">
-                        <div class="container-fluid py-2">
-                            <div class="row align-items-center">
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <span class="input-group-text">Fecha de boda</span>
-                                        <input type="date" class="form-control" id="wedding-date">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <span class="input-group-text">Total invitados</span>
-                                        <input type="number" class="form-control" id="total-guests" min="0">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <button class="btn btn-primary" id="save-details">Guardar Detalles</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Civil Ceremony Section -->
                     <section id="civil-section" class="section-content">
                         <h2>Ceremonia Civil</h2>
