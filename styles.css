@@ -155,18 +155,13 @@ h2 {
     font-weight: 600;
 }
 
-/* Make sure sections are visible */
+/* Section visibility */
 .section-content {
-    display: block;
+    display: none;
 }
 
 .section-content.active {
-    display: block;
-}
-
-/* Hide inactive sections */
-.section-content:not(.active) {
-    display: none;
+    display: block !important;
 }
 
 /* Cards */
@@ -303,11 +298,6 @@ body[data-active-section="tables"] #main-content-area {
     .timeline-filters select {
         flex: 1;
     }
-}
-
-/* Landing Page Specific Styles */
-.hero-section {
-    /* Keep existing hero styles */
 }
 
 /* Inner Pages Styles */
