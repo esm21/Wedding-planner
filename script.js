@@ -184,19 +184,49 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 function showSection(sectionId) {
-    console.log('Showing section:', sectionId); // Debug log
+    // Hide all sections
     document.querySelectorAll('.section-content').forEach(section => {
         section.style.display = 'none';
     });
-    const targetSection = document.getElementById(`${sectionId}-section`);
-    if (targetSection) {
-    targetSection.style.display = 'block';
+
+    // Show selected section
+    const selectedSection = document.getElementById(`${sectionId}-section`);
+    if (selectedSection) {
+        selectedSection.style.display = 'block';
+    }
+
+    // Update active nav link
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('data-section') === sectionId) {
+            link.classList.add('active');
+        }
+    });
+
+    // Update body attribute for CSS targeting
+    document.body.setAttribute('data-active-section', sectionId);
+    
+    // Adjust layout based on section
+    const mainContent = document.getElementById('main-content-area');
+    const calculatorContainer = document.getElementById('budget-calculator-container');
+    
+    if (sectionId === 'guests' || sectionId === 'tables') {
+        mainContent.classList.remove('col-lg-9');
+        mainContent.classList.add('col-lg-12');
+        if (calculatorContainer) {
+            calculatorContainer.style.display = 'none';
+        }
+    } else {
+        mainContent.classList.remove('col-lg-12');
+        mainContent.classList.add('col-lg-9');
+        if (calculatorContainer) {
+            calculatorContainer.style.display = 'block';
+        }
+    }
+
     // Scroll to top when changing sections
     window.scrollTo(0, 0);
     updateBudget();
-    } else {
-    console.error(`Section not found: ${sectionId}-section`);
-    }
 }
 
 function addNewItem(type) {
