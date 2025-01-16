@@ -170,7 +170,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const addReligiousBtn = document.getElementById('add-religious-item');
     const addBanquetBtn = document.getElementById('add-banquet-item');
     const addGuestBtn = document.getElementById('add-guest');
-    
+    const addTableBtn = document.getElementById('add-table');
+
     if (addCivilBtn) addCivilBtn.addEventListener('click', () => addNewItem('civil'));
     if (addReligiousBtn) addReligiousBtn.addEventListener('click', () => addNewItem('religious'));
     if (addBanquetBtn) addBanquetBtn.addEventListener('click', () => addNewItem('banquet'));
@@ -181,24 +182,104 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
     document.getElementById('save-details').addEventListener('click', saveBasicDetails);
 
-    // Tables section
-    const addTableBtn = document.getElementById('add-table-btn');
-    if (addTableBtn) {
-        addTableBtn.addEventListener('click', () => {
-            const tableName = prompt('Nombre de la mesa:');
-            const capacity = parseInt(prompt('Capacidad de la mesa:'));
-            
-            if (tableName && !isNaN(capacity)) {
-                const tables = JSON.parse(localStorage.getItem('tables')) || [];
-                tables.push({
-                    name: tableName,
-                    capacity: capacity,
-                    guests: []
-                });
-                localStorage.setItem('tables', JSON.stringify(tables));
-                updateTables();
-            }
-        });
+    // Tables section initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        const addTableBtn = document.getElementById('add-table');
+        if (addTableBtn) {
+            addTableBtn.addEventListener('click', () => {
+                const tableName = prompt('Nombre de la mesa:');
+                const capacity = parseInt(prompt('Capacidad de la mesa:'));
+                
+                if (tableName && !isNaN(capacity)) {
+                    addTable(tableName, capacity);
+                }
+            });
+        }
+    });
+}
+
+function addTable(name, capacity) {
+    const tables = JSON.parse(localStorage.getItem('tables')) || [];
+    const newTable = {
+        id: Date.now(),
+        name: name,
+        capacity: capacity,
+        guests: []
+    };
+    
+    tables.push(newTable);
+    localStorage.setItem('tables', JSON.stringify(tables));
+    updateTableDisplay();
+    updateTableStats();
+}
+
+function updateTableDisplay() {
+    const tablesGrid = document.getElementById('tables-grid');
+    if (!tablesGrid) return;
+
+    const tables = JSON.parse(localStorage.getItem('tables')) || [];
+    tablesGrid.innerHTML = '';
+
+    tables.forEach(table => {
+        const tableCard = document.createElement('div');
+        tableCard.className = 'card table-card m-2';
+        tableCard.style.width = '200px';
+        tableCard.innerHTML = `
+            <div class="card-body">
+                <h5 class="card-title">${table.name}</h5>
+                <p class="card-text">Capacidad: ${table.capacity}</p>
+                <p class="card-text">Asignados: ${table.guests.length}</p>
+                <div class="table-guests" data-table-id="${table.id}">
+                    ${table.guests.map(guest => `
+                        <div class="guest-item" draggable="true" data-guest-id="${guest.id}">
+                            ${guest.name}
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn btn-sm btn-danger" onclick="deleteTable(${table.id})">
+                    <i class="bi bi-trash"></i> Eliminar
+                </button>
+            </div>
+        `;
+        tablesGrid.appendChild(tableCard);
+    });
+}
+
+function updateTableStats() {
+    const tables = JSON.parse(localStorage.getItem('tables')) || [];
+    const totalTables = tables.length;
+    const totalSeats = tables.reduce((sum, table) => sum + table.capacity, 0);
+    const occupiedSeats = tables.reduce((sum, table) => sum + table.guests.length, 0);
+    const availableSeats = totalSeats - occupiedSeats;
+
+    document.getElementById('tables-count').textContent = totalTables;
+    document.getElementById('total-seats').textContent = totalSeats;
+    document.getElementById('available-seats').textContent = availableSeats;
+}
+
+function deleteTable(tableId) {
+    let tables = JSON.parse(localStorage.getItem('tables')) || [];
+    const tableIndex = tables.findIndex(t => t.id === tableId);
+    
+    if (tableIndex !== -1) {
+        // Move guests back to unassigned
+        const removedTable = tables[tableIndex];
+        if (removedTable.guests.length > 0) {
+            const unassignedContainer = document.getElementById('unassigned-guests');
+            removedTable.guests.forEach(guest => {
+                const guestElement = document.createElement('div');
+                guestElement.className = 'guest-item';
+                guestElement.setAttribute('draggable', 'true');
+                guestElement.setAttribute('data-guest-id', guest.id);
+                guestElement.textContent = guest.name;
+                unassignedContainer.appendChild(guestElement);
+            });
+        }
+        
+        tables.splice(tableIndex, 1);
+        localStorage.setItem('tables', JSON.stringify(tables));
+        updateTableDisplay();
+        updateTableStats();
     }
 }
 
@@ -1952,7 +2033,7 @@ function updateTables() {
                         </div>
                     `).join('')}
                 </div>
-                <button class="btn btn-sm btn-danger delete-table" onclick="removeTable(${index})">
+                <button class="btn btn-sm btn-danger" onclick="deleteTable(${table.id})">
                     <i class="bi bi-trash"></i> Eliminar
                 </button>
             </div>
