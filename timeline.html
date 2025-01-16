@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Timeline & Tasks</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="timeline-container">
+        <!-- Header -->
+        <header class="timeline-header">
+            <h1>Wedding Timeline</h1>
+            <div class="timeline-actions">
+                <button class="btn-add-task">Add Task</button>
+                <div class="timeline-filters">
+                    <select id="filterStatus">
+                        <option value="all">All Tasks</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    <select id="filterCategory">
+                        <option value="all">All Categories</option>
+                        <option value="venue">Venue</option>
+                        <option value="vendors">Vendors</option>
+                        <option value="attire">Attire</option>
+                        <option value="guests">Guests</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <!-- Calendar View -->
+        <div class="calendar-view">
+            <!-- Will be populated by JavaScript -->
+        </div>
+
+        <!-- Timeline View -->
+        <div class="timeline-view">
+            <!-- Will be populated by JavaScript -->
+        </div>
+
+        <!-- Task List -->
+        <div class="task-list">
+            <!-- Will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal" id="addTaskModal">
+        <div class="modal-content">
+            <h2>Add New Task</h2>
+            <form id="addTaskForm">
+                <input type="text" id="taskTitle" placeholder="Task Title" required>
+                <textarea id="taskDescription" placeholder="Description"></textarea>
+                <input type="date" id="taskDueDate" required>
+                <select id="taskCategory" required>
+                    <option value="venue">Venue</option>
+                    <option value="vendors">Vendors</option>
+                    <option value="attire">Attire</option>
+                    <option value="guests">Guests</option>
+                </select>
+                <button type="submit">Add Task</button>
+                <button type="button" class="btn-cancel">Cancel</button>
+            </form>
+        </div>
+    </div>
+</body>
+<script src="script.js"></script>
+</html> 
