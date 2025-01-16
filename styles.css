@@ -184,3 +184,23 @@ body[data-active-section="tables"] #main-content-area {
     flex: 0 0 100%;
     max-width: 100%;
 }
+
+/* Drag and Drop Styling */
+.guest-item.dragging {
+    opacity: 0.5;
+    cursor: move;
+}
+
+.table-guests.drag-over {
+    background-color: rgba(157, 117, 83, 0.1);
+    border: 2px dashed var(--primary-color);
+}
+
+.guest-item {
+    cursor: grab;
+    transition: all 0.3s ease;
+}
+
+.guest-item:active {
+    cursor: grabbing;
+}
