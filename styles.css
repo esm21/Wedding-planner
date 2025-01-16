@@ -25,6 +25,11 @@ body {
     background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
     padding: 1rem;
     box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .navbar-brand {
@@ -69,8 +74,8 @@ body {
 /* Budget Calculator */
 .budget-calculator {
     position: sticky;
-    top: 2rem;
-    max-height: calc(100vh - 4rem);
+    top: 100px; /* Adjust based on navbar height + desired spacing */
+    max-height: calc(100vh - 120px);
     overflow-y: auto;
 }
 
@@ -155,4 +160,27 @@ h2 {
     color: white;
     border: none;
     padding: 1rem;
+}
+
+/* Adjust content for fixed navbar */
+.container-fluid.mt-4 {
+    margin-top: 80px; /* Adjust based on navbar height */
+}
+
+/* Dynamic content width */
+#main-content-area {
+    transition: all 0.3s ease;
+}
+
+/* Hide calculator for specific sections */
+body[data-active-section="guests"] #budget-calculator-container,
+body[data-active-section="tables"] #budget-calculator-container {
+    display: none;
+}
+
+body[data-active-section="guests"] #main-content-area,
+body[data-active-section="tables"] #main-content-area {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
 }
