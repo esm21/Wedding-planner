@@ -1579,6 +1579,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Planning event listeners
     document.getElementById('add-task').addEventListener('click', () => {
         const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+        // Reset form when opening modal
+        document.getElementById('task-form').reset();
         taskModal.show();
     });
     
@@ -1750,6 +1752,8 @@ function saveDetails() {
 // Add these functions for the Planning section
 function showTaskModal() {
     const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+    // Reset form when opening modal
+    document.getElementById('task-form').reset();
     taskModal.show();
 }
 
@@ -1782,7 +1786,10 @@ function saveTask() {
     timelineContainer.appendChild(taskElement);
 
     // Close modal and reset form
-    bootstrap.Modal.getInstance(document.getElementById('taskModal')).hide();
+    const taskModal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+    if (taskModal) {
+        taskModal.hide();
+    }
     document.getElementById('task-form').reset();
 
     // Save to localStorage
@@ -1888,3 +1895,13 @@ function checkTaskTimeline(item, timeline) {
             return true;
     }
 }
+
+// Add event listener for modal cancel button
+document.addEventListener('DOMContentLoaded', function() {
+    const taskModal = document.getElementById('taskModal');
+    if (taskModal) {
+        taskModal.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('task-form').reset();
+        });
+    }
+});
