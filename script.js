@@ -136,16 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         updateGuestCounts();
     }
-    
-    // Show initial section (Planning)
-    const initialSection = document.querySelector('[data-section="planning"]');
-    if (initialSection) {
-        initialSection.classList.add('active');
-        showSection('planning');
-    }
-    
-    // Initialize dashboard
-    initializeDashboard();
 });    
     function setupEventListeners() {
     console.log('Setting up event listeners...'); // Debug log
@@ -194,17 +184,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 function showSection(sectionId) {
-    console.log('Showing section:', sectionId); // Debug log
     // Hide all sections
     document.querySelectorAll('.section-content').forEach(section => {
-        section.classList.remove('active');
         section.style.display = 'none';
     });
 
     // Show selected section
     const selectedSection = document.getElementById(`${sectionId}-section`);
     if (selectedSection) {
-        selectedSection.classList.add('active');
         selectedSection.style.display = 'block';
     }
 
@@ -224,137 +211,22 @@ function showSection(sectionId) {
     const calculatorContainer = document.getElementById('budget-calculator-container');
     
     if (sectionId === 'guests' || sectionId === 'tables') {
-        if (mainContent) {
-            mainContent.classList.remove('col-lg-9');
-            mainContent.classList.add('col-lg-12');
-        }
+        mainContent.classList.remove('col-lg-9');
+        mainContent.classList.add('col-lg-12');
         if (calculatorContainer) {
             calculatorContainer.style.display = 'none';
         }
     } else {
-        if (mainContent) {
-            mainContent.classList.remove('col-lg-12');
-            mainContent.classList.add('col-lg-9');
-        }
+        mainContent.classList.remove('col-lg-12');
+        mainContent.classList.add('col-lg-9');
         if (calculatorContainer) {
             calculatorContainer.style.display = 'block';
         }
     }
 
-    // Load section content
-    loadSectionContent(sectionId);
-}
-
-function loadSectionContent(sectionId) {
-    switch(sectionId) {
-        case 'planning':
-            updateDashboardStats();
-            break;
-        case 'civil':
-        case 'religious':
-        case 'banquet':
-            const items = JSON.parse(localStorage.getItem(`${sectionId}-items`) || '[]');
-            const tbody = document.querySelector(`#${sectionId}-table tbody`);
-            if (tbody) {
-                // Clear existing content
-                tbody.innerHTML = '';
-                // Load predefined items if no items exist
-                if (items.length === 0) {
-                    const predefinedItems = getPredefinedItems(sectionId);
-                    predefinedItems.forEach(item => {
-                        addItemToTable(item, tbody);
-                    });
-                } else {
-                    // Display existing items
-                    items.forEach(item => {
-                        addItemToTable(item, tbody);
-                    });
-                }
-            }
-            break;
-        case 'guests':
-            updateGuestCounts();
-            break;
-        case 'tables':
-            updateTableStats();
-            break;
-    }
-}
-
-function getPredefinedItems(section) {
-    const items = {
-        civil: [
-            { name: 'Documentación', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Alta' },
-            { name: 'Tasas', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Alta' },
-            { name: 'Testigos', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Media' }
-        ],
-        religious: [
-            { name: 'Iglesia', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Alta' },
-            { name: 'Decoración', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Media' },
-            { name: 'Música', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Media' }
-        ],
-        banquet: [
-            { name: 'Lugar', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Alta' },
-            { name: 'Catering', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Alta' },
-            { name: 'Decoración', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Media' }
-        ]
-    };
-    return items[section] || [];
-}
-
-function addItemToTable(item, tbody) {
-    const row = tbody.insertRow();
-    row.innerHTML = `
-        <td contenteditable="true">${item.name}</td>
-        <td contenteditable="true">${item.estimatedCost}</td>
-        <td contenteditable="true">${item.realCost}</td>
-        <td>
-            <select class="form-select">
-                <option ${item.status === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                <option ${item.status === 'En curso' ? 'selected' : ''}>En curso</option>
-                <option ${item.status === 'Terminado' ? 'selected' : ''}>Terminado</option>
-                <option ${item.status === 'No interesado' ? 'selected' : ''}>No interesado</option>
-            </select>
-        </td>
-        <td>
-            <select class="form-select">
-                <option ${item.priority === 'Alta' ? 'selected' : ''}>Alta</option>
-                <option ${item.priority === 'Media' ? 'selected' : ''}>Media</option>
-                <option ${item.priority === 'Baja' ? 'selected' : ''}>Baja</option>
-            </select>
-        </td>
-        <td>
-            <button class="btn btn-sm btn-outline-primary edit-item">
-                <i class="bi bi-pencil"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-danger delete-item">
-                <i class="bi bi-trash"></i>
-            </button>
-        </td>
-    `;
-    attachBudgetListeners(row);
-}
-
-function displayItems(items, tbody) {
-    tbody.innerHTML = '';
-    items.forEach(item => {
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td>${item.name || ''}</td>
-            <td>${item.estimatedCost || 0} €</td>
-            <td>${item.realCost || 0} €</td>
-            <td>${item.status || 'Pendiente'}</td>
-            <td>${item.priority || 'Media'}</td>
-            <td>
-                <button class="btn btn-sm btn-outline-primary edit-item">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger delete-item">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
-    });
+    // Scroll to top when changing sections
+    window.scrollTo(0, 0);
+    updateBudget();
 }
 
 function addNewItem(type) {
@@ -391,6 +263,7 @@ function deleteRow(button) {
     button.closest('tr').remove();
     updateBudget();
 }
+
 function attachBudgetListeners(row) {
     const editableCells = row.querySelectorAll('[contenteditable="true"]');
     editableCells.forEach(cell => {
@@ -1315,7 +1188,7 @@ function importGuests() {
                     </td>
                     <td>
                         <select class="form-select dietary-restrictions">
-                            <option value="none" ${guest.restricciones === 'none' ? 'selected' : ''}>Sin restricciones</option>
+                            <option value="none" ${!guest.restricciones ? 'selected' : ''}>Sin restricciones</option>
                             <option value="vegetarian" ${guest.restricciones === 'vegetarian' ? 'selected' : ''}>Vegetariano</option>
                             <option value="vegan" ${guest.restricciones === 'vegan' ? 'selected' : ''}>Vegano</option>
                             <option value="gluten" ${guest.restricciones === 'gluten' ? 'selected' : ''}>Sin gluten</option>
@@ -2032,25 +1905,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-function updateDashboardStats() {
-    // Get stats from localStorage or your data source
-    const weddingDate = localStorage.getItem('weddingDate');
-    const totalGuests = localStorage.getItem('totalGuests');
-    
-    // Calculate days remaining
-    const daysRemaining = weddingDate ? 
-        Math.ceil((new Date(weddingDate) - new Date()) / (1000 * 60 * 60 * 24)) : 0;
-
-    // Update stats display
-    document.querySelector('.stat-value').textContent = totalGuests || '0';
-    document.querySelectorAll('.stat-value')[2].textContent = daysRemaining;
-}
-
-function initializeDashboard() {
-    updateDashboardStats();
-    // Add more dashboard initialization as needed
-}
-
-// Call when page loads
-document.addEventListener('DOMContentLoaded', initializeDashboard);
