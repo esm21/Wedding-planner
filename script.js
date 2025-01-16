@@ -255,7 +255,22 @@ function loadSectionContent(sectionId) {
         case 'banquet':
             const items = JSON.parse(localStorage.getItem(`${sectionId}-items`) || '[]');
             const tbody = document.querySelector(`#${sectionId}-table tbody`);
-            if (tbody) displayItems(items, tbody);
+            if (tbody) {
+                // Clear existing content
+                tbody.innerHTML = '';
+                // Load predefined items if no items exist
+                if (items.length === 0) {
+                    const predefinedItems = getPredefinedItems(sectionId);
+                    predefinedItems.forEach(item => {
+                        addItemToTable(item, tbody);
+                    });
+                } else {
+                    // Display existing items
+                    items.forEach(item => {
+                        addItemToTable(item, tbody);
+                    });
+                }
+            }
             break;
         case 'guests':
             updateGuestCounts();
@@ -264,6 +279,60 @@ function loadSectionContent(sectionId) {
             updateTableStats();
             break;
     }
+}
+
+function getPredefinedItems(section) {
+    const items = {
+        civil: [
+            { name: 'Documentación', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Alta' },
+            { name: 'Tasas', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Alta' },
+            { name: 'Testigos', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Media' }
+        ],
+        religious: [
+            { name: 'Iglesia', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Alta' },
+            { name: 'Decoración', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Media' },
+            { name: 'Música', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Media' }
+        ],
+        banquet: [
+            { name: 'Lugar', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Alta' },
+            { name: 'Catering', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Alta' },
+            { name: 'Decoración', estimatedCost: 0, realCost: 0, status: 'Pendiente', priority: 'Media' }
+        ]
+    };
+    return items[section] || [];
+}
+
+function addItemToTable(item, tbody) {
+    const row = tbody.insertRow();
+    row.innerHTML = `
+        <td contenteditable="true">${item.name}</td>
+        <td contenteditable="true">${item.estimatedCost}</td>
+        <td contenteditable="true">${item.realCost}</td>
+        <td>
+            <select class="form-select">
+                <option ${item.status === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                <option ${item.status === 'En curso' ? 'selected' : ''}>En curso</option>
+                <option ${item.status === 'Terminado' ? 'selected' : ''}>Terminado</option>
+                <option ${item.status === 'No interesado' ? 'selected' : ''}>No interesado</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select">
+                <option ${item.priority === 'Alta' ? 'selected' : ''}>Alta</option>
+                <option ${item.priority === 'Media' ? 'selected' : ''}>Media</option>
+                <option ${item.priority === 'Baja' ? 'selected' : ''}>Baja</option>
+            </select>
+        </td>
+        <td>
+            <button class="btn btn-sm btn-outline-primary edit-item">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger delete-item">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    `;
+    attachBudgetListeners(row);
 }
 
 function displayItems(items, tbody) {
