@@ -677,102 +677,33 @@ function updateBudget() {
 }
 
 function addGuest() {
-    const guestCount = document.querySelectorAll('#guests-table tbody tr').length + 1;
-    const guestName = `Invitado ${guestCount}`;
-    const guestId = `guest-${Date.now()}`;
-    
-    // Add to the table
-    const tbody = document.querySelector('#guests-table tbody');
-    const row = tbody.insertRow();
-    row.style.display = '';
-    row.setAttribute('data-guest-id', guestId);
-    row.innerHTML = `
-           <td contenteditable="true">${guestName}</td>
-        <td contenteditable="true">0</td>
-        <td>
-               <select class="form-select guest-category" onchange="updateGuestCounts()">
-                   <option>Familia Novia</option>
-                   <option>Familia Novio</option>
-                   <option>Amigos Novia</option>
-                   <option>Amigos Novio</option>
-                   <option>Trabajo Novia</option>
-                   <option>Trabajo Novio</option>
-                <option>Otros</option>
-            </select>
-        </td>
-        <td>
-               <select class="form-select dietary-restrictions">
-                   <option value="none" selected>Sin restricciones</option>
-                   <option value="vegetarian">Vegetariano</option>
-                   <option value="vegan">Vegano</option>
-                   <option value="gluten">Sin gluten</option>
-                   <option value="lactose">Sin lactosa</option>
-                   <option value="allergies">Alergias</option>
-                   <option value="other">Otras restricciones</option>
-               </select>
-           </td>
-           <td>
-               <select class="form-select invitation-status">
-                <option>No</option>
-                <option>Sí</option>
-            </select>
-        </td>
-        <td>
-               <select class="form-select confirmation-status">
-                <option>Pendiente</option>
-                <option>Confirmado</option>
-                <option>Rechazado</option>
-            </select>
-        </td>
-        <td>
-            <select class="form-select table-group">
-                   <option value="">Sin asignar</option>
-                   ${getTableOptions()}
-            </select>
-        </td>
-           <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td>
-               <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
-        </td>
-    `;
-    
-    // Add to unassigned guests area (Mesas page)
-    const guestElement = createGuestItem(guestName, guestId, 0);
-    document.getElementById('unassigned-guests').appendChild(guestElement);
-    setupDragAndDrop(guestElement);
-    
-    // Add change listeners
-    row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
-    row.querySelector('.guest-category').addEventListener('change', updateGuestCounts);
-    
-    // Watch for changes in the plus-ones field
-    const plusOnesCell = row.cells[1];
-    plusOnesCell.addEventListener('input', () => {
-    const plusOnes = parseInt(plusOnesCell.textContent) || 0;
-    const guestItem = document.querySelector(`.guest-item[data-guest-id="${guestId}"]`);
-    if (guestItem) {
-    guestItem.setAttribute('data-plus-ones', plusOnes);
-    // Update the plus-ones display
-    const plusOnesDisplay = guestItem.querySelector('.text-muted');
-    if (plusOnes > 0) {
-    if (plusOnesDisplay) {
-    plusOnesDisplay.textContent = `+${plusOnes}`;
-    } else {
-    guestItem.querySelector('.guest-info').insertAdjacentHTML('beforeend', 
-    `<small class="text-muted">+${plusOnes}</small>`);
+    const guestName = document.getElementById('guest-name').value;
+    const guestCategory = document.getElementById('guest-category').value;
+    const guestStatus = document.getElementById('guest-status').value;
+
+    if (!guestName || !guestCategory) {
+        alert('Por favor complete todos los campos requeridos');
+        return;
     }
-    } else if (plusOnesDisplay) {
-    plusOnesDisplay.remove();
-    }
-    updateTableStats();
-    }
-    });
-    
-    updateGuestCounts();
-    }
-    
-    function deleteGuest(button) {
+
+    const guest = {
+        id: Date.now(),
+        name: guestName,
+        category: guestCategory,
+        status: guestStatus
+    };
+
+    let guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
+    guests.push(guest);
+    localStorage.setItem('wedding-guests', JSON.stringify(guests));
+
+    updateGuestList();
+    document.getElementById('guest-name').value = '';
+    document.getElementById('guest-category').value = '';
+    document.getElementById('guest-status').value = 'pending-invite';
+}
+
+function deleteGuest(button) {
     // Get the guest name before removing the row
     const guestName = button.closest('tr').cells[0].textContent;
     
@@ -835,15 +766,9 @@ function addGuest() {
     }
     
     function filterGuests(status) {
-    const rows = document.querySelectorAll('#guests-table tbody tr');
-    rows.forEach(row => {
-    if (status === 'all') {
-    row.style.display = '';
-    } else {
-    const confirmation = row.querySelector('select.confirmation-status').value;
-    row.style.display = (status === confirmation) ? '' : 'none';
-    }
-    });
+    const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
+    const filteredGuests = status === 'all' ? guests : guests.filter(guest => guest.status === status);
+    updateGuestList(filteredGuests);
     }
     
     function filterGuestsByName() {
@@ -2202,30 +2127,33 @@ function loadGuests() {
     window.filterGuests = function(status) {
         const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
         const filteredGuests = status === 'all' ? guests : guests.filter(guest => guest.status === status);
-        renderGuestList(filteredGuests);
+        updateGuestList(filteredGuests);
     };
 
-    function renderGuestList(guests) {
+    function updateGuestList(guestsToShow) {
+        const guestList = document.getElementById('guest-list');
         if (!guestList) return;
+
+        const guests = guestsToShow || JSON.parse(localStorage.getItem('wedding-guests')) || [];
         guestList.innerHTML = '';
-        guests.forEach((guest) => {
+
+        const statusClasses = {
+            'pending-invite': 'warning',
+            'invited': 'info',
+            'confirmed': 'success',
+            'rejected': 'danger'
+        };
+
+        const statusLabels = {
+            'pending-invite': 'Pendiente de Invitar',
+            'invited': 'Invitado',
+            'confirmed': 'Confirmado',
+            'rejected': 'No Asistirá'
+        };
+
+        guests.forEach(guest => {
             const li = document.createElement('li');
             li.className = 'list-group-item d-flex justify-content-between align-items-center';
-            
-            const statusClasses = {
-                'pending-invite': 'warning',
-                'invited': 'info',
-                'confirmed': 'success',
-                'rejected': 'danger'
-            };
-
-            const statusLabels = {
-                'pending-invite': 'Pendiente de Invitar',
-                'invited': 'Invitado',
-                'confirmed': 'Confirmado',
-                'rejected': 'No Asistirá'
-            };
-
             li.innerHTML = `
                 ${guest.name} (${guest.category})
                 <span>
@@ -2248,7 +2176,7 @@ function loadGuests() {
 
     function updateGuestList() {
         const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
-        renderGuestList(guests);
+        updateGuestList(guests);
     }
 
     updateGuestList();
