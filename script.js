@@ -181,6 +181,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize budget calculator
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
     document.getElementById('save-details').addEventListener('click', saveBasicDetails);
+
+    // Guest form submission
+    const guestForm = document.getElementById('guest-form');
+    if (guestForm) {
+        guestForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            addGuest();
+        });
+    }
     }
 
 function showSection(sectionId) {
@@ -570,18 +579,18 @@ function updateBudget() {
 
 function addGuest() {
     const guestName = document.getElementById('guest-name').value;
-    if (!guestName) {
-        alert('Por favor ingrese el nombre del invitado');
+    const guestCategory = document.getElementById('guest-category').value;
+
+    if (!guestName || !guestCategory) {
+        alert('Por favor complete todos los campos requeridos');
         return;
     }
 
-    const guestCount = document.querySelectorAll('#guests-table tbody tr').length + 1;
     const guestId = `guest-${Date.now()}`;
     
     // Add to the table
     const tbody = document.querySelector('#guests-table tbody');
     const row = tbody.insertRow();
-    row.style.display = '';
     row.setAttribute('data-guest-id', guestId);
     row.innerHTML = `
         <td contenteditable="true">${guestName}</td>
@@ -590,13 +599,13 @@ function addGuest() {
         </td>
         <td>
             <select class="form-select guest-category" onchange="updateGuestCounts()">
-                <option>Familia Novia</option>
-                <option>Familia Novio</option>
-                <option>Amigos Novia</option>
-                <option>Amigos Novio</option>
-                <option>Trabajo Novia</option>
-                <option>Trabajo Novio</option>
-                <option>Otros</option>
+                <option ${guestCategory === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
+                <option ${guestCategory === 'Familia Novio' ? 'selected' : ''}>Familia Novio</option>
+                <option ${guestCategory === 'Amigos Novia' ? 'selected' : ''}>Amigos Novia</option>
+                <option ${guestCategory === 'Amigos Novio' ? 'selected' : ''}>Amigos Novio</option>
+                <option ${guestCategory === 'Trabajo Novia' ? 'selected' : ''}>Trabajo Novia</option>
+                <option ${guestCategory === 'Trabajo Novio' ? 'selected' : ''}>Trabajo Novio</option>
+                <option ${guestCategory === 'Otros' ? 'selected' : ''}>Otros</option>
             </select>
         </td>
         <td>
@@ -631,22 +640,21 @@ function addGuest() {
         </td>
         <td contenteditable="true"></td>
         <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">
-                <i class="bi bi-trash"></i>
-            </button>
+            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
         </td>
     `;
 
-    // Add to unassigned guests area (Mesas page)
-    const guestElement = createGuestItem(guestName, guestId, 0);
+    // Add to unassigned guests area if it exists
     const unassignedArea = document.getElementById('unassigned-guests');
     if (unassignedArea) {
+        const guestElement = createGuestItem(guestName, guestId, 0);
         unassignedArea.appendChild(guestElement);
         setupDragAndDrop(guestElement);
     }
     
     updateGuestCounts();
-    document.getElementById('guest-name').value = ''; // Clear input after adding
+    document.getElementById('guest-name').value = '';
+    document.getElementById('guest-category').value = '';
 }
 
 function deleteGuest(button) {
