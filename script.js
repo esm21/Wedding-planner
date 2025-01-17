@@ -181,145 +181,52 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize budget calculator
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
     document.getElementById('save-details').addEventListener('click', saveBasicDetails);
-
-    // Tables section initialization
-    document.addEventListener('DOMContentLoaded', function() {
-        const addTableBtn = document.getElementById('add-table');
-        if (addTableBtn) {
-            addTableBtn.addEventListener('click', () => {
-                const tableName = prompt('Nombre de la mesa:');
-                const capacity = parseInt(prompt('Capacidad de la mesa:'));
-                
-                if (tableName && !isNaN(capacity)) {
-                    addTable(tableName, capacity);
-                }
-            });
-        }
-    });
-}
-
-function addTable(name, capacity) {
-    const tables = JSON.parse(localStorage.getItem('tables')) || [];
-    const newTable = {
-        id: Date.now(),
-        name: name,
-        capacity: capacity,
-        guests: []
-    };
-    
-    tables.push(newTable);
-    localStorage.setItem('tables', JSON.stringify(tables));
-    updateTableDisplay();
-    updateTableStats();
-}
-
-function updateTableDisplay() {
-    const tablesGrid = document.getElementById('tables-grid');
-    if (!tablesGrid) return;
-
-    const tables = JSON.parse(localStorage.getItem('tables')) || [];
-    tablesGrid.innerHTML = '';
-
-    tables.forEach(table => {
-        const tableCard = document.createElement('div');
-        tableCard.className = 'card table-card m-2';
-        tableCard.style.width = '200px';
-        tableCard.innerHTML = `
-            <div class="card-body">
-                <h5 class="card-title">${table.name}</h5>
-                <p class="card-text">Capacidad: ${table.capacity}</p>
-                <p class="card-text">Asignados: ${table.guests.length}</p>
-                <div class="table-guests" data-table-id="${table.id}">
-                    ${table.guests.map(guest => `
-                        <div class="guest-item" draggable="true" data-guest-id="${guest.id}">
-                            ${guest.name}
-                        </div>
-                    `).join('')}
-                </div>
-                <button class="btn btn-sm btn-danger" onclick="deleteTable(${table.id})">
-                    <i class="bi bi-trash"></i> Eliminar
-                </button>
-            </div>
-        `;
-        tablesGrid.appendChild(tableCard);
-    });
-}
-
-function updateTableStats() {
-    const tables = JSON.parse(localStorage.getItem('tables')) || [];
-    const totalTables = tables.length;
-    const totalSeats = tables.reduce((sum, table) => sum + table.capacity, 0);
-    const occupiedSeats = tables.reduce((sum, table) => sum + table.guests.length, 0);
-    const availableSeats = totalSeats - occupiedSeats;
-
-    document.getElementById('tables-count').textContent = totalTables;
-    document.getElementById('total-seats').textContent = totalSeats;
-    document.getElementById('available-seats').textContent = availableSeats;
-}
-
-function deleteTable(tableId) {
-    let tables = JSON.parse(localStorage.getItem('tables')) || [];
-    const tableIndex = tables.findIndex(t => t.id === tableId);
-    
-    if (tableIndex !== -1) {
-        // Move guests back to unassigned
-        const removedTable = tables[tableIndex];
-        if (removedTable.guests.length > 0) {
-            const unassignedContainer = document.getElementById('unassigned-guests');
-            removedTable.guests.forEach(guest => {
-                const guestElement = document.createElement('div');
-                guestElement.className = 'guest-item';
-                guestElement.setAttribute('draggable', 'true');
-                guestElement.setAttribute('data-guest-id', guest.id);
-                guestElement.textContent = guest.name;
-                unassignedContainer.appendChild(guestElement);
-            });
-        }
-        
-        tables.splice(tableIndex, 1);
-        localStorage.setItem('tables', JSON.stringify(tables));
-        updateTableDisplay();
-        updateTableStats();
     }
-}
 
 function showSection(sectionId) {
-    console.log('Showing section:', sectionId); // Debug log
-    
-    // Hide all sections first
+    // Hide all sections
     document.querySelectorAll('.section-content').forEach(section => {
         section.style.display = 'none';
     });
-    
-    // Show the selected section
+
+    // Show selected section
     const selectedSection = document.getElementById(`${sectionId}-section`);
     if (selectedSection) {
         selectedSection.style.display = 'block';
     }
 
-    // Load specific section content
-    if (sectionId === 'guests') {
-        loadGuests();
-    } else if (sectionId === 'tables') {
-        loadTables();
-    }
-
-    // Update the active state in navigation
+    // Update active nav link
     document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
         if (link.getAttribute('data-section') === sectionId) {
             link.classList.add('active');
-        } else {
-            link.classList.remove('active');
         }
     });
 
-    // Update URL without reloading the page
-    const url = new URL(window.location);
-    url.searchParams.set('section', sectionId);
-    window.history.pushState({}, '', url);
+    // Update body attribute for CSS targeting
+    document.body.setAttribute('data-active-section', sectionId);
+    
+    // Adjust layout based on section
+    const mainContent = document.getElementById('main-content-area');
+    const calculatorContainer = document.getElementById('budget-calculator-container');
+    
+    if (sectionId === 'guests' || sectionId === 'tables') {
+        mainContent.classList.remove('col-lg-9');
+        mainContent.classList.add('col-lg-12');
+        if (calculatorContainer) {
+            calculatorContainer.style.display = 'none';
+        }
+    } else {
+        mainContent.classList.remove('col-lg-12');
+        mainContent.classList.add('col-lg-9');
+        if (calculatorContainer) {
+            calculatorContainer.style.display = 'block';
+        }
+    }
 
-    // Scroll to top of the page
+    // Scroll to top when changing sections
     window.scrollTo(0, 0);
+    updateBudget();
 }
 
 function addNewItem(type) {
@@ -662,67 +569,102 @@ function updateBudget() {
 }
 
 function addGuest() {
-    const guestName = document.getElementById('guest-name').value;
-    const guestCategory = document.getElementById('guest-category').value;
-    const guestStatus = document.getElementById('guest-status').value;
-
-    if (!guestName || !guestCategory) {
-        alert('Por favor complete todos los campos requeridos');
-        return;
-    }
-
+    const guestCount = document.querySelectorAll('#guests-table tbody tr').length + 1;
+    const guestName = `Invitado ${guestCount}`;
+    const guestId = `guest-${Date.now()}`;
+    
     // Add to the table
     const tbody = document.querySelector('#guests-table tbody');
     const row = tbody.insertRow();
+    row.style.display = '';
+    row.setAttribute('data-guest-id', guestId);
     row.innerHTML = `
-        <td contenteditable="true">${guestName}</td>
+           <td contenteditable="true">${guestName}</td>
+        <td contenteditable="true">0</td>
         <td>
-            <select class="form-select guest-category">
-                <option ${guestCategory === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
-                <option ${guestCategory === 'Familia Novio' ? 'selected' : ''}>Familia Novio</option>
-                <option ${guestCategory === 'Amigos Novia' ? 'selected' : ''}>Amigos Novia</option>
-                <option ${guestCategory === 'Amigos Novio' ? 'selected' : ''}>Amigos Novio</option>
-                <option ${guestCategory === 'Trabajo Novia' ? 'selected' : ''}>Trabajo Novia</option>
-                <option ${guestCategory === 'Trabajo Novio' ? 'selected' : ''}>Trabajo Novio</option>
-                <option ${guestCategory === 'Otros' ? 'selected' : ''}>Otros</option>
+               <select class="form-select guest-category" onchange="updateGuestCounts()">
+                   <option>Familia Novia</option>
+                   <option>Familia Novio</option>
+                   <option>Amigos Novia</option>
+                   <option>Amigos Novio</option>
+                   <option>Trabajo Novia</option>
+                   <option>Trabajo Novio</option>
+                <option>Otros</option>
             </select>
         </td>
         <td>
-            <select class="form-select guest-status">
-                <option ${guestStatus === 'pending-invite' ? 'selected' : ''}>Pendiente de Invitar</option>
-                <option ${guestStatus === 'invited' ? 'selected' : ''}>Invitado</option>
-                <option ${guestStatus === 'confirmed' ? 'selected' : ''}>Confirmado</option>
-                <option ${guestStatus === 'rejected' ? 'selected' : ''}>No Asistirá</option>
+               <select class="form-select dietary-restrictions">
+                   <option value="none" selected>Sin restricciones</option>
+                   <option value="vegetarian">Vegetariano</option>
+                   <option value="vegan">Vegano</option>
+                   <option value="gluten">Sin gluten</option>
+                   <option value="lactose">Sin lactosa</option>
+                   <option value="allergies">Alergias</option>
+                   <option value="other">Otras restricciones</option>
+               </select>
+           </td>
+           <td>
+               <select class="form-select invitation-status">
+                <option>No</option>
+                <option>Sí</option>
             </select>
         </td>
         <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">
-                <i class="bi bi-trash"></i>
-            </button>
+               <select class="form-select confirmation-status">
+                <option>Pendiente</option>
+                <option>Confirmado</option>
+                <option>Rechazado</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select table-group">
+                   <option value="">Sin asignar</option>
+                   ${getTableOptions()}
+            </select>
+        </td>
+           <td contenteditable="true"></td>
+        <td contenteditable="true"></td>
+        <td>
+               <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
         </td>
     `;
-
-    // Save to localStorage
-    const guest = {
-        id: Date.now(),
-        name: guestName,
-        category: guestCategory,
-        status: guestStatus
-    };
-
-    let guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
-    guests.push(guest);
-    localStorage.setItem('wedding-guests', JSON.stringify(guests));
-
-    // Reset form
-    document.getElementById('guest-name').value = '';
-    document.getElementById('guest-category').value = '';
-    document.getElementById('guest-status').value = 'pending-invite';
+    
+    // Add to unassigned guests area (Mesas page)
+    const guestElement = createGuestItem(guestName, guestId, 0);
+    document.getElementById('unassigned-guests').appendChild(guestElement);
+    setupDragAndDrop(guestElement);
+    
+    // Add change listeners
+    row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
+    row.querySelector('.guest-category').addEventListener('change', updateGuestCounts);
+    
+    // Watch for changes in the plus-ones field
+    const plusOnesCell = row.cells[1];
+    plusOnesCell.addEventListener('input', () => {
+    const plusOnes = parseInt(plusOnesCell.textContent) || 0;
+    const guestItem = document.querySelector(`.guest-item[data-guest-id="${guestId}"]`);
+    if (guestItem) {
+    guestItem.setAttribute('data-plus-ones', plusOnes);
+    // Update the plus-ones display
+    const plusOnesDisplay = guestItem.querySelector('.text-muted');
+    if (plusOnes > 0) {
+    if (plusOnesDisplay) {
+    plusOnesDisplay.textContent = `+${plusOnes}`;
+    } else {
+    guestItem.querySelector('.guest-info').insertAdjacentHTML('beforeend', 
+    `<small class="text-muted">+${plusOnes}</small>`);
+    }
+    } else if (plusOnesDisplay) {
+    plusOnesDisplay.remove();
+    }
+    updateTableStats();
+    }
+    });
     
     updateGuestCounts();
-}
-
-function deleteGuest(button) {
+    }
+    
+    function deleteGuest(button) {
     // Get the guest name before removing the row
     const guestName = button.closest('tr').cells[0].textContent;
     
@@ -787,12 +729,12 @@ function deleteGuest(button) {
     function filterGuests(status) {
     const rows = document.querySelectorAll('#guests-table tbody tr');
     rows.forEach(row => {
-        if (status === 'all') {
-            row.style.display = '';
-        } else {
-            const guestStatus = row.querySelector('select.guest-status').value;
-            row.style.display = (status === guestStatus) ? '' : 'none';
-        }
+    if (status === 'all') {
+    row.style.display = '';
+    } else {
+    const confirmation = row.querySelector('select.confirmation-status').value;
+    row.style.display = (status === confirmation) ? '' : 'none';
+    }
     });
     }
     
@@ -1963,424 +1905,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-function updateTables() {
-    const tablesContainer = document.querySelector('.tables-container');
-    if (!tablesContainer) return;
-
-    const tables = JSON.parse(localStorage.getItem('tables')) || [];
-    tablesContainer.innerHTML = '';
-    
-    tables.forEach((table, index) => {
-        const card = document.createElement('div');
-        card.className = 'card table-card m-2';
-        card.style.width = '200px';
-        card.innerHTML = `
-            <div class="card-body">
-                <h5 class="card-title">${table.name}</h5>
-                <p class="card-text">Capacidad: ${table.capacity}</p>
-                <p class="card-text">Asignados: ${table.guests.length}</p>
-                <div class="table-guests" data-table-id="table-${index}">
-                    ${table.guests.map(guest => `
-                        <div class="guest-item" draggable="true" data-guest-id="${guest.id}">
-                            ${guest.name}
-                        </div>
-                    `).join('')}
-                </div>
-                <button class="btn btn-sm btn-danger" onclick="deleteTable(${table.id})">
-                    <i class="bi bi-trash"></i> Eliminar
-                </button>
-            </div>
-        `;
-        tablesContainer.appendChild(card);
-    });
-    
-    setupTableDropZones();
-    updateSeatingAssignment();
-}
-
-function updateSeatingAssignment() {
-    const seatingAssignment = document.querySelector('.seating-assignment');
-    if (!seatingAssignment) return;
-
-    const tables = JSON.parse(localStorage.getItem('tables')) || [];
-    const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
-    seatingAssignment.innerHTML = '';
-
-    tables.forEach((table, tableIndex) => {
-        const tableDiv = document.createElement('div');
-        tableDiv.className = 'card m-2';
-        tableDiv.style.width = '200px';
-        tableDiv.innerHTML = `
-            <div class="card-body">
-                <h5 class="card-title">${table.name}</h5>
-                <ul class="list-group" id="table-${tableIndex}">
-                    ${table.guests.map(guest => `<li class="list-group-item">${guest.name}</li>`).join('')}
-                </ul>
-                <select class="form-select mt-2" onchange="assignGuest(${tableIndex}, this.value); this.value='';">
-                    <option value="">Asignar invitado...</option>
-                    ${guests.filter(guest => !tables.some(t => t.guests.some(g => g.id === guest.id)))
-                           .map(guest => `<option value="${guest.id}">${guest.name}</option>`).join('')}
-                </select>
-            </div>
-        `;
-        seatingAssignment.appendChild(tableDiv);
-    });
-}
-
-function removeTable(index) {
-    let tables = JSON.parse(localStorage.getItem('tables')) || [];
-    // Move guests back to unassigned
-    const removedTable = tables[index];
-    if (removedTable && removedTable.guests) {
-        removedTable.guests.forEach(guest => {
-            unassignGuestFromTable(guest.id);
-        });
-    }
-    tables.splice(index, 1);
-    localStorage.setItem('tables', JSON.stringify(tables));
-    updateTables();
-}
-
-function assignGuest(tableIndex, guestId) {
-    if (!guestId) return;
-    
-    let tables = JSON.parse(localStorage.getItem('tables')) || [];
-    const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
-    const guest = guests.find(g => g.id === guestId);
-    
-    if (!guest) return;
-
-    if (tables[tableIndex].guests.length < tables[tableIndex].capacity) {
-        // Remove from other tables first
-        tables.forEach(table => {
-            table.guests = table.guests.filter(g => g.id !== guestId);
-        });
-        
-        // Add to new table
-        tables[tableIndex].guests.push({
-            id: guest.id,
-            name: guest.name
-        });
-        
-        localStorage.setItem('tables', JSON.stringify(tables));
-        updateTables();
-    } else {
-        alert('Esta mesa está llena. Por favor, elija otra mesa.');
-    }
-}
-
-// Add these functions to your existing script.js
-
-function loadGuests() {
-    const guestsSection = document.getElementById('guests-section');
-    if (!guestsSection) return;
-
-    guestsSection.innerHTML = `
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <h3>Agregar Invitado</h3>
-                <form id="add-guest-form">
-                    <div class="mb-3">
-                        <label for="guest-name" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="guest-name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="guest-category" class="form-label">Categoría</label>
-                        <select class="form-select" id="guest-category" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="family">Familia</option>
-                            <option value="friends">Amigos</option>
-                            <option value="colleagues">Colegas</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="guest-status" class="form-label">Estado</label>
-                        <select class="form-select" id="guest-status" required>
-                            <option value="pending-invite">Pendiente de Invitar</option>
-                            <option value="invited">Invitado</option>
-                            <option value="confirmed">Confirmado</option>
-                            <option value="rejected">No Asistirá</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Agregar Invitado</button>
-                </form>
-            </div>
-            <div class="col-md-6">
-                <h3>Lista de Invitados</h3>
-                <div class="mb-3">
-                    <label for="guest-filter" class="form-label">Filtrar por Estado</label>
-                    <select class="form-select" id="guest-filter" onchange="filterGuests(this.value)">
-                        <option value="all">Todos</option>
-                        <option value="pending-invite">Pendiente de Invitar</option>
-                        <option value="invited">Invitados</option>
-                        <option value="confirmed">Confirmados</option>
-                        <option value="rejected">No Asistirán</option>
-                    </select>
-                </div>
-                <ul id="guest-list" class="list-group">
-                </ul>
-            </div>
-        </div>
-    `;
-
-    const addGuestForm = document.getElementById('add-guest-form');
-    const guestList = document.getElementById('guest-list');
-
-    if (addGuestForm) {
-        addGuestForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('guest-name').value;
-            const category = document.getElementById('guest-category').value;
-            const status = document.getElementById('guest-status').value;
-
-            const guest = { 
-                id: Date.now(), // Add unique ID for each guest
-                name, 
-                category, 
-                status 
-            };
-            let guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
-            guests.push(guest);
-            localStorage.setItem('wedding-guests', JSON.stringify(guests));
-
-            updateGuestList();
-            addGuestForm.reset();
-        });
-    }
-
-    window.filterGuests = function(status) {
-        const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
-        const filteredGuests = status === 'all' ? guests : guests.filter(guest => guest.status === status);
-        updateGuestList(filteredGuests);
-    };
-
-    function updateGuestList(guestsToShow) {
-        const guestList = document.getElementById('guest-list');
-        if (!guestList) return;
-
-        const guests = guestsToShow || JSON.parse(localStorage.getItem('wedding-guests')) || [];
-        guestList.innerHTML = '';
-
-        const statusClasses = {
-            'pending-invite': 'warning',
-            'invited': 'info',
-            'confirmed': 'success',
-            'rejected': 'danger'
-        };
-
-        const statusLabels = {
-            'pending-invite': 'Pendiente de Invitar',
-            'invited': 'Invitado',
-            'confirmed': 'Confirmado',
-            'rejected': 'No Asistirá'
-        };
-
-        guests.forEach(guest => {
-            const li = document.createElement('li');
-            li.className = 'list-group-item d-flex justify-content-between align-items-center';
-            li.innerHTML = `
-                ${guest.name} (${guest.category})
-                <span>
-                    <span class="badge bg-${statusClasses[guest.status]}">${statusLabels[guest.status]}</span>
-                    <button class="btn btn-sm btn-danger ms-2" onclick="removeGuest('${guest.id}')">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </span>
-            `;
-            guestList.appendChild(li);
-        });
-    }
-
-    window.removeGuest = function(guestId) {
-        let guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
-        guests = guests.filter(g => g.id !== guestId);
-        localStorage.setItem('wedding-guests', JSON.stringify(guests));
-        updateGuestList();
-    };
-
-    function updateGuestList() {
-        const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
-        updateGuestList(guests);
-    }
-
-    updateGuestList();
-}
-
-function loadTables() {
-    const tablesSection = document.getElementById('tables-section');
-    if (!tablesSection) return;
-
-    tablesSection.innerHTML = `
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <h3>Agregar Mesa</h3>
-                <form id="add-table-form">
-                    <div class="mb-3">
-                        <label for="table-name" class="form-label">Nombre de la Mesa</label>
-                        <input type="text" class="form-control" id="table-name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="table-capacity" class="form-label">Capacidad</label>
-                        <input type="number" class="form-control" id="table-capacity" min="1" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Agregar Mesa</button>
-                </form>
-            </div>
-            <div class="col-md-6">
-                <h3>Mesas</h3>
-                <div id="tables-container" class="d-flex flex-wrap">
-                </div>
-            </div>
-        </div>
-        <div class="row mt-4">
-            <div class="col-12">
-                <h3>Asignación de Invitados</h3>
-                <div id="seating-assignment" class="d-flex flex-wrap">
-                </div>
-            </div>
-        </div>
-    `;
-
-    const addTableForm = document.getElementById('add-table-form');
-    const tablesContainer = document.getElementById('tables-container');
-    const seatingAssignment = document.getElementById('seating-assignment');
-
-    if (addTableForm) {
-        addTableForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('table-name').value;
-            const capacity = parseInt(document.getElementById('table-capacity').value);
-
-            const table = { 
-                id: Date.now(),
-                name, 
-                capacity, 
-                guests: [] 
-            };
-            let tables = JSON.parse(localStorage.getItem('wedding-tables')) || [];
-            tables.push(table);
-            localStorage.setItem('wedding-tables', JSON.stringify(tables));
-
-            updateTables();
-            addTableForm.reset();
-        });
-    }
-
-    function updateTables() {
-        const tables = JSON.parse(localStorage.getItem('wedding-tables')) || [];
-        if (!tablesContainer) return;
-
-        tablesContainer.innerHTML = '';
-        tables.forEach((table) => {
-            const card = document.createElement('div');
-            card.className = 'card m-2';
-            card.style.width = '200px';
-            card.innerHTML = `
-                <div class="card-body">
-                    <h5 class="card-title">${table.name}</h5>
-                    <p class="card-text">Capacidad: ${table.capacity}</p>
-                    <p class="card-text">Asignados: ${table.guests.length}</p>
-                    <button class="btn btn-sm btn-danger" onclick="removeTable('${table.id}')">
-                        <i class="bi bi-trash"></i> Eliminar
-                    </button>
-                </div>
-            `;
-            tablesContainer.appendChild(card);
-        });
-        updateSeatingAssignment();
-    }
-
-    function updateSeatingAssignment() {
-        if (!seatingAssignment) return;
-
-        const tables = JSON.parse(localStorage.getItem('wedding-tables')) || [];
-        const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
-        const confirmedGuests = guests.filter(guest => guest.status === 'confirmed');
-
-        seatingAssignment.innerHTML = '';
-        tables.forEach((table) => {
-            const tableDiv = document.createElement('div');
-            tableDiv.className = 'card m-2';
-            tableDiv.style.width = '200px';
-            tableDiv.innerHTML = `
-                <div class="card-body">
-                    <h5 class="card-title">${table.name}</h5>
-                    <ul class="list-group" id="table-${table.id}">
-                        ${table.guests.map(guestId => {
-                            const guest = guests.find(g => g.id === guestId);
-                            return guest ? `
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    ${guest.name}
-                                    <button class="btn btn-sm btn-danger" onclick="removeGuestFromTable('${table.id}', '${guest.id}')">
-                                        <i class="bi bi-x"></i>
-                                    </button>
-                                </li>
-                            ` : '';
-                        }).join('')}
-                    </ul>
-                    <select class="form-select mt-2" onchange="assignGuestToTable('${table.id}', this.value); this.value='';">
-                        <option value="">Asignar invitado...</option>
-                        ${confirmedGuests
-                            .filter(guest => !tables.some(t => t.guests.includes(guest.id)))
-                            .map(guest => `<option value="${guest.id}">${guest.name}</option>`)
-                            .join('')}
-                    </select>
-                </div>
-            `;
-            seatingAssignment.appendChild(tableDiv);
-        });
-    }
-
-    window.removeTable = function(tableId) {
-        let tables = JSON.parse(localStorage.getItem('wedding-tables')) || [];
-        tables = tables.filter(t => t.id !== tableId);
-        localStorage.setItem('wedding-tables', JSON.stringify(tables));
-        updateTables();
-    };
-
-    window.assignGuestToTable = function(tableId, guestId) {
-        if (!guestId) return;
-        
-        let tables = JSON.parse(localStorage.getItem('wedding-tables')) || [];
-        const table = tables.find(t => t.id === tableId);
-        
-        if (table && table.guests.length < table.capacity) {
-            // Remove guest from any other table first
-            tables.forEach(t => {
-                t.guests = t.guests.filter(g => g !== guestId);
-            });
-            
-            // Add to new table
-            table.guests.push(guestId);
-            localStorage.setItem('wedding-tables', JSON.stringify(tables));
-            updateTables();
-        } else {
-            alert('Esta mesa está llena. Por favor, elija otra mesa.');
-        }
-    };
-
-    window.removeGuestFromTable = function(tableId, guestId) {
-        let tables = JSON.parse(localStorage.getItem('wedding-tables')) || [];
-        const table = tables.find(t => t.id === tableId);
-        if (table) {
-            table.guests = table.guests.filter(g => g !== guestId);
-            localStorage.setItem('wedding-tables', JSON.stringify(tables));
-            updateTables();
-        }
-    };
-
-    updateTables();
-}
-
-// Add to your showSection function
-function showSection(sectionId) {
-    // ... existing code ...
-    
-    if (sectionId === 'guests') {
-        loadGuests();
-    } else if (sectionId === 'tables') {
-        loadTables();
-    }
-    
-   }
