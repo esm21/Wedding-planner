@@ -145,15 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             const section = this.getAttribute('data-section');
-    console.log('Navigation clicked:', section); // Debug log
-            // Remove active class from all links
-            document.querySelectorAll('.nav-link').forEach(l => {
-                l.classList.remove('active');
-            });
-            // Add active class to clicked link
-            this.classList.add('active');
             showSection(section);
-    history.pushState(null, '', `?section=${section}`);
         });
     });
 
@@ -186,18 +178,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const guestForm = document.getElementById('guest-form');
     if (guestForm) {
         guestForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+            e.preventDefault();  // Prevent form submission
             addGuest();
         });
     }
     }
 
 function showSection(sectionId) {
+    console.log('Showing section:', sectionId);  // Debug log
+    
     // Hide all sections
     document.querySelectorAll('.section-content').forEach(section => {
         section.style.display = 'none';
     });
-
+    
     // Show selected section
     const selectedSection = document.getElementById(`${sectionId}-section`);
     if (selectedSection) {
