@@ -686,6 +686,38 @@ function addGuest() {
         return;
     }
 
+    // Add to the table
+    const tbody = document.querySelector('#guests-table tbody');
+    const row = tbody.insertRow();
+    row.innerHTML = `
+        <td contenteditable="true">${guestName}</td>
+        <td>
+            <select class="form-select guest-category">
+                <option ${guestCategory === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
+                <option ${guestCategory === 'Familia Novio' ? 'selected' : ''}>Familia Novio</option>
+                <option ${guestCategory === 'Amigos Novia' ? 'selected' : ''}>Amigos Novia</option>
+                <option ${guestCategory === 'Amigos Novio' ? 'selected' : ''}>Amigos Novio</option>
+                <option ${guestCategory === 'Trabajo Novia' ? 'selected' : ''}>Trabajo Novia</option>
+                <option ${guestCategory === 'Trabajo Novio' ? 'selected' : ''}>Trabajo Novio</option>
+                <option ${guestCategory === 'Otros' ? 'selected' : ''}>Otros</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select guest-status">
+                <option ${guestStatus === 'pending-invite' ? 'selected' : ''}>Pendiente de Invitar</option>
+                <option ${guestStatus === 'invited' ? 'selected' : ''}>Invitado</option>
+                <option ${guestStatus === 'confirmed' ? 'selected' : ''}>Confirmado</option>
+                <option ${guestStatus === 'rejected' ? 'selected' : ''}>No Asistirá</option>
+            </select>
+        </td>
+        <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    `;
+
+    // Save to localStorage
     const guest = {
         id: Date.now(),
         name: guestName,
@@ -697,10 +729,12 @@ function addGuest() {
     guests.push(guest);
     localStorage.setItem('wedding-guests', JSON.stringify(guests));
 
-    updateGuestList();
+    // Reset form
     document.getElementById('guest-name').value = '';
     document.getElementById('guest-category').value = '';
     document.getElementById('guest-status').value = 'pending-invite';
+    
+    updateGuestCounts();
 }
 
 function deleteGuest(button) {
@@ -766,9 +800,15 @@ function deleteGuest(button) {
     }
     
     function filterGuests(status) {
-    const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
-    const filteredGuests = status === 'all' ? guests : guests.filter(guest => guest.status === status);
-    updateGuestList(filteredGuests);
+    const rows = document.querySelectorAll('#guests-table tbody tr');
+    rows.forEach(row => {
+        if (status === 'all') {
+            row.style.display = '';
+        } else {
+            const guestStatus = row.querySelector('select.guest-status').value;
+            row.style.display = (status === guestStatus) ? '' : 'none';
+        }
+    });
     }
     
     function filterGuestsByName() {
