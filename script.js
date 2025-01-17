@@ -284,57 +284,42 @@ function deleteTable(tableId) {
 }
 
 function showSection(sectionId) {
-    // Hide all sections
+    console.log('Showing section:', sectionId); // Debug log
+    
+    // Hide all sections first
     document.querySelectorAll('.section-content').forEach(section => {
         section.style.display = 'none';
     });
-
-    // Show selected section
+    
+    // Show the selected section
     const selectedSection = document.getElementById(`${sectionId}-section`);
     if (selectedSection) {
         selectedSection.style.display = 'block';
     }
 
-    // Update active nav link
+    // Load specific section content
+    if (sectionId === 'guests') {
+        loadGuests();
+    } else if (sectionId === 'tables') {
+        loadTables();
+    }
+
+    // Update the active state in navigation
     document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
         if (link.getAttribute('data-section') === sectionId) {
             link.classList.add('active');
+        } else {
+            link.classList.remove('active');
         }
     });
 
-    // Update body attribute for CSS targeting
-    document.body.setAttribute('data-active-section', sectionId);
-    
-    // Adjust layout based on section
-    const mainContent = document.getElementById('main-content-area');
-    const calculatorContainer = document.getElementById('budget-calculator-container');
-    
-    if (sectionId === 'guests' || sectionId === 'tables') {
-        mainContent.classList.remove('col-lg-9');
-        mainContent.classList.add('col-lg-12');
-        if (calculatorContainer) {
-            calculatorContainer.style.display = 'none';
-        }
-    } else {
-        mainContent.classList.remove('col-lg-12');
-        mainContent.classList.add('col-lg-9');
-        if (calculatorContainer) {
-            calculatorContainer.style.display = 'block';
-        }
-    }
+    // Update URL without reloading the page
+    const url = new URL(window.location);
+    url.searchParams.set('section', sectionId);
+    window.history.pushState({}, '', url);
 
-    // Scroll to top when changing sections
+    // Scroll to top of the page
     window.scrollTo(0, 0);
-    updateBudget();
-
-    if (sectionId === 'tables') {
-        updateTables();
-    }
-
-    if (sectionId === 'guests') {
-        loadGuests();
-    }
 }
 
 function addNewItem(type) {
@@ -2398,5 +2383,4 @@ function showSection(sectionId) {
         loadTables();
     }
     
-    // ... rest of existing code ...
-}
+   }
