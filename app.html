@@ -245,7 +245,23 @@
                     <!-- Tables Section -->
                     <section id="tables-section" class="section-content" style="display: none;">
                         <h2>Mesas</h2>
-                        <button class="btn btn-success mb-3" id="add-table-btn">Añadir Mesa</button>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <form id="table-form" onsubmit="event.preventDefault(); addTable();">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control" id="table-name" placeholder="Nombre de la mesa" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" id="table-capacity" placeholder="Capacidad" min="1" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-primary w-100">Añadir Mesa</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <div class="tables-container d-flex flex-wrap"></div>
                         <div class="seating-assignment d-flex flex-wrap mt-4"></div>
                     </section>
@@ -514,38 +530,26 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="guest-form">
-                        <div class="mb-3">
-                            <label class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="guest-name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Personas Adicionales</label>
-                            <input type="number" class="form-control" id="guest-plus-ones" value="0" min="0">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Categoría</label>
-                            <select class="form-select" id="guest-category">
-                                <option>Familia Novia</option>
-                                <option>Familia Novio</option>
-                                <option>Amigos Novia</option>
-                                <option>Amigos Novio</option>
-                                <option>Trabajo Novia</option>
-                                <option>Trabajo Novio</option>
-                                <option>Otros</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Restricciones Alimentarias</label>
-                            <select class="form-select" id="guest-dietary">
-                                <option value="none">Sin restricciones</option>
-                                <option value="vegetarian">Vegetariano</option>
-                                <option value="vegan">Vegano</option>
-                                <option value="gluten">Sin gluten</option>
-                                <option value="lactose">Sin lactosa</option>
-                                <option value="allergies">Alergias</option>
-                                <option value="other">Otras restricciones</option>
-                            </select>
+                    <form id="guest-form" class="mb-3" onsubmit="event.preventDefault(); addGuest();">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="guest-name" placeholder="Nombre del invitado" required>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="guest-category" required>
+                                    <option value="">Categoría...</option>
+                                    <option>Familia Novia</option>
+                                    <option>Familia Novio</option>
+                                    <option>Amigos Novia</option>
+                                    <option>Amigos Novio</option>
+                                    <option>Trabajo Novia</option>
+                                    <option>Trabajo Novio</option>
+                                    <option>Otros</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">Añadir</button>
+                            </div>
                         </div>
                     </form>
                 </div>
