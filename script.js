@@ -581,6 +581,11 @@ function addGuest() {
     
     // Add to the table
     const tbody = document.querySelector('#guests-table tbody');
+    if (!tbody) {
+        console.error('Could not find guests table');
+        return;
+    }
+
     const row = tbody.insertRow();
     row.setAttribute('data-guest-id', guestId);
     row.innerHTML = `
@@ -634,10 +639,10 @@ function addGuest() {
         </td>
     `;
 
-    // Add to unassigned guests area
-    const guestElement = createGuestItem(guestName, guestId, 0);
+    // Add to unassigned guests area if it exists
     const unassignedArea = document.getElementById('unassigned-guests');
     if (unassignedArea) {
+        const guestElement = createGuestItem(guestName, guestId, 0);
         unassignedArea.appendChild(guestElement);
         setupDragAndDrop(guestElement);
     }
