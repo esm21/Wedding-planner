@@ -153,8 +153,18 @@
                     </section>
 
                     <!-- Guests Section -->
-                    <section id="guests-section" class="section-content" style="display: none;">
+                    <section id="guests-section" class="section-content">
                         <h2>Invitados</h2>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <button class="btn btn-secondary me-2" onclick="exportGuests()">
+                                    <i class="bi bi-download"></i> Exportar Invitados
+                                </button>
+                                <button class="btn btn-secondary" onclick="importGuests()">
+                                    <i class="bi bi-upload"></i> Importar Invitados
+                                </button>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-12">
                                 <form id="guest-form" class="mb-3">
@@ -174,16 +184,8 @@
                                                 <option>Otros</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-3">
-                                            <select class="form-select" id="guest-status" required>
-                                                <option value="pending-invite">Pendiente de Invitar</option>
-                                                <option value="invited">Invitado</option>
-                                                <option value="confirmed">Confirmado</option>
-                                                <option value="rejected">No Asistirá</option>
-                                            </select>
-                                        </div>
                                         <div class="col-md-2">
-                                            <button type="button" class="btn btn-primary w-100" onclick="addGuest()">Añadir</button>
+                                            <button type="submit" class="btn btn-primary w-100">Añadir</button>
                                         </div>
                                     </div>
                                 </form>
@@ -199,16 +201,6 @@
                                 <table class="table" id="guests-table">
                                     <!-- ... rest of the table ... -->
                                 </table>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <button class="btn btn-secondary" onclick="exportGuests()">
-                                    <i class="bi bi-download"></i> Exportar Invitados
-                                </button>
-                                <button class="btn btn-secondary" onclick="importGuests()">
-                                    <i class="bi bi-upload"></i> Importar Invitados
-                                </button>
                             </div>
                         </div>
                     </section>
