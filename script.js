@@ -145,7 +145,15 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             const section = this.getAttribute('data-section');
+    console.log('Navigation clicked:', section); // Debug log
+            // Remove active class from all links
+            document.querySelectorAll('.nav-link').forEach(l => {
+                l.classList.remove('active');
+            });
+            // Add active class to clicked link
+            this.classList.add('active');
             showSection(section);
+    history.pushState(null, '', `?section=${section}`);
         });
     });
 
@@ -173,25 +181,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize budget calculator
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
     document.getElementById('save-details').addEventListener('click', saveBasicDetails);
-
-    // Guest form submission
-    const guestForm = document.getElementById('guest-form');
-    if (guestForm) {
-        guestForm.addEventListener('submit', function(e) {
-            e.preventDefault();  // Prevent form submission
-            addGuest();
-        });
-    }
     }
 
 function showSection(sectionId) {
-    console.log('Showing section:', sectionId);  // Debug log
-    
     // Hide all sections
     document.querySelectorAll('.section-content').forEach(section => {
         section.style.display = 'none';
     });
-    
+
     // Show selected section
     const selectedSection = document.getElementById(`${sectionId}-section`);
     if (selectedSection) {
@@ -572,55 +569,48 @@ function updateBudget() {
 }
 
 function addGuest() {
-    const guestName = document.getElementById('guest-name').value;
-    const guestCategory = document.getElementById('guest-category').value;
-
-    if (!guestName || !guestCategory) {
-        alert('Por favor complete todos los campos requeridos');
-        return;
-    }
-
+    const guestCount = document.querySelectorAll('#guests-table tbody tr').length + 1;
+    const guestName = `Invitado ${guestCount}`;
     const guestId = `guest-${Date.now()}`;
     
     // Add to the table
     const tbody = document.querySelector('#guests-table tbody');
     const row = tbody.insertRow();
+    row.style.display = '';
     row.setAttribute('data-guest-id', guestId);
     row.innerHTML = `
-        <td contenteditable="true">${guestName}</td>
+           <td contenteditable="true">${guestName}</td>
+        <td contenteditable="true">0</td>
         <td>
-            <input type="number" class="form-control plus-ones" value="0" min="0" onchange="updateGuestCounts()">
-        </td>
-        <td>
-            <select class="form-select guest-category" onchange="updateGuestCounts()">
-                <option ${guestCategory === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
-                <option ${guestCategory === 'Familia Novio' ? 'selected' : ''}>Familia Novio</option>
-                <option ${guestCategory === 'Amigos Novia' ? 'selected' : ''}>Amigos Novia</option>
-                <option ${guestCategory === 'Amigos Novio' ? 'selected' : ''}>Amigos Novio</option>
-                <option ${guestCategory === 'Trabajo Novia' ? 'selected' : ''}>Trabajo Novia</option>
-                <option ${guestCategory === 'Trabajo Novio' ? 'selected' : ''}>Trabajo Novio</option>
-                <option ${guestCategory === 'Otros' ? 'selected' : ''}>Otros</option>
+               <select class="form-select guest-category" onchange="updateGuestCounts()">
+                   <option>Familia Novia</option>
+                   <option>Familia Novio</option>
+                   <option>Amigos Novia</option>
+                   <option>Amigos Novio</option>
+                   <option>Trabajo Novia</option>
+                   <option>Trabajo Novio</option>
+                <option>Otros</option>
             </select>
         </td>
         <td>
-            <select class="form-select dietary-restrictions">
-                <option value="none" selected>Sin restricciones</option>
-                <option value="vegetarian">Vegetariano</option>
-                <option value="vegan">Vegano</option>
-                <option value="gluten">Sin gluten</option>
-                <option value="lactose">Sin lactosa</option>
-                <option value="allergies">Alergias</option>
-                <option value="other">Otras restricciones</option>
-            </select>
-        </td>
-        <td>
-            <select class="form-select invitation-status" onchange="updateGuestCounts()">
+               <select class="form-select dietary-restrictions">
+                   <option value="none" selected>Sin restricciones</option>
+                   <option value="vegetarian">Vegetariano</option>
+                   <option value="vegan">Vegano</option>
+                   <option value="gluten">Sin gluten</option>
+                   <option value="lactose">Sin lactosa</option>
+                   <option value="allergies">Alergias</option>
+                   <option value="other">Otras restricciones</option>
+               </select>
+           </td>
+           <td>
+               <select class="form-select invitation-status">
                 <option>No</option>
                 <option>Sí</option>
             </select>
         </td>
         <td>
-            <select class="form-select confirmation-status" onchange="updateGuestCounts()">
+               <select class="form-select confirmation-status">
                 <option>Pendiente</option>
                 <option>Confirmado</option>
                 <option>Rechazado</option>
@@ -628,30 +618,53 @@ function addGuest() {
         </td>
         <td>
             <select class="form-select table-group">
-                <option value="">Sin asignar</option>
-                ${getTableOptions()}
+                   <option value="">Sin asignar</option>
+                   ${getTableOptions()}
             </select>
         </td>
+           <td contenteditable="true"></td>
         <td contenteditable="true"></td>
         <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
+               <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
         </td>
     `;
-
-    // Add to unassigned guests area if it exists
-    const unassignedArea = document.getElementById('unassigned-guests');
-    if (unassignedArea) {
-        const guestElement = createGuestItem(guestName, guestId, 0);
-        unassignedArea.appendChild(guestElement);
-        setupDragAndDrop(guestElement);
+    
+    // Add to unassigned guests area (Mesas page)
+    const guestElement = createGuestItem(guestName, guestId, 0);
+    document.getElementById('unassigned-guests').appendChild(guestElement);
+    setupDragAndDrop(guestElement);
+    
+    // Add change listeners
+    row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
+    row.querySelector('.guest-category').addEventListener('change', updateGuestCounts);
+    
+    // Watch for changes in the plus-ones field
+    const plusOnesCell = row.cells[1];
+    plusOnesCell.addEventListener('input', () => {
+    const plusOnes = parseInt(plusOnesCell.textContent) || 0;
+    const guestItem = document.querySelector(`.guest-item[data-guest-id="${guestId}"]`);
+    if (guestItem) {
+    guestItem.setAttribute('data-plus-ones', plusOnes);
+    // Update the plus-ones display
+    const plusOnesDisplay = guestItem.querySelector('.text-muted');
+    if (plusOnes > 0) {
+    if (plusOnesDisplay) {
+    plusOnesDisplay.textContent = `+${plusOnes}`;
+    } else {
+    guestItem.querySelector('.guest-info').insertAdjacentHTML('beforeend', 
+    `<small class="text-muted">+${plusOnes}</small>`);
     }
+    } else if (plusOnesDisplay) {
+    plusOnesDisplay.remove();
+    }
+    updateTableStats();
+    }
+    });
     
     updateGuestCounts();
-    document.getElementById('guest-name').value = '';
-    document.getElementById('guest-category').value = '';
-}
-
-function deleteGuest(button) {
+    }
+    
+    function deleteGuest(button) {
     // Get the guest name before removing the row
     const guestName = button.closest('tr').cells[0].textContent;
     
@@ -668,9 +681,9 @@ function deleteGuest(button) {
     
     updateGuestCounts();
     updateTableStats();
-}
-
-function updateGuestCounts() {
+    }
+    
+    function updateGuestCounts() {
     console.log('Updating guest counts...'); // Debug log
     const rows = document.querySelectorAll('#guests-table tbody tr');
     const total = rows.length;
@@ -711,9 +724,9 @@ function updateGuestCounts() {
     // Update summary section
     document.getElementById('summary-total-guests').textContent = total;
     document.getElementById('summary-confirmed-guests').textContent = confirmed;
-}
-
-function filterGuests(status) {
+    }
+    
+    function filterGuests(status) {
     const rows = document.querySelectorAll('#guests-table tbody tr');
     rows.forEach(row => {
     if (status === 'all') {
@@ -723,9 +736,9 @@ function filterGuests(status) {
     row.style.display = (status === confirmation) ? '' : 'none';
     }
     });
-}
-
-function filterGuestsByName() {
+    }
+    
+    function filterGuestsByName() {
     const searchValue = document.getElementById('guest-search').value.toLowerCase();
     const rows = document.querySelectorAll('#guests-table tbody tr');
     
@@ -733,9 +746,9 @@ function filterGuestsByName() {
     const guestName = row.cells[0].textContent.toLowerCase();
     row.style.display = guestName.includes(searchValue) ? '' : 'none';
     });
-}
-
-document.getElementById('guest-search').addEventListener('input', filterGuestsByName);
+    }
+    
+    document.getElementById('guest-search').addEventListener('input', filterGuestsByName);
 
 function addTable() {
     const tableCount = document.querySelectorAll('.table-card').length + 1;
@@ -1145,67 +1158,115 @@ document.addEventListener('DOMContentLoaded', function() {
 function importGuests() {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.json';
+    input.accept = '.csv';
+    
     input.onchange = function(e) {
         const file = e.target.files[0];
         const reader = new FileReader();
+        
         reader.onload = function(event) {
-            const guests = JSON.parse(event.target.result);
+            const csvData = event.target.result;
+            const guests = parseCSV(csvData);
+            
             guests.forEach(guest => {
-                const guestId = `guest-${Date.now()}-${Math.random()}`;
+                // Add each guest from the CSV
                 const tbody = document.querySelector('#guests-table tbody');
                 const row = tbody.insertRow();
-                row.setAttribute('data-guest-id', guestId);
                 row.innerHTML = `
-                    <td contenteditable="true">${guest.name}</td>
-                    <td>
-                        <input type="number" class="form-control plus-ones" value="${guest.plusOnes}" min="0" onchange="updateGuestCounts()">
-                    </td>
+                    <td contenteditable="true">${guest.nombre || ''}</td>
+                    <td contenteditable="true">${guest.adicionales || '0'}</td>
                     <td>
                         <select class="form-select guest-category" onchange="updateGuestCounts()">
-                            ${createOptionsHTML(['Familia Novia', 'Familia Novio', 'Amigos Novia', 'Amigos Novio', 'Trabajo Novia', 'Trabajo Novio', 'Otros'], guest.category)}
+                            <option ${guest.categoria === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
+                            <option ${guest.categoria === 'Familia Novio' ? 'selected' : ''}>Familia Novio</option>
+                            <option ${guest.categoria === 'Amigos Novia' ? 'selected' : ''}>Amigos Novia</option>
+                            <option ${guest.categoria === 'Amigos Novio' ? 'selected' : ''}>Amigos Novio</option>
+                            <option ${guest.categoria === 'Trabajo Novia' ? 'selected' : ''}>Trabajo Novia</option>
+                            <option ${guest.categoria === 'Trabajo Novio' ? 'selected' : ''}>Trabajo Novio</option>
+                            <option ${guest.categoria === 'Otros' ? 'selected' : ''}>Otros</option>
                         </select>
                     </td>
                     <td>
                         <select class="form-select dietary-restrictions">
-                            ${createOptionsHTML(['Sin restricciones', 'Vegetariano', 'Vegano', 'Sin gluten', 'Sin lactosa', 'Alergias', 'Otras restricciones'], guest.dietary)}
+                            <option value="none" ${!guest.restricciones ? 'selected' : ''}>Sin restricciones</option>
+                            <option value="vegetarian" ${guest.restricciones === 'vegetarian' ? 'selected' : ''}>Vegetariano</option>
+                            <option value="vegan" ${guest.restricciones === 'vegan' ? 'selected' : ''}>Vegano</option>
+                            <option value="gluten" ${guest.restricciones === 'gluten' ? 'selected' : ''}>Sin gluten</option>
+                            <option value="lactose" ${guest.restricciones === 'lactose' ? 'selected' : ''}>Sin lactosa</option>
+                            <option value="allergies" ${guest.restricciones === 'allergies' ? 'selected' : ''}>Alergias</option>
+                            <option value="other" ${guest.restricciones === 'other' ? 'selected' : ''}>Otras restricciones</option>
                         </select>
                     </td>
                     <td>
-                        <select class="form-select invitation-status" onchange="updateGuestCounts()">
-                            ${createOptionsHTML(['No', 'Sí'], guest.invitation)}
+                        <select class="form-select invitation-status">
+                            <option>No</option>
+                            <option>Sí</option>
                         </select>
                     </td>
                     <td>
-                        <select class="form-select confirmation-status" onchange="updateGuestCounts()">
-                            ${createOptionsHTML(['Pendiente', 'Confirmado', 'Rechazado'], guest.confirmation)}
+                        <select class="form-select confirmation-status">
+                            <option>Pendiente</option>
+                            <option>Confirmado</option>
+                            <option>Rechazado</option>
                         </select>
                     </td>
                     <td>
                         <select class="form-select table-group">
                             <option value="">Sin asignar</option>
-                            ${getTableOptions()}
                         </select>
                     </td>
-                    <td contenteditable="true">${guest.notes || ''}</td>
+                    <td contenteditable="true">${guest.regalo || ''}</td>
                     <td>
-                        <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
                     </td>
                 `;
+                
+                // Add to draggable area
+                const guestElement = document.createElement('div');
+                guestElement.className = 'guest-item';
+                guestElement.setAttribute('data-guest-id', `guest-${tbody.rows.length}`);
+                guestElement.draggable = true;
+                guestElement.innerHTML = `
+                    <div contenteditable="true">${guest.nombre}</div>
+                    <small class="text-muted">Arrastra a una mesa</small>
+                `;
+                
+                document.getElementById('unassigned-guests').appendChild(guestElement);
+                setupDragAndDrop(guestElement);
+                
+                // Add change listener
+                row.querySelector('.confirmation-status').addEventListener('change', updateGuestCounts);
+                row.querySelector('.guest-category').addEventListener('change', updateGuestCounts);
             });
+            
             updateGuestCounts();
         };
+        
         reader.readAsText(file);
     };
+    
     input.click();
 }
 
-function createOptionsHTML(options, selectedValue) {
-    return options.map(option => 
-        `<option ${option === selectedValue ? 'selected' : ''}>${option}</option>`
-    ).join('');
+function parseCSV(csv) {
+    const lines = csv.split('\n');
+    const result = [];
+    const headers = lines[0].split(',').map(header => header.trim());
+    
+    for(let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        
+        const obj = {};
+        const currentline = lines[i].split(',').map(cell => cell.trim());
+        
+        headers.forEach((header, index) => {
+            obj[header] = currentline[index];
+        });
+        
+        result.push(obj);
+    }
+    
+    return result;
 }
 
 // Update the event listener for import button
@@ -1600,6 +1661,7 @@ document.getElementById('save-guest').addEventListener('click', function() {
                 ${getTableOptions()}
             </select>
         </td>
+        <td contenteditable="true"></td>
         <td contenteditable="true"></td>
         <td>
             <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
