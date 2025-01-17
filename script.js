@@ -181,7 +181,107 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize budget calculator
     document.getElementById('initial-budget').addEventListener('input', updateBudget);
     document.getElementById('save-details').addEventListener('click', saveBasicDetails);
+
+    // Tables section initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        const addTableBtn = document.getElementById('add-table');
+        if (addTableBtn) {
+            addTableBtn.addEventListener('click', () => {
+                const tableName = prompt('Nombre de la mesa:');
+                const capacity = parseInt(prompt('Capacidad de la mesa:'));
+                
+                if (tableName && !isNaN(capacity)) {
+                    addTable(tableName, capacity);
+                }
+            });
+        }
+    });
+}
+
+function addTable(name, capacity) {
+    const tables = JSON.parse(localStorage.getItem('tables')) || [];
+    const newTable = {
+        id: Date.now(),
+        name: name,
+        capacity: capacity,
+        guests: []
+    };
+    
+    tables.push(newTable);
+    localStorage.setItem('tables', JSON.stringify(tables));
+    updateTableDisplay();
+    updateTableStats();
+}
+
+function updateTableDisplay() {
+    const tablesGrid = document.getElementById('tables-grid');
+    if (!tablesGrid) return;
+
+    const tables = JSON.parse(localStorage.getItem('tables')) || [];
+    tablesGrid.innerHTML = '';
+
+    tables.forEach(table => {
+        const tableCard = document.createElement('div');
+        tableCard.className = 'card table-card m-2';
+        tableCard.style.width = '200px';
+        tableCard.innerHTML = `
+            <div class="card-body">
+                <h5 class="card-title">${table.name}</h5>
+                <p class="card-text">Capacidad: ${table.capacity}</p>
+                <p class="card-text">Asignados: ${table.guests.length}</p>
+                <div class="table-guests" data-table-id="${table.id}">
+                    ${table.guests.map(guest => `
+                        <div class="guest-item" draggable="true" data-guest-id="${guest.id}">
+                            ${guest.name}
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn btn-sm btn-danger" onclick="deleteTable(${table.id})">
+                    <i class="bi bi-trash"></i> Eliminar
+                </button>
+            </div>
+        `;
+        tablesGrid.appendChild(tableCard);
+    });
+}
+
+function updateTableStats() {
+    const tables = JSON.parse(localStorage.getItem('tables')) || [];
+    const totalTables = tables.length;
+    const totalSeats = tables.reduce((sum, table) => sum + table.capacity, 0);
+    const occupiedSeats = tables.reduce((sum, table) => sum + table.guests.length, 0);
+    const availableSeats = totalSeats - occupiedSeats;
+
+    document.getElementById('tables-count').textContent = totalTables;
+    document.getElementById('total-seats').textContent = totalSeats;
+    document.getElementById('available-seats').textContent = availableSeats;
+}
+
+function deleteTable(tableId) {
+    let tables = JSON.parse(localStorage.getItem('tables')) || [];
+    const tableIndex = tables.findIndex(t => t.id === tableId);
+    
+    if (tableIndex !== -1) {
+        // Move guests back to unassigned
+        const removedTable = tables[tableIndex];
+        if (removedTable.guests.length > 0) {
+            const unassignedContainer = document.getElementById('unassigned-guests');
+            removedTable.guests.forEach(guest => {
+                const guestElement = document.createElement('div');
+                guestElement.className = 'guest-item';
+                guestElement.setAttribute('draggable', 'true');
+                guestElement.setAttribute('data-guest-id', guest.id);
+                guestElement.textContent = guest.name;
+                unassignedContainer.appendChild(guestElement);
+            });
+        }
+        
+        tables.splice(tableIndex, 1);
+        localStorage.setItem('tables', JSON.stringify(tables));
+        updateTableDisplay();
+        updateTableStats();
     }
+}
 
 function showSection(sectionId) {
     // Hide all sections
@@ -227,6 +327,14 @@ function showSection(sectionId) {
     // Scroll to top when changing sections
     window.scrollTo(0, 0);
     updateBudget();
+
+    if (sectionId === 'tables') {
+        updateTables();
+    }
+
+    if (sectionId === 'guests') {
+        loadGuests();
+    }
 }
 
 function addNewItem(type) {
@@ -1905,3 +2013,207 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function updateTables() {
+    const tablesContainer = document.querySelector('.tables-container');
+    if (!tablesContainer) return;
+
+    const tables = JSON.parse(localStorage.getItem('tables')) || [];
+    tablesContainer.innerHTML = '';
+    
+    tables.forEach((table, index) => {
+        const card = document.createElement('div');
+        card.className = 'card table-card m-2';
+        card.style.width = '200px';
+        card.innerHTML = `
+            <div class="card-body">
+                <h5 class="card-title">${table.name}</h5>
+                <p class="card-text">Capacidad: ${table.capacity}</p>
+                <p class="card-text">Asignados: ${table.guests.length}</p>
+                <div class="table-guests" data-table-id="table-${index}">
+                    ${table.guests.map(guest => `
+                        <div class="guest-item" draggable="true" data-guest-id="${guest.id}">
+                            ${guest.name}
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn btn-sm btn-danger" onclick="deleteTable(${table.id})">
+                    <i class="bi bi-trash"></i> Eliminar
+                </button>
+            </div>
+        `;
+        tablesContainer.appendChild(card);
+    });
+    
+    setupTableDropZones();
+    updateSeatingAssignment();
+}
+
+function updateSeatingAssignment() {
+    const seatingAssignment = document.querySelector('.seating-assignment');
+    if (!seatingAssignment) return;
+
+    const tables = JSON.parse(localStorage.getItem('tables')) || [];
+    const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
+    seatingAssignment.innerHTML = '';
+
+    tables.forEach((table, tableIndex) => {
+        const tableDiv = document.createElement('div');
+        tableDiv.className = 'card m-2';
+        tableDiv.style.width = '200px';
+        tableDiv.innerHTML = `
+            <div class="card-body">
+                <h5 class="card-title">${table.name}</h5>
+                <ul class="list-group" id="table-${tableIndex}">
+                    ${table.guests.map(guest => `<li class="list-group-item">${guest.name}</li>`).join('')}
+                </ul>
+                <select class="form-select mt-2" onchange="assignGuest(${tableIndex}, this.value); this.value='';">
+                    <option value="">Asignar invitado...</option>
+                    ${guests.filter(guest => !tables.some(t => t.guests.some(g => g.id === guest.id)))
+                           .map(guest => `<option value="${guest.id}">${guest.name}</option>`).join('')}
+                </select>
+            </div>
+        `;
+        seatingAssignment.appendChild(tableDiv);
+    });
+}
+
+function removeTable(index) {
+    let tables = JSON.parse(localStorage.getItem('tables')) || [];
+    // Move guests back to unassigned
+    const removedTable = tables[index];
+    if (removedTable && removedTable.guests) {
+        removedTable.guests.forEach(guest => {
+            unassignGuestFromTable(guest.id);
+        });
+    }
+    tables.splice(index, 1);
+    localStorage.setItem('tables', JSON.stringify(tables));
+    updateTables();
+}
+
+function assignGuest(tableIndex, guestId) {
+    if (!guestId) return;
+    
+    let tables = JSON.parse(localStorage.getItem('tables')) || [];
+    const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
+    const guest = guests.find(g => g.id === guestId);
+    
+    if (!guest) return;
+
+    if (tables[tableIndex].guests.length < tables[tableIndex].capacity) {
+        // Remove from other tables first
+        tables.forEach(table => {
+            table.guests = table.guests.filter(g => g.id !== guestId);
+        });
+        
+        // Add to new table
+        tables[tableIndex].guests.push({
+            id: guest.id,
+            name: guest.name
+        });
+        
+        localStorage.setItem('tables', JSON.stringify(tables));
+        updateTables();
+    } else {
+        alert('Esta mesa está llena. Por favor, elija otra mesa.');
+    }
+}
+
+// Add these functions to your existing script.js
+
+function loadGuests() {
+    const guestsSection = document.getElementById('guests-section');
+    if (!guestsSection) return;
+
+    guestsSection.innerHTML = `
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h3>Agregar Invitado</h3>
+                <form id="add-guest-form">
+                    <div class="mb-3">
+                        <label for="guest-name" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="guest-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="guest-email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="guest-email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="guest-category" class="form-label">Categoría</label>
+                        <select class="form-select" id="guest-category" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="family">Familia</option>
+                            <option value="friends">Amigos</option>
+                            <option value="colleagues">Colegas</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar Invitado</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <h3>Lista de Invitados</h3>
+                <ul id="guest-list" class="list-group">
+                </ul>
+            </div>
+        </div>
+    `;
+
+    const addGuestForm = document.getElementById('add-guest-form');
+    const guestList = document.getElementById('guest-list');
+
+    if (addGuestForm) {
+        addGuestForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('guest-name').value;
+            const email = document.getElementById('guest-email').value;
+            const category = document.getElementById('guest-category').value;
+
+            const guest = { name, email, category, rsvp: false };
+            let guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
+            guests.push(guest);
+            localStorage.setItem('wedding-guests', JSON.stringify(guests));
+
+            updateGuestList();
+            addGuestForm.reset();
+        });
+    }
+
+    function updateGuestList() {
+        if (!guestList) return;
+        const guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
+        guestList.innerHTML = '';
+        guests.forEach((guest, index) => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+                ${guest.name} (${guest.category})
+                <span>
+                    <button class="btn btn-sm btn-${guest.rsvp ? 'success' : 'warning'}" onclick="toggleRSVP(${index})">
+                        ${guest.rsvp ? 'Confirmado' : 'Pendiente'}
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="removeGuest(${index})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </span>
+            `;
+            guestList.appendChild(li);
+        });
+    }
+
+    window.toggleRSVP = function(index) {
+        let guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
+        guests[index].rsvp = !guests[index].rsvp;
+        localStorage.setItem('wedding-guests', JSON.stringify(guests));
+        updateGuestList();
+    };
+
+    window.removeGuest = function(index) {
+        let guests = JSON.parse(localStorage.getItem('wedding-guests')) || [];
+        guests.splice(index, 1);
+        localStorage.setItem('wedding-guests', JSON.stringify(guests));
+        updateGuestList();
+    };
+
+    updateGuestList();
+}
