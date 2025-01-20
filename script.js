@@ -610,8 +610,11 @@ function addGuest() {
 
     const row = tbody.insertRow();
     row.innerHTML = `
-        <td>${guestName}</td>
-        <td>0</td>
+        <td contenteditable="true">${guestName}</td>
+        <td>
+            <input type="number" class="form-control form-control-sm" 
+                   value="0" min="0" onchange="updateGuestCounts()">
+        </td>
         <td>
             <select class="form-select guest-category" onchange="updateGuestCounts()">
                 <option ${guestCategory === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
@@ -652,8 +655,8 @@ function addGuest() {
                 <option value="">Sin asignar</option>
             </select>
         </td>
-        <td></td>
-        <td></td>
+        <td contenteditable="true"></td>
+        <td contenteditable="true"></td>
         <td>
             <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">
                 <i class="bi bi-trash"></i>
@@ -917,15 +920,21 @@ function updateTableGuests(tableId) {
             if (!guestRow) return '';
             
             const guestName = guestRow.cells[0].textContent;
-            const plusOnes = parseInt(guestRow.cells[1].textContent) || 0;
+            const plusOnes = parseInt(guestRow.querySelector('input[type="number"]').value) || 0;
+            const giftReceived = guestRow.cells[7].textContent;
+            const notes = guestRow.cells[8].textContent;
+            
             let guestHtml = `
                 <div class="guest-row">
-                    <span>${guestName}</span>
+                    <span class="guest-info">
+                        ${guestName}
+                        ${giftReceived ? '<i class="bi bi-gift text-success ms-2" title="Regalo recibido"></i>' : ''}
+                        ${notes ? '<i class="bi bi-sticky text-info ms-2" title="' + notes + '"></i>' : ''}
+                    </span>
                     <i class="bi bi-x-circle remove-guest" 
                        onclick="removeGuestFromTable('${tableId}', '${guestId}')"></i>
                 </div>`;
             
-            // Add plus ones if any
             if (plusOnes > 0) {
                 for (let i = 1; i <= plusOnes; i++) {
                     guestHtml += `
@@ -941,7 +950,7 @@ function updateTableGuests(tableId) {
         // Update guest count and check capacity
         const totalGuests = table.guests.reduce((total, guestId) => {
             const guestRow = document.querySelector(`#guests-table tr[data-guest-id="${guestId}"]`);
-            const plusOnes = guestRow ? (parseInt(guestRow.cells[1].textContent) || 0) : 0;
+            const plusOnes = guestRow ? (parseInt(guestRow.querySelector('input[type="number"]').value) || 0) : 0;
             return total + 1 + plusOnes;
         }, 0);
         
