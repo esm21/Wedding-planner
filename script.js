@@ -136,6 +136,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         updateGuestCounts();
     }
+
+    // Initialize guest filters
+    initializeGuestFilters();
+    
+    // Initialize guests chart
+    initializeGuestsChart();
 });    
     function setupEventListeners() {
     console.log('Setting up event listeners...'); // Debug log
@@ -705,6 +711,22 @@ function updateGuestCounts() {
     // Update summary section
     document.getElementById('summary-total-guests').textContent = total;
     document.getElementById('summary-confirmed-guests').textContent = confirmed;
+
+    // Update chart data
+    if (guestsChart) {
+        const counts = [
+            categories['Familia Novia'],
+            categories['Familia Novio'],
+            categories['Amigos Novia'],
+            categories['Amigos Novio'],
+            categories['Trabajo Novia'],
+            categories['Trabajo Novio'],
+            categories['Otros']
+        ];
+        
+        guestsChart.data.datasets[0].data = counts;
+        guestsChart.update();
+    }
 }
 
 function filterGuests(status) {
@@ -1867,3 +1889,110 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+let guestsChart = null;
+
+function initializeGuestFilters() {
+    const filterButtons = document.querySelectorAll('[data-filter]');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            // Update active state
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Apply filter
+            const filter = button.getAttribute('data-filter');
+            filterGuests(filter);
+        });
+    });
+}
+
+function filterGuests(filter) {
+    const rows = document.querySelectorAll('#guests-table tbody tr');
+    rows.forEach(row => {
+        const confirmationStatus = row.querySelector('.confirmation-status').value;
+        switch(filter) {
+            case 'confirmed':
+                row.style.display = confirmationStatus === 'confirmed' ? '' : 'none';
+                break;
+            case 'pending':
+                row.style.display = confirmationStatus === 'pending' ? '' : 'none';
+                break;
+            default: // 'all'
+                row.style.display = '';
+        }
+    });
+}
+
+function initializeGuestsChart() {
+    const ctx = document.getElementById('guestsChart');
+    if (!ctx) return;
+    
+    guestsChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [
+                'Familia Novia',
+                'Familia Novio',
+                'Amigos Novia',
+                'Amigos Novio',
+                'Trabajo Novia',
+                'Trabajo Novio',
+                'Otros'
+            ],
+            datasets: [{
+                data: [0, 0, 0, 0, 0, 0, 0],
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF',
+                    '#FF9F40',
+                    '#C9CBCF'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateGuestCounts() {
+    // Existing counting code...
+    
+    // Update chart data
+    if (guestsChart) {
+        const categories = [
+            'Familia Novia',
+            'Familia Novio',
+            'Amigos Novia',
+            'Amigos Novio',
+            'Trabajo Novia',
+            'Trabajo Novio',
+            'Otros'
+        ];
+        
+        const counts = categories.map(category => {
+            return Array.from(document.querySelectorAll('#guests-table tbody tr'))
+                .filter(row => row.style.display !== 'none')
+                .filter(row => row.querySelector('.guest-category').value === category)
+                .length;
+        });
+        
+        guestsChart.data.datasets[0].data = counts;
+        guestsChart.update();
+    }
+}
