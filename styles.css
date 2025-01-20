@@ -442,3 +442,34 @@ body[data-active-section="tables"] #main-content-area {
     background-color: #f8f9fa;
     cursor: not-allowed;
 }
+
+.guest-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.guest-info i {
+    font-size: 0.9em;
+    cursor: help;
+}
+
+[contenteditable="true"] {
+    padding: 0.25rem;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+[contenteditable="true"]:hover {
+    border-color: #dee2e6;
+}
+
+[contenteditable="true"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.form-control-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
