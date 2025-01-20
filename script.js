@@ -601,81 +601,77 @@ function addGuest() {
         return;
     }
 
-    try {
-        const tbody = document.querySelector('#guests-table tbody');
-        if (!tbody) {
-            throw new Error('Tabla de invitados no encontrada');
-        }
-
-        const guestId = `guest-${Date.now()}`;
-        const row = tbody.insertRow();
-        row.setAttribute('data-guest-id', guestId);
-        
-        row.innerHTML = `
-            <td>${guestName}</td>
-            <td>0</td>
-            <td>
-                <select class="form-select guest-category" onchange="updateGuestCounts()">
-                    <option ${guestCategory === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
-                    <option ${guestCategory === 'Familia Novio' ? 'selected' : ''}>Familia Novio</option>
-                    <option ${guestCategory === 'Amigos Novia' ? 'selected' : ''}>Amigos Novia</option>
-                    <option ${guestCategory === 'Amigos Novio' ? 'selected' : ''}>Amigos Novio</option>
-                    <option ${guestCategory === 'Trabajo Novia' ? 'selected' : ''}>Trabajo Novia</option>
-                    <option ${guestCategory === 'Trabajo Novio' ? 'selected' : ''}>Trabajo Novio</option>
-                    <option ${guestCategory === 'Otros' ? 'selected' : ''}>Otros</option>
-                </select>
-            </td>
-            <td>
-                <select class="form-select dietary-restrictions">
-                    <option value="none" selected>Sin restricciones</option>
-                    <option value="vegetarian">Vegetariano</option>
-                    <option value="vegan">Vegano</option>
-                    <option value="gluten">Sin gluten</option>
-                    <option value="lactose">Sin lactosa</option>
-                    <option value="allergies">Alergias</option>
-                    <option value="other">Otras restricciones</option>
-                </select>
-            </td>
-            <td>
-                <select class="form-select invitation-status" onchange="updateGuestCounts()">
-                    <option value="no">No</option>
-                    <option value="yes">Sí</option>
-                </select>
-            </td>
-            <td>
-                <select class="form-select confirmation-status" onchange="updateGuestCounts()">
-                    <option value="pending">Pendiente</option>
-                    <option value="confirmed">Confirmado</option>
-                    <option value="declined">Rechazado</option>
-                </select>
-            </td>
-            <td>
-                <select class="form-select table-group">
-                    <option value="">Sin asignar</option>
-                </select>
-            </td>
-            <td></td>
-            <td></td>
-            <td>
-                <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
-
-        // Close modal using Bootstrap's API
-        const modal = bootstrap.Modal.getInstance(document.getElementById('guestModal'));
-        if (modal) {
-            modal.hide();
-        }
-
-        // Update counts
-        updateGuestCounts();
-        
-    } catch (error) {
-        console.error('Error adding guest:', error);
-        alert('Hubo un error al añadir el invitado. Por favor, inténtelo de nuevo.');
+    // Add to the table
+    const tbody = document.querySelector('#guests-table tbody');
+    if (!tbody) {
+        console.error('Could not find guests table');
+        return;
     }
+
+    const row = tbody.insertRow();
+    row.innerHTML = `
+        <td>${guestName}</td>
+        <td>0</td>
+        <td>
+            <select class="form-select guest-category" onchange="updateGuestCounts()">
+                <option ${guestCategory === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
+                <option ${guestCategory === 'Familia Novio' ? 'selected' : ''}>Familia Novio</option>
+                <option ${guestCategory === 'Amigos Novia' ? 'selected' : ''}>Amigos Novia</option>
+                <option ${guestCategory === 'Amigos Novio' ? 'selected' : ''}>Amigos Novio</option>
+                <option ${guestCategory === 'Trabajo Novia' ? 'selected' : ''}>Trabajo Novia</option>
+                <option ${guestCategory === 'Trabajo Novio' ? 'selected' : ''}>Trabajo Novio</option>
+                <option ${guestCategory === 'Otros' ? 'selected' : ''}>Otros</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select dietary-restrictions">
+                <option value="none" selected>Sin restricciones</option>
+                <option value="vegetarian">Vegetariano</option>
+                <option value="vegan">Vegano</option>
+                <option value="gluten">Sin gluten</option>
+                <option value="lactose">Sin lactosa</option>
+                <option value="allergies">Alergias</option>
+                <option value="other">Otras restricciones</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select invitation-status" onchange="updateGuestCounts()">
+                <option value="no">No</option>
+                <option value="yes">Sí</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select confirmation-status" onchange="updateGuestCounts()">
+                <option value="pending">Pendiente</option>
+                <option value="confirmed">Confirmado</option>
+                <option value="declined">Rechazado</option>
+            </select>
+        </td>
+        <td>
+            <select class="form-select table-group">
+                <option value="">Sin asignar</option>
+            </select>
+        </td>
+        <td></td>
+        <td></td>
+        <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    `;
+
+    // Reset form and close modal
+    document.getElementById('guest-name').value = '';
+    document.getElementById('guest-category').value = '';
+    const modal = document.getElementById('guestModal');
+    const bsModal = bootstrap.Modal.getInstance(modal);
+    if (bsModal) {
+        bsModal.hide();
+    }
+
+    // Update counts
+    updateGuestCounts();
 }
 
 function deleteGuest(button) {
