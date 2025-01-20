@@ -590,10 +590,10 @@ function addGuest() {
     const row = tbody.insertRow();
     row.setAttribute('data-guest-id', guestId);
     row.innerHTML = `
-        <td contenteditable="true">${guestName}</td>
-        <td contenteditable="true">0</td>
+        <td>${guestName}</td>
+        <td>0</td>
         <td>
-            <select class="form-select guest-category" onchange="updateGuestCounts()">
+            <select class="form-select guest-category">
                 <option ${guestCategory === 'Familia Novia' ? 'selected' : ''}>Familia Novia</option>
                 <option ${guestCategory === 'Familia Novio' ? 'selected' : ''}>Familia Novio</option>
                 <option ${guestCategory === 'Amigos Novia' ? 'selected' : ''}>Amigos Novia</option>
@@ -615,13 +615,13 @@ function addGuest() {
             </select>
         </td>
         <td>
-            <select class="form-select invitation-status" onchange="updateGuestCounts()">
+            <select class="form-select invitation-status">
                 <option value="no">No</option>
                 <option value="yes">Sí</option>
             </select>
         </td>
         <td>
-            <select class="form-select confirmation-status" onchange="updateGuestCounts()">
+            <select class="form-select confirmation-status">
                 <option value="pending">Pendiente</option>
                 <option value="confirmed">Confirmado</option>
                 <option value="declined">Rechazado</option>
@@ -630,11 +630,10 @@ function addGuest() {
         <td>
             <select class="form-select table-group">
                 <option value="">Sin asignar</option>
-                ${getTableOptions()}
             </select>
         </td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
+        <td></td>
+        <td></td>
         <td>
             <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">
                 <i class="bi bi-trash"></i>
@@ -642,11 +641,15 @@ function addGuest() {
         </td>
     `;
 
-    // Close modal and reset form
-    const modal = bootstrap.Modal.getInstance(document.getElementById('guestModal'));
-    modal.hide();
-    document.getElementById('guest-form').reset();
-    
+    // Reset form and close modal
+    document.getElementById('guest-name').value = '';
+    document.getElementById('guest-category').value = '';
+    const modal = document.getElementById('guestModal');
+    const bsModal = bootstrap.Modal.getInstance(modal);
+    if (bsModal) {
+        bsModal.hide();
+    }
+
     // Update counts
     updateGuestCounts();
 }
@@ -672,10 +675,17 @@ function deleteGuest(button) {
 
 function updateGuestCounts() {
     const rows = document.querySelectorAll('#guests-table tbody tr');
-    let total = 0;
-    let confirmed = 0;
-    
-    // Reset category counts
+    let total = rows.length;
+    let confirmed = Array.from(rows).filter(row => 
+        row.querySelector('.confirmation-status').value === 'confirmed'
+    ).length;
+
+    // Update main counts
+    document.getElementById('guest-count').textContent = total;
+    document.getElementById('confirmed-count').textContent = confirmed;
+    document.getElementById('pending-count').textContent = total - confirmed;
+
+    // Count categories
     const categories = {
         'Familia Novia': 0,
         'Familia Novio': 0,
@@ -685,47 +695,22 @@ function updateGuestCounts() {
         'Trabajo Novio': 0,
         'Otros': 0
     };
-    
-    // Count only visible rows
+
     rows.forEach(row => {
-        if (row.style.display !== 'none') {
-            total++;
-            const status = row.querySelector('.confirmation-status').value;
-            if (status === 'confirmed') {
-                confirmed++;
-            }
-            
-            const category = row.querySelector('.guest-category').value;
-            if (category in categories) {
-                categories[category]++;
-            }
+        const category = row.querySelector('.guest-category').value;
+        if (category in categories) {
+            categories[category]++;
         }
     });
-    
-    // Update main counts
-    const guestCountElement = document.getElementById('guest-count');
-    const confirmedCountElement = document.getElementById('confirmed-count');
-    const pendingCountElement = document.getElementById('pending-count');
-    
-    if (guestCountElement) guestCountElement.textContent = total;
-    if (confirmedCountElement) confirmedCountElement.textContent = confirmed;
-    if (pendingCountElement) pendingCountElement.textContent = total - confirmed;
-    
+
     // Update category counts
-    const categoryElements = {
-        'Familia Novia': 'bride-family-count',
-        'Familia Novio': 'groom-family-count',
-        'Amigos Novia': 'bride-friends-count',
-        'Amigos Novio': 'groom-friends-count',
-        'Trabajo Novia': 'bride-work-count',
-        'Trabajo Novio': 'groom-work-count',
-        'Otros': 'other-count'
-    };
-    
-    Object.entries(categories).forEach(([category, count]) => {
-        const element = document.getElementById(categoryElements[category]);
-        if (element) element.textContent = count;
-    });
+    document.getElementById('bride-family-count').textContent = categories['Familia Novia'];
+    document.getElementById('groom-family-count').textContent = categories['Familia Novio'];
+    document.getElementById('bride-friends-count').textContent = categories['Amigos Novia'];
+    document.getElementById('groom-friends-count').textContent = categories['Amigos Novio'];
+    document.getElementById('bride-work-count').textContent = categories['Trabajo Novia'];
+    document.getElementById('groom-work-count').textContent = categories['Trabajo Novio'];
+    document.getElementById('other-count').textContent = categories['Otros'];
 
     // Update chart if it exists
     if (guestsChart) {
