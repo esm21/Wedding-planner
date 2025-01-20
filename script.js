@@ -873,7 +873,8 @@ function getAvailableGuests() {
     const allGuests = Array.from(document.querySelectorAll('#guests-table tbody tr'))
         .map(row => ({
             name: row.cells[0].textContent,
-            id: row.getAttribute('data-guest-id')
+            id: row.getAttribute('data-guest-id'),
+            plusOnes: parseInt(row.cells[1].textContent) || 0
         }));
     
     // Filter out guests already assigned to tables
@@ -882,7 +883,10 @@ function getAvailableGuests() {
     
     return allGuests
         .filter(guest => !assignedGuests.has(guest.id))
-        .map(guest => `<option value="${guest.id}">${guest.name}</option>`)
+        .map(guest => {
+            const plusOnesText = guest.plusOnes > 0 ? ` (+${guest.plusOnes})` : '';
+            return `<option value="${guest.id}">${guest.name}${plusOnesText}</option>`;
+        })
         .join('');
 }
 
@@ -910,19 +914,43 @@ function updateTableGuests(tableId) {
     if (table) {
         guestList.innerHTML = table.guests.map(guestId => {
             const guestRow = document.querySelector(`#guests-table tr[data-guest-id="${guestId}"]`);
-            const guestName = guestRow ? guestRow.cells[0].textContent : 'Invitado desconocido';
-            return `
+            if (!guestRow) return '';
+            
+            const guestName = guestRow.cells[0].textContent;
+            const plusOnes = parseInt(guestRow.cells[1].textContent) || 0;
+            let guestHtml = `
                 <div class="guest-row">
                     <span>${guestName}</span>
                     <i class="bi bi-x-circle remove-guest" 
                        onclick="removeGuestFromTable('${tableId}', '${guestId}')"></i>
-                </div>
-            `;
+                </div>`;
+            
+            // Add plus ones if any
+            if (plusOnes > 0) {
+                for (let i = 1; i <= plusOnes; i++) {
+                    guestHtml += `
+                        <div class="guest-row guest-plus-one">
+                            <span>${guestName} (Acompañante ${i})</span>
+                        </div>`;
+                }
+            }
+            
+            return guestHtml;
         }).join('');
 
-        // Update guest count
+        // Update guest count and check capacity
+        const totalGuests = table.guests.reduce((total, guestId) => {
+            const guestRow = document.querySelector(`#guests-table tr[data-guest-id="${guestId}"]`);
+            const plusOnes = guestRow ? (parseInt(guestRow.cells[1].textContent) || 0) : 0;
+            return total + 1 + plusOnes;
+        }, 0);
+        
         tableBox.querySelector('.guest-count').textContent = 
-            `(${table.guests.length}/${table.capacity})`;
+            `(${totalGuests}/${table.capacity})`;
+        
+        // Disable guest selection if table is full
+        const selectElement = tableBox.querySelector('.add-guest-row select');
+        selectElement.disabled = totalGuests >= table.capacity;
 
         // Update available guests in dropdown
         tableBox.querySelector('.add-guest-row select').innerHTML = `
