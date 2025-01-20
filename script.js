@@ -581,11 +581,6 @@ function addGuest() {
     
     // Add to the table
     const tbody = document.querySelector('#guests-table tbody');
-    if (!tbody) {
-        console.error('Could not find guests table');
-        return;
-    }
-
     const row = tbody.insertRow();
     row.setAttribute('data-guest-id', guestId);
     row.innerHTML = `
@@ -604,26 +599,26 @@ function addGuest() {
         </td>
         <td>
             <select class="form-select dietary-restrictions">
-                <option value="none" ${dietary === 'none' ? 'selected' : ''}>Sin restricciones</option>
-                <option value="vegetarian" ${dietary === 'vegetarian' ? 'selected' : ''}>Vegetariano</option>
-                <option value="vegan" ${dietary === 'vegan' ? 'selected' : ''}>Vegano</option>
-                <option value="gluten" ${dietary === 'gluten' ? 'selected' : ''}>Sin gluten</option>
-                <option value="lactose" ${dietary === 'lactose' ? 'selected' : ''}>Sin lactosa</option>
-                <option value="allergies" ${dietary === 'allergies' ? 'selected' : ''}>Alergias</option>
-                <option value="other" ${dietary === 'other' ? 'selected' : ''}>Otras restricciones</option>
+                <option value="none" selected>Sin restricciones</option>
+                <option value="vegetarian">Vegetariano</option>
+                <option value="vegan">Vegano</option>
+                <option value="gluten">Sin gluten</option>
+                <option value="lactose">Sin lactosa</option>
+                <option value="allergies">Alergias</option>
+                <option value="other">Otras restricciones</option>
             </select>
         </td>
         <td>
-            <select class="form-select invitation-status">
-                <option>No</option>
-                <option>Sí</option>
+            <select class="form-select invitation-status" onchange="updateGuestCounts()">
+                <option value="no">No</option>
+                <option value="yes">Sí</option>
             </select>
         </td>
         <td>
-            <select class="form-select confirmation-status">
-                <option>Pendiente</option>
-                <option>Confirmado</option>
-                <option>Rechazado</option>
+            <select class="form-select confirmation-status" onchange="updateGuestCounts()">
+                <option value="pending">Pendiente</option>
+                <option value="confirmed">Confirmado</option>
+                <option value="declined">Rechazado</option>
             </select>
         </td>
         <td>
@@ -635,21 +630,19 @@ function addGuest() {
         <td contenteditable="true"></td>
         <td contenteditable="true"></td>
         <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">Eliminar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteGuest(this)">
+                <i class="bi bi-trash"></i>
+            </button>
         </td>
     `;
 
-    // Add to unassigned guests area if it exists
-    const unassignedArea = document.getElementById('unassigned-guests');
-    if (unassignedArea) {
-        const guestElement = createGuestItem(guestName, guestId, 0);
-        unassignedArea.appendChild(guestElement);
-        setupDragAndDrop(guestElement);
-    }
+    // Close modal and reset form
+    const modal = bootstrap.Modal.getInstance(document.getElementById('guestModal'));
+    modal.hide();
+    document.getElementById('guest-form').reset();
     
+    // Update counts
     updateGuestCounts();
-    document.getElementById('guest-name').value = '';
-    document.getElementById('guest-category').value = '';
 }
 
 function deleteGuest(button) {
@@ -1874,4 +1867,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
