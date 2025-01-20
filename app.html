@@ -204,6 +204,12 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="card mt-3">
+                                    <div class="card-body">
+                                        <h6>Distribución de Invitados</h6>
+                                        <canvas id="guestsChart"></canvas>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-9 main-guest-area">
                                 <div class="btn-group mb-3">
@@ -212,9 +218,9 @@
                                     <button class="btn btn-outline-secondary" id="export-guests">Exportar Lista</button>
                                 </div>
                                 <div class="btn-group mb-3 ms-2">
-                                    <button class="btn btn-outline-info" id="filter-all">Todos</button>
-                                    <button class="btn btn-outline-info" id="filter-confirmed">Confirmados</button>
-                                    <button class="btn btn-outline-info" id="filter-pending">Pendientes</button>
+                                    <button class="btn btn-outline-info active" data-filter="all">Todos</button>
+                                    <button class="btn btn-outline-info" data-filter="confirmed">Confirmados</button>
+                                    <button class="btn btn-outline-info" data-filter="pending">Pendientes</button>
                                 </div>
                                 <div class="input-group mb-3">
                                     <input type="text" class="form-control" id="guest-search" placeholder="Buscar invitado...">
@@ -559,6 +565,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
