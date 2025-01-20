@@ -218,9 +218,9 @@
                                     <button class="btn btn-outline-secondary" id="export-guests">Exportar Lista</button>
                                 </div>
                                 <div class="btn-group mb-3 ms-2">
-                                    <button class="btn btn-outline-info active" data-filter="all">Todos</button>
-                                    <button class="btn btn-outline-info" data-filter="confirmed">Confirmados</button>
-                                    <button class="btn btn-outline-info" data-filter="pending">Pendientes</button>
+                                    <button class="btn btn-outline-info active" onclick="filterGuests('all')">Todos</button>
+                                    <button class="btn btn-outline-info" onclick="filterGuests('confirmed')">Confirmados</button>
+                                    <button class="btn btn-outline-info" onclick="filterGuests('pending')">Pendientes</button>
                                 </div>
                                 <div class="input-group mb-3">
                                     <input type="text" class="form-control" id="guest-search" placeholder="Buscar invitado...">
