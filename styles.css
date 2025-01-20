@@ -427,3 +427,18 @@ body[data-active-section="tables"] #main-content-area {
     color: var(--danger-color);
     cursor: pointer;
 }
+
+.guest-plus-one {
+    padding-left: 1.5rem;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.guest-row span {
+    flex: 1;
+}
+
+.add-guest-row select:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
