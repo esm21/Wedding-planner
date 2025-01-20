@@ -144,20 +144,20 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeGuestsChart();
 
     // Setup guest modal functionality
-    const addGuestButton = document.querySelector('[data-bs-toggle="modal"][data-bs-target="#guestModal"]');
-    const saveGuestButton = document.querySelector('#guestModal .btn-primary');
     const guestModal = document.getElementById('guestModal');
-    
-    if (saveGuestButton) {
-        saveGuestButton.addEventListener('click', function() {
-            addGuest();
-        });
-    }
-    
     if (guestModal) {
         guestModal.addEventListener('hidden.bs.modal', function() {
             document.getElementById('guest-name').value = '';
             document.getElementById('guest-category').value = '';
+        });
+    }
+
+    // Setup form submission
+    const guestForm = document.getElementById('guest-form');
+    if (guestForm) {
+        guestForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            addGuest();
         });
     }
 });    
