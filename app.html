@@ -159,48 +159,50 @@
                             <div class="col-md-3 sidebar-stats">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h6>Resumen Invitados</h6>
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span>Total Invitados:</span>
-                                            <span id="guest-count">0</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span>Confirmados:</span>
-                                            <span id="confirmed-count">0</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between">
-                                            <span>Pendientes:</span>
-                                            <span id="pending-count">0</span>
-                                        </div>
-                                        <hr>
-                                        <h6>Por Categoría</h6>
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span>Familia Novia:</span>
-                                            <span id="bride-family-count">0</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span>Familia Novio:</span>
-                                            <span id="groom-family-count">0</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span>Amigos Novia:</span>
-                                            <span id="bride-friends-count">0</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span>Amigos Novio:</span>
-                                            <span id="groom-friends-count">0</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span>Trabajo Novia:</span>
-                                            <span id="bride-work-count">0</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span>Trabajo Novio:</span>
-                                            <span id="groom-work-count">0</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between">
-                                            <span>Otros:</span>
-                                            <span id="other-count">0</span>
+                                        <h5>Resumen Invitados</h5>
+                                        <div class="stats-list">
+                                            <div class="stat-item">
+                                                <span>Total Invitados:</span>
+                                                <span id="guest-count">0</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span>Confirmados:</span>
+                                                <span id="confirmed-count">0</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span>Pendientes:</span>
+                                                <span id="pending-count">0</span>
+                                            </div>
+                                            <hr>
+                                            <h6>Por Categoría</h6>
+                                            <div class="stat-item">
+                                                <span>Familia Novia:</span>
+                                                <span id="bride-family-count">0</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span>Familia Novio:</span>
+                                                <span id="groom-family-count">0</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span>Amigos Novia:</span>
+                                                <span id="bride-friends-count">0</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span>Amigos Novio:</span>
+                                                <span id="groom-friends-count">0</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span>Trabajo Novia:</span>
+                                                <span id="bride-work-count">0</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span>Trabajo Novio:</span>
+                                                <span id="groom-work-count">0</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span>Otros:</span>
+                                                <span id="other-count">0</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -536,25 +538,23 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="guest-form">
-                        <div class="mb-3">
-                            <label class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="guest-name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Categoría</label>
-                            <select class="form-select" id="guest-category" required>
-                                <option value="">Seleccionar categoría...</option>
-                                <option>Familia Novia</option>
-                                <option>Familia Novio</option>
-                                <option>Amigos Novia</option>
-                                <option>Amigos Novio</option>
-                                <option>Trabajo Novia</option>
-                                <option>Trabajo Novio</option>
-                                <option>Otros</option>
-                            </select>
-                        </div>
-                    </form>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="guest-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Categoría</label>
+                        <select class="form-select" id="guest-category" required>
+                            <option value="">Seleccionar categoría...</option>
+                            <option>Familia Novia</option>
+                            <option>Familia Novio</option>
+                            <option>Amigos Novia</option>
+                            <option>Amigos Novio</option>
+                            <option>Trabajo Novia</option>
+                            <option>Trabajo Novio</option>
+                            <option>Otros</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
