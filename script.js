@@ -671,35 +671,41 @@ function deleteGuest(button) {
 }
 
 function updateGuestCounts() {
-    console.log('Updating guest counts...'); // Debug log
     const rows = document.querySelectorAll('#guests-table tbody tr');
-    const total = rows.length;
-    const confirmed = Array.from(rows).filter(row => 
-    row.querySelector('select.confirmation-status').value === 'Confirmado'
-    ).length;
+    let total = 0;
+    let confirmed = 0;
     
+    // Reset category counts
+    const categories = {
+        'Familia Novia': 0,
+        'Familia Novio': 0,
+        'Amigos Novia': 0,
+        'Amigos Novio': 0,
+        'Trabajo Novia': 0,
+        'Trabajo Novio': 0,
+        'Otros': 0
+    };
+    
+    // Count only visible rows
+    rows.forEach(row => {
+        if (row.style.display !== 'none') {
+            total++;
+            const status = row.querySelector('.confirmation-status').value;
+            if (status === 'confirmed') {
+                confirmed++;
+            }
+            
+            const category = row.querySelector('.guest-category').value;
+            categories[category]++;
+        }
+    });
+    
+    // Update main counts
     document.getElementById('guest-count').textContent = total;
     document.getElementById('confirmed-count').textContent = confirmed;
     document.getElementById('pending-count').textContent = total - confirmed;
     
-    // Update category counts
-    const categories = {
-    'Familia Novia': 0,
-    'Familia Novio': 0,
-    'Amigos Novia': 0,
-    'Amigos Novio': 0,
-    'Trabajo Novia': 0,
-    'Trabajo Novio': 0,
-    'Otros': 0
-    };
-    
-    console.log('Counting categories...'); // Debug log
-    rows.forEach(row => {
-    const category = row.querySelector('.guest-category').value;
-    console.log('Found category:', category); // Debug log
-    categories[category]++;
-    });
-    
+    // Update category counts in left panel
     document.getElementById('bride-family-count').textContent = categories['Familia Novia'];
     document.getElementById('groom-family-count').textContent = categories['Familia Novio'];
     document.getElementById('bride-friends-count').textContent = categories['Amigos Novia'];
@@ -712,9 +718,9 @@ function updateGuestCounts() {
     document.getElementById('summary-total-guests').textContent = total;
     document.getElementById('summary-confirmed-guests').textContent = confirmed;
 
-    // Update chart data
+    // Update chart if it exists
     if (guestsChart) {
-        const counts = [
+        guestsChart.data.datasets[0].data = [
             categories['Familia Novia'],
             categories['Familia Novio'],
             categories['Amigos Novia'],
@@ -723,22 +729,38 @@ function updateGuestCounts() {
             categories['Trabajo Novio'],
             categories['Otros']
         ];
-        
-        guestsChart.data.datasets[0].data = counts;
         guestsChart.update();
     }
 }
 
 function filterGuests(status) {
     const rows = document.querySelectorAll('#guests-table tbody tr');
-    rows.forEach(row => {
-    if (status === 'all') {
-    row.style.display = '';
-    } else {
-    const confirmation = row.querySelector('select.confirmation-status').value;
-    row.style.display = (status === confirmation) ? '' : 'none';
-    }
+    const buttons = document.querySelectorAll('.btn-group .btn-outline-info');
+    
+    // Update active button
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase().includes(status)) {
+            btn.classList.add('active');
+        }
     });
+    
+    rows.forEach(row => {
+        const confirmationStatus = row.querySelector('.confirmation-status').value;
+        switch(status) {
+            case 'confirmed':
+                row.style.display = confirmationStatus === 'confirmed' ? '' : 'none';
+                break;
+            case 'pending':
+                row.style.display = confirmationStatus === 'pending' ? '' : 'none';
+                break;
+            default: // 'all'
+                row.style.display = '';
+        }
+    });
+    
+    // Update counts after filtering
+    updateGuestCounts();
 }
 
 function filterGuestsByName() {
@@ -1118,8 +1140,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add new event listeners
     document.getElementById('filter-all').addEventListener('click', () => filterGuests('all'));
-    document.getElementById('filter-confirmed').addEventListener('click', () => filterGuests('Confirmado'));
-    document.getElementById('filter-pending').addEventListener('click', () => filterGuests('Pendiente'));
+    document.getElementById('filter-confirmed').addEventListener('click', () => filterGuests('confirmed'));
+    document.getElementById('filter-pending').addEventListener('click', () => filterGuests('pending'));
     
     document.getElementById('import-guests').addEventListener('click', importGuests);
     
