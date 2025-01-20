@@ -207,7 +207,7 @@
                             </div>
                             <div class="col-md-9 main-guest-area">
                                 <div class="btn-group mb-3">
-                                    <button class="btn btn-success" id="add-guest-btn">Añadir Invitado</button>
+                                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#guestModal">Añadir Invitado</button>
                                     <button class="btn btn-outline-primary" id="import-guests">Importar Lista</button>
                                     <button class="btn btn-outline-secondary" id="export-guests">Exportar Lista</button>
                                 </div>
@@ -530,32 +530,29 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" id="guest-name" placeholder="Nombre del invitado" required>
-                            </div>
-                            <div class="col-md-3">
-                                <select class="form-select" id="guest-category" required>
-                                    <option value="">Categoría...</option>
-                                    <option>Familia Novia</option>
-                                    <option>Familia Novio</option>
-                                    <option>Amigos Novia</option>
-                                    <option>Amigos Novio</option>
-                                    <option>Trabajo Novia</option>
-                                    <option>Trabajo Novio</option>
-                                    <option>Otros</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-primary w-100" onclick="addGuest()">Añadir</button>
-                            </div>
+                    <form id="guest-form">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="guest-name" required>
                         </div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Categoría</label>
+                            <select class="form-select" id="guest-category" required>
+                                <option value="">Seleccionar categoría...</option>
+                                <option>Familia Novia</option>
+                                <option>Familia Novio</option>
+                                <option>Amigos Novia</option>
+                                <option>Amigos Novio</option>
+                                <option>Trabajo Novia</option>
+                                <option>Trabajo Novio</option>
+                                <option>Otros</option>
+                            </select>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="save-guest">Guardar</button>
+                    <button type="button" class="btn btn-primary" onclick="addGuest()">Guardar</button>
                 </div>
             </div>
         </div>
