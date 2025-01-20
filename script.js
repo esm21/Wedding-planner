@@ -696,27 +696,36 @@ function updateGuestCounts() {
             }
             
             const category = row.querySelector('.guest-category').value;
-            categories[category]++;
+            if (category in categories) {
+                categories[category]++;
+            }
         }
     });
     
     // Update main counts
-    document.getElementById('guest-count').textContent = total;
-    document.getElementById('confirmed-count').textContent = confirmed;
-    document.getElementById('pending-count').textContent = total - confirmed;
+    const guestCountElement = document.getElementById('guest-count');
+    const confirmedCountElement = document.getElementById('confirmed-count');
+    const pendingCountElement = document.getElementById('pending-count');
     
-    // Update category counts in left panel
-    document.getElementById('bride-family-count').textContent = categories['Familia Novia'];
-    document.getElementById('groom-family-count').textContent = categories['Familia Novio'];
-    document.getElementById('bride-friends-count').textContent = categories['Amigos Novia'];
-    document.getElementById('groom-friends-count').textContent = categories['Amigos Novio'];
-    document.getElementById('bride-work-count').textContent = categories['Trabajo Novia'];
-    document.getElementById('groom-work-count').textContent = categories['Trabajo Novio'];
-    document.getElementById('other-count').textContent = categories['Otros'];
+    if (guestCountElement) guestCountElement.textContent = total;
+    if (confirmedCountElement) confirmedCountElement.textContent = confirmed;
+    if (pendingCountElement) pendingCountElement.textContent = total - confirmed;
     
-    // Update summary section
-    document.getElementById('summary-total-guests').textContent = total;
-    document.getElementById('summary-confirmed-guests').textContent = confirmed;
+    // Update category counts
+    const categoryElements = {
+        'Familia Novia': 'bride-family-count',
+        'Familia Novio': 'groom-family-count',
+        'Amigos Novia': 'bride-friends-count',
+        'Amigos Novio': 'groom-friends-count',
+        'Trabajo Novia': 'bride-work-count',
+        'Trabajo Novio': 'groom-work-count',
+        'Otros': 'other-count'
+    };
+    
+    Object.entries(categories).forEach(([category, count]) => {
+        const element = document.getElementById(categoryElements[category]);
+        if (element) element.textContent = count;
+    });
 
     // Update chart if it exists
     if (guestsChart) {
@@ -1990,31 +1999,4 @@ function initializeGuestsChart() {
             }
         }
     });
-}
-
-function updateGuestCounts() {
-    // Existing counting code...
-    
-    // Update chart data
-    if (guestsChart) {
-        const categories = [
-            'Familia Novia',
-            'Familia Novio',
-            'Amigos Novia',
-            'Amigos Novio',
-            'Trabajo Novia',
-            'Trabajo Novio',
-            'Otros'
-        ];
-        
-        const counts = categories.map(category => {
-            return Array.from(document.querySelectorAll('#guests-table tbody tr'))
-                .filter(row => row.style.display !== 'none')
-                .filter(row => row.querySelector('.guest-category').value === category)
-                .length;
-        });
-        
-        guestsChart.data.datasets[0].data = counts;
-        guestsChart.update();
-    }
 }
