@@ -1,3 +1,32 @@
+// Add at the beginning of script.js, after existing variable declarations
+// Check URL hash on page load and when hash changes
+window.addEventListener('load', handleNavigation);
+window.addEventListener('hashchange', handleNavigation);
+
+function handleNavigation() {
+    // Get the hash from URL (remove the # symbol)
+    const hash = window.location.hash.slice(1) || 'planning';
+    
+    // Hide all sections
+    document.querySelectorAll('.section-content').forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Show the selected section
+    const targetSection = document.getElementById(`${hash}-section`);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+    }
+    
+    // Update active nav link
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${hash}`) {
+            link.classList.add('active');
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded'); // Debug log
     
