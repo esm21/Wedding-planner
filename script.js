@@ -196,6 +196,29 @@ document.addEventListener('DOMContentLoaded', function() {
             addGuest();
         });
     }
+
+    // Handle navigation when clicking nav links
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Remove active class from all links
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            // Add active class to clicked link
+            this.classList.add('active');
+            
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            const sectionId = this.getAttribute('data-section') + '-section';
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+        });
+    });
 });    
     function setupEventListeners() {
     console.log('Setting up event listeners...'); // Debug log
