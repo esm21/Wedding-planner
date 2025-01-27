@@ -838,14 +838,11 @@ function createTableBox(table) {
                    onchange="updateTableCapacity('${table.id}', this.value)">
         </div>
         <div class="table-guests">
-            <h6>Invitados <span class="guest-count">(${table.guests ? table.guests.length : 0}/${table.capacity})</span></h6>
-            <div class="assigned-guests-list mb-2">
-                <!-- Assigned guests will be listed here -->
-            </div>
+            <h6>Invitados <span class="guest-count">(0/${table.capacity})</span></h6>
+            <div class="assigned-guests-list mb-2"></div>
             <div class="add-guest-row">
                 <select class="form-select form-select-sm" onchange="addGuestToTable('${table.id}', this)">
                     <option value="">Añadir invitado...</option>
-                    ${getAvailableGuests(table.id)}
                 </select>
             </div>
         </div>
@@ -855,29 +852,14 @@ function createTableBox(table) {
     updateTableGuests(table.id);
 }
 
-function getAvailableGuests(tableId) {
-    // Get all guests from the guests table
-    const allGuests = Array.from(document.querySelectorAll('#guests-table tbody tr'))
-        .map(row => ({
-            id: row.getAttribute('data-guest-id'),
-            name: row.cells[0].textContent,
-            plusOnes: parseInt(row.cells[1].querySelector('input').value) || 0
-        }));
-    
-    // Get current table's guests
-    const tables = JSON.parse(localStorage.getItem('wedding-tables')) || [];
-    const currentTable = tables.find(t => t.id === tableId);
-    const assignedGuests = new Set(tables.flatMap(t => t.guests));
-    
-    // Filter out guests already assigned to any table
-    return allGuests
-        .filter(guest => !assignedGuests.has(guest.id) || 
-            (currentTable && currentTable.guests.includes(guest.id)))
-        .map(guest => {
-            const plusOnesText = guest.plusOnes > 0 ? ` (+${guest.plusOnes})` : '';
-            return `<option value="${guest.id}">${guest.name}${plusOnesText}</option>`;
-        })
-        .join('');
+function updateTableCapacity(tableId, newCapacity) {
+    let tables = JSON.parse(localStorage.getItem('wedding-tables')) || [];
+    const table = tables.find(t => t.id === tableId);
+    if (table) {
+        table.capacity = parseInt(newCapacity);
+        localStorage.setItem('wedding-tables', JSON.stringify(tables));
+        updateTableGuests(tableId);
+    }
 }
 
 function updateTableGuests(tableId) {
@@ -891,13 +873,13 @@ function updateTableGuests(tableId) {
     // Update assigned guests list
     const assignedGuestsList = tableBox.querySelector('.assigned-guests-list');
     if (assignedGuestsList) {
-        assignedGuestsList.innerHTML = table.guests.map(guestId => {
+        const guestsList = table.guests.map(guestId => {
             const guestRow = document.querySelector(`#guests-table tbody tr[data-guest-id="${guestId}"]`);
             if (!guestRow) return '';
 
             const guestName = guestRow.cells[0].textContent;
             const plusOnes = parseInt(guestRow.cells[1].querySelector('input').value) || 0;
-            
+
             let html = `
                 <div class="assigned-guest">
                     <span>${guestName}</span>
@@ -907,16 +889,18 @@ function updateTableGuests(tableId) {
                     </button>
                 </div>`;
 
-            // Add plus ones display
-            for (let i = 1; i <= plusOnes; i++) {
-                html += `
-                    <div class="assigned-guest plus-one">
-                        <span>${guestName} (Acompañante ${i})</span>
-                    </div>`;
+            if (plusOnes > 0) {
+                for (let i = 1; i <= plusOnes; i++) {
+                    html += `
+                        <div class="assigned-guest plus-one">
+                            <span>${guestName} (Acompañante ${i})</span>
+                        </div>`;
+                }
             }
-            
             return html;
-        }).join('');
+        });
+
+        assignedGuestsList.innerHTML = guestsList.join('');
     }
 
     // Update guest count
@@ -926,6 +910,7 @@ function updateTableGuests(tableId) {
         return total + 1 + plusOnes;
     }, 0);
 
+    // Update capacity display
     tableBox.querySelector('.guest-count').textContent = `(${totalGuests}/${table.capacity})`;
 
     // Update available guests dropdown
@@ -934,19 +919,23 @@ function updateTableGuests(tableId) {
         <option value="">Añadir invitado...</option>
         ${getAvailableGuests(tableId)}
     `;
-    
+
     // Disable select if table is full
     selectElement.disabled = totalGuests >= table.capacity;
 }
 
-function removeGuestFromTable(tableId, guestId) {
+function addGuestToTable(tableId, selectElement) {
+    const guestId = selectElement.value;
+    if (!guestId) return;
+
     let tables = JSON.parse(localStorage.getItem('wedding-tables')) || [];
     const table = tables.find(t => t.id === tableId);
     
-    if (table) {
-        table.guests = table.guests.filter(id => id !== guestId);
+    if (table && !table.guests.includes(guestId)) {
+        table.guests.push(guestId);
         localStorage.setItem('wedding-tables', JSON.stringify(tables));
         updateTableGuests(tableId);
+        selectElement.value = ''; // Reset select
     }
 }
 
