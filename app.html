@@ -14,50 +14,29 @@
         <!-- Top Navigation Bar -->
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
-                <a href="index.html" class="navbar-brand">Planificador de Bodas</a>
-                <div class="navbar-nav">
-                    <ul class="nav nav-pills">
+                <a class="navbar-brand" href="#planning">Wedding Planner</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a href="#" class="nav-link active" data-section="planning">
-                                <i class="bi bi-calendar-check me-2"></i>
-                                <span>Planificación</span>
-                            </a>
+                            <a class="nav-link" href="#planning">Planning</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link" data-section="civil">
-                                <i class="bi bi-building me-2"></i>
-                                <span>Ceremonia Civil</span>
-                            </a>
+                            <a class="nav-link" href="#guests">Guests</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link" data-section="religious">
-                                <i class="bi bi-building-fill-check me-2"></i>
-                                <span>Ceremonia Religiosa</span>
-                            </a>
+                            <a class="nav-link" href="#tables">Tables</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link" data-section="banquet">
-                                <i class="bi bi-cup-hot me-2"></i>
-                                <span>Convite</span>
-                            </a>
+                            <a class="nav-link" href="#timeline">Timeline</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link" data-section="guests">
-                                <i class="bi bi-people me-2"></i>
-                                <span>Invitados</span>
-                            </a>
+                            <a class="nav-link" href="#budget">Budget</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link" data-section="tables">
-                                <i class="bi bi-grid-3x3 me-2"></i>
-                                <span>Mesas</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-section="summary">
-                                <i class="bi bi-clipboard-data me-2"></i>
-                                <span>Resumen</span>
-                            </a>
+                            <a class="nav-link" href="#convite">Convite</a>
                         </li>
                     </ul>
                 </div>
@@ -153,7 +132,7 @@
                     </section>
 
                     <!-- Guests Section -->
-                    <section id="guests-section" class="section-content" style="display: none;">
+                    <section id="guests-section" class="section-content">
                         <h2>Invitados</h2>
                         <div class="row">
                             <div class="col-md-3 sidebar-stats">
@@ -253,7 +232,7 @@
                     </section>
 
                     <!-- Tables Section -->
-                    <section id="tables-section" class="section-content" style="display: none;">
+                    <section id="tables-section" class="section-content">
                         <h2>Distribución de Mesas</h2>
                         <div class="row">
                             <div class="col-md-3">
@@ -313,7 +292,7 @@
                     </section>
 
                     <!-- Planning Section -->
-                    <section id="planning-section" class="section-content" style="display: none;">
+                    <section id="planning-section" class="section-content">
                         <h2>Planificación</h2>
                         <div class="row">
                             <div class="col-md-3">
@@ -580,4 +559,3 @@
     <script src="script.js"></script>
 </body>
 </html> 
-
