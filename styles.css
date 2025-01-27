@@ -473,3 +473,35 @@ body[data-active-section="tables"] #main-content-area {
     padding: 0.25rem 0.5rem;
     font-size: 0.875rem;
 }
+
+.assigned-guests-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: var(--border-radius);
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.assigned-guest {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.assigned-guest:last-child {
+    border-bottom: none;
+}
+
+.assigned-guest.plus-one {
+    padding-left: 1rem;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.assigned-guest .btn-link {
+    padding: 0;
+    font-size: 1.1em;
+}
