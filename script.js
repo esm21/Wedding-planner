@@ -10,24 +10,31 @@ function handleNavigation() {
     // Hide all sections
     document.querySelectorAll('.section-content').forEach(section => {
         section.style.display = 'none';
+        section.classList.remove('active');
     });
     
     // Show the selected section
     const targetSection = document.getElementById(`${hash}-section`);
     if (targetSection) {
         targetSection.style.display = 'block';
+        targetSection.classList.add('active');
     }
     
     // Update active nav link
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
-        if (link.getAttribute('href') === `#${hash}`) {
+        if (link.getAttribute('href').slice(1) === hash) {
             link.classList.add('active');
         }
     });
+
+    // Update body data attribute for specific section styles
+    document.body.setAttribute('data-active-section', hash);
 }
 
+// Initialize navigation on page load
 document.addEventListener('DOMContentLoaded', function() {
+    handleNavigation(); // Handle initial navigation
     console.log('DOM Content Loaded'); // Debug log
     
     // Initialize predefined elements first
