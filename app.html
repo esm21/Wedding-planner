@@ -328,86 +328,19 @@
                     <section id="planning-section" class="section-content">
                         <h2>Planificación</h2>
                         <div class="row">
-                            <div class="col-md-3">
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Cuenta Atrás</h5>
-                                        <div class="countdown-timer text-center">
-                                            <div id="wedding-countdown" class="display-6">--</div>
-                                            <small class="text-muted">días hasta la boda</small>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col-md-4">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h5 class="card-title">Filtros</h5>
-                                        <select class="form-select mb-2" id="task-status-filter">
-                                            <option value="all">Todas las tareas</option>
-                                            <option value="pending">Pendientes</option>
-                                            <option value="in-progress">En progreso</option>
-                                            <option value="completed">Completadas</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <button class="btn btn-success" id="add-task">
-                                        <i class="bi bi-plus-lg"></i> Añadir Tarea
-                                    </button>
-                                </div>
-                                <div class="timeline">
-                                    <div class="timeline-items" id="timeline-container">
-                                        <!-- Timeline items will be added here dynamically -->
+                                        <h3>Cuenta Atrás</h3>
+                                        <div class="countdown-display">
+                                            <span id="countdown-days">--</span>
+                                            <span>días hasta la boda</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </section>
-
-                    <!-- Add Task Modal -->
-                    <div class="modal fade" id="taskModal" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Nueva Tarea</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="task-form">
-                                        <div class="mb-3">
-                                            <label class="form-label">Título</label>
-                                            <input type="text" class="form-control" id="task-title" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Descripción</label>
-                                            <textarea class="form-control" id="task-description" rows="3"></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Fecha límite</label>
-                                            <input type="date" class="form-control" id="task-deadline" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Responsable</label>
-                                            <input type="text" class="form-control" id="task-assignee">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Prioridad</label>
-                                            <select class="form-select" id="task-priority">
-                                                <option value="high">Alta</option>
-                                                <option value="medium">Media</option>
-                                                <option value="low">Baja</option>
-                                            </select>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="button" class="btn btn-primary" id="save-task">Guardar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Checklist Section -->
                     <section id="checklist-section" class="section-content" style="display: none;">
