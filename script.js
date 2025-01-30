@@ -2203,3 +2203,96 @@ function updateTableGuests(tableId) {
     // Disable select if table is full
     selectElement.disabled = totalGuests >= table.capacity;
 }
+
+// Add after your existing code
+function updatePlanningView() {
+    // Sample tasks data structure
+    const tasks = {
+        civil: [
+            { name: 'Documentación', status: 'pending' },
+            { name: 'Fecha', status: 'completed' },
+            { name: 'Testigos', status: 'in-progress' }
+        ],
+        religious: [
+            { name: 'Iglesia', status: 'completed' },
+            { name: 'Música', status: 'pending' },
+            { name: 'Decoración', status: 'in-progress' }
+        ],
+        reception: [
+            { name: 'Lugar', status: 'completed' },
+            { name: 'Catering', status: 'in-progress' },
+            { name: 'Decoración', status: 'pending' }
+        ]
+    };
+
+    // Update task lists
+    updateTaskList('civil-tasks', tasks.civil);
+    updateTaskList('religious-tasks', tasks.religious);
+    updateTaskList('reception-tasks', tasks.reception);
+
+    // Update statistics
+    updateTaskStats(tasks);
+
+    // Update chart
+    updateProgressChart(tasks);
+}
+
+function updateTaskList(elementId, tasks) {
+    const container = document.getElementById(elementId);
+    if (!container) return;
+
+    container.innerHTML = tasks.map(task => `
+        <div class="task-item">
+            <span class="task-status status-${task.status}"></span>
+            <span>${task.name}</span>
+        </div>
+    `).join('');
+}
+
+function updateTaskStats(tasks) {
+    const allTasks = [...tasks.civil, ...tasks.religious, ...tasks.reception];
+    const counts = {
+        completed: allTasks.filter(t => t.status === 'completed').length,
+        inProgress: allTasks.filter(t => t.status === 'in-progress').length,
+        pending: allTasks.filter(t => t.status === 'pending').length
+    };
+
+    document.getElementById('completed-tasks-count').textContent = counts.completed;
+    document.getElementById('in-progress-tasks-count').textContent = counts.inProgress;
+    document.getElementById('pending-tasks-count').textContent = counts.pending;
+}
+
+function updateProgressChart(tasks) {
+    const allTasks = [...tasks.civil, ...tasks.religious, ...tasks.reception];
+    const counts = {
+        completed: allTasks.filter(t => t.status === 'completed').length,
+        inProgress: allTasks.filter(t => t.status === 'in-progress').length,
+        pending: allTasks.filter(t => t.status === 'pending').length
+    };
+
+    const ctx = document.getElementById('tasksProgressChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Completadas', 'En Curso', 'Pendientes'],
+            datasets: [{
+                data: [counts.completed, counts.inProgress, counts.pending],
+                backgroundColor: ['#198754', '#0dcaf0', '#ffc107']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+// Call this when the planning section is shown
+document.addEventListener('DOMContentLoaded', function() {
+    updatePlanningView();
+});
